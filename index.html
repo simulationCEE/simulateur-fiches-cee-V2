@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur CEE — EBS Énergie</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">CEE</div>
+      <div class="brand-text">
+        <h1>Simulateur de primes CEE</h1>
+        <p>Catalogue complet des fiches &middot; EBS Énergie</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="stat-pill" id="ficheCount">11 fiches référencées</div>
+    </div>
+  </header>
+
+  <div class="sources-overlay" id="sourcesOverlay">
+    <div class="sources-panel">
+      <div class="sources-header">
+        <div>
+          <h3>Sources réglementaires</h3>
+          <p>Référence, version et fenêtres de validité vérifiées pour chaque fiche</p>
+        </div>
+        <button class="close-btn" onclick="closeSources()">✕</button>
+      </div>
+      <div class="sources-body" id="sourcesBody"></div>
+    </div>
+  </div>
+
+  <div class="default-prices-card">
+    <div class="dpc-label">💶 Prix CEE par défaut<span class="hint">Appliqués automatiquement à toutes les simulations</span></div>
+    <div class="dpc-fields">
+      <div class="dpc-field">
+        <label>Prix Classique <span class="hint">€/MWh</span></label>
+        <input type="number" id="defaultPriceClassique" step="0.1" placeholder="ex : 7,8">
+      </div>
+      <div class="dpc-field">
+        <label>Prix Précarité <span class="hint">€/MWh</span></label>
+        <input type="number" id="defaultPricePrecarite" step="0.1" placeholder="ex : 11">
+      </div>
+    </div>
+    <span class="dpc-saved" id="dpcSaved">✓ Enregistré</span>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="text" class="search-input" id="searchInput" placeholder="Rechercher une fiche : PAC, isolation, solaire, rénovation, tertiaire..." autocomplete="off">
+  </div>
+
+  <div class="chips" id="chips">
+    <div class="chip active" data-filter="all">Toutes les fiches</div>
+    <div class="chip" data-filter="res">🏠 Résidentiel</div>
+    <div class="chip" data-filter="ter">🏢 Tertiaire</div>
+    <div class="chip empty-chip" data-filter="indus">🏭 Industrie</div>
+    <div class="chip empty-chip" data-filter="agri">🌾 Agriculture</div>
+    <div class="chip empty-chip" data-filter="reseaux">🔥 Réseaux</div>
+    <div class="chip empty-chip" data-filter="transport">🚚 Transport</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div id="groupedContainer"></div>
+  <div class="no-results" id="noResults" style="display:none">Aucune fiche ne correspond à cette recherche.</div>
+
+  <footer class="site-footer">
+    <p><b>Avertissement :</b> les simulations proposées par cet outil sont fournies à titre purement indicatif et n'ont aucune valeur contractuelle. Les prix CEE (classique, précarité) sont des paramètres modifiables par l'utilisateur et ne reflètent pas nécessairement les tarifs pratiqués à un instant donné par un obligé CEE. Les montants réels de prime dépendent notamment de l'éligibilité effective des travaux, du dossier constitué, du signataire retenu et de la réglementation en vigueur au moment de l'engagement des travaux. EBS Énergie ne saurait être tenue responsable des écarts entre les montants estimés par ce simulateur et les montants effectivement obtenus. Cet outil ne se substitue pas à une étude personnalisée du dossier.</p>
+    <button type="button" class="sources-link" onclick="openSources()">📚 Sources &amp; mises à jour</button>
+  </footer>
+</div>
+
+<!-- ═══════════ SIMULATOR OVERLAY ═══════════ -->
+<div class="sim-overlay" id="overlay">
+  <div class="sim-panel">
+    <div class="sim-header">
+      <div class="sim-header-l">
+        <h2 id="simTitle">—</h2>
+        <p id="simSubtitle">—</p>
+      </div>
+      <button class="close-btn" onclick="closeSim()">✕</button>
+    </div>
+    <div class="sim-body" id="simBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════ CART FLOATING BAR ═══════════ -->
+<div class="cart-bar" id="cartBar" onclick="openCart()">
+  🧾 <span id="cartBarText">0 simulation</span>
+  <span class="cart-badge" id="cartBadge">0</span>
+</div>
+
+<!-- ═══════════ CART PANEL — tableau comparatif visuel ═══════════ -->
+<div class="cart-overlay" id="cartOverlay">
+  <div class="cart-panel">
+    <div class="cart-panel-header">
+      <div>
+        <h3>Dossier &amp; comparatif de simulations</h3>
+        <p>Estimations indicatives — non contractuelles</p>
+      </div>
+      <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-panel-footer">
+      <span class="legal-mini">Ces montants sont estimatifs et ne sauraient engager la responsabilité d'EBS Énergie.</span>
+      <button onclick="clearCart()">Vider</button>
+      <button class="btn-primary" onclick="downloadCartPDF()">📄 Télécharger le PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PRINT AREA (invisible à l'écran, utilisée pour l'export PDF) ═══════════ -->
+<div id="printArea"></div>
+
+  <script src="js/core/formatters.js"></script>
+  <script src="js/components/bareme.js"></script>
+  <script src="js/components/adjustable-table.js"></script>
+  <script src="js/components/reverse-solver.js"></script>
+  <script src="js/simulator/grid.js"></script>
+  <script src="js/core/default-prices.js"></script>
+  <script src="js/simulator/overlay.js"></script>
+  <script src="js/components/tooltips.js"></script>
+  <script src="js/components/regulatory-check.js"></script>
+  <script src="js/components/checklist-168.js"></script>
+  <script src="js/data/sources.js"></script>
+  <script src="js/simulator/sources.js"></script>
+  <script src="js/compare/cart.js"></script>
+  <script src="js/pdf/pdf.js"></script>
+  <script src="js/fiches/bar-th-171.js"></script>
+  <script src="js/fiches/bar-th-179.js"></script>
+  <script src="js/fiches/bat-th-163.js"></script>
+  <script src="js/fiches/bar-th-177.js"></script>
+  <script src="js/fiches/bar-th-168.js"></script>
+  <script src="js/fiches/isolation.js"></script>
+  <script src="js/data/fiches.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
