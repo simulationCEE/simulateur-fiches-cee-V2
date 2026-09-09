@@ -32,7 +32,6 @@ function buildCard(f){
 }
 
 const SUBDOMAIN_ORDER = ['pac','isol','solaire','renov'];
-const FEATURED_CODES = ['BAR-TH-171','BAR-TH-168','BAR-TH-179'];
 const groupedContainer = document.getElementById('groupedContainer');
 
 function renderFlatGrid(list){
@@ -79,8 +78,7 @@ function renderGrid(){
 
   if(q){
     const filtered = FICHES.filter(f=>{
-      const matchesSector = activeFilter === 'all' ||
-        (activeFilter === 'featured' ? FEATURED_CODES.includes(f.code) : f.sector === activeFilter);
+      const matchesSector = activeFilter === 'all' || f.sector === activeFilter;
       const matchesSearch = f.code.toLowerCase().includes(q) ||
         f.title.toLowerCase().includes(q) ||
         f.tags.some(t=>tagLabel(t).toLowerCase().includes(q));
@@ -92,11 +90,6 @@ function renderGrid(){
 
   if(activeFilter === 'all'){
     renderFlatGrid(FICHES);
-    return;
-  }
-
-  if(activeFilter === 'featured'){
-    renderFlatGrid(FICHES.filter(f => FEATURED_CODES.includes(f.code)));
     return;
   }
 
