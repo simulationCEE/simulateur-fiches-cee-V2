@@ -5,6 +5,9 @@ const searchInput = document.getElementById('searchInput');
 const chips = document.querySelectorAll('.chip');
 let activeFilter = 'all';
 
+function ficheHasSector(f, sector){
+  return Array.isArray(f.sector) ? f.sector.includes(sector) : f.sector === sector;
+}
 function tagLabel(t){
   return {pac:"PAC",isol:"Isolation",solaire:"Solaire",renov:"Rénovation"}[t] || t;
 }
@@ -16,10 +19,12 @@ function buildCard(f){
   const div = document.createElement('div');
   div.className = 'card';
   div.onclick = () => openSim(f);
+  const sectors = Array.isArray(f.sector) ? f.sector : [f.sector];
+  const sectorTags = sectors.map(s=>`<span class="sector-tag ${s==='res'?'sector-res':'sector-ter'}">${s==='res'?'Résidentiel':'Tertiaire'}</span>`).join('');
   div.innerHTML = `
     <div class="card-top">
       <span class="card-code">${f.code}</span>
-      <span class="sector-tag ${f.sector==='res'?'sector-res':'sector-ter'}">${f.sector==='res'?'Résidentiel':'Tertiaire'}</span>
+      <span class="sector-tags">${sectorTags}</span>
     </div>
     <div class="card-title">${f.title}</div>
     <div class="card-meta">
@@ -48,7 +53,7 @@ function renderGroupedBySector(sector){
   groupedContainer.style.display = '';
   document.getElementById('noResults').style.display = 'none';
   groupedContainer.innerHTML = '';
-  const sectorFiches = FICHES.filter(f => f.sector === sector);
+  const sectorFiches = FICHES.filter(f => ficheHasSector(f, sector));
 
   if(sectorFiches.length === 0){
     groupedContainer.innerHTML = `<div class="empty-sector">Aucune fiche n'est encore référencée pour ce secteur.<br>Cette catégorie sera complétée prochainement.</div>`;
@@ -78,7 +83,7 @@ function renderGrid(){
 
   if(q){
     const filtered = FICHES.filter(f=>{
-      const matchesSector = activeFilter === 'all' || f.sector === activeFilter;
+      const matchesSector = activeFilter === 'all' || ficheHasSector(f, activeFilter);
       const matchesSearch = f.code.toLowerCase().includes(q) ||
         f.title.toLowerCase().includes(q) ||
         f.tags.some(t=>tagLabel(t).toLowerCase().includes(q));
