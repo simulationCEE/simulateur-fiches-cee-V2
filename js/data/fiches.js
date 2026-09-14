@@ -18,6 +18,11 @@ const FICHES = [
     render: renderBAT163
   },
   {
+    code:"PAC MIXTE", title:"PAC Mixte résidentiel-tertiaire", sector:["res","ter"], tags:["pac"],
+    version:"interne EBS", dv:"22 ans",
+    render: renderPACMixte
+  },
+  {
     code:"BAR-TH-177", title:"Rénovation globale résidentiel collectif", sector:"res", tags:["renov"],
     version:"vA63-1", dv:"30 ans",
     render: renderTH177
