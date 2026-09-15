@@ -5,6 +5,8 @@ const searchInput = document.getElementById('searchInput');
 const chips = document.querySelectorAll('.chip');
 let activeFilter = 'all';
 
+const SECTOR_LABELS = {res:"Résidentiel", ter:"Tertiaire", agri:"Agriculture", indus:"Industrie", reseaux:"Réseaux", transport:"Transport"};
+const SECTOR_CLASSES = {res:"sector-res", ter:"sector-ter", agri:"sector-agri", indus:"sector-indus", reseaux:"sector-reseaux", transport:"sector-transport"};
 function ficheHasSector(f, sector){
   return Array.isArray(f.sector) ? f.sector.includes(sector) : f.sector === sector;
 }
@@ -20,7 +22,7 @@ function buildCard(f){
   div.className = 'card';
   div.onclick = () => openSim(f);
   const sectors = Array.isArray(f.sector) ? f.sector : [f.sector];
-  const sectorTags = sectors.map(s=>`<span class="sector-tag ${s==='res'?'sector-res':'sector-ter'}">${s==='res'?'Résidentiel':'Tertiaire'}</span>`).join('');
+  const sectorTags = sectors.map(s=>`<span class="sector-tag ${SECTOR_CLASSES[s]||'sector-res'}">${SECTOR_LABELS[s]||s}</span>`).join('');
   div.innerHTML = `
     <div class="card-top">
       <span class="card-code">${f.code}</span>
