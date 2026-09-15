@@ -35,6 +35,19 @@
     </div>
   </div>
 
+  <div class="sources-overlay" id="converterOverlay">
+    <div class="sources-panel" style="max-width:480px">
+      <div class="sources-header">
+        <div>
+          <h3>Convertisseur d'unités CEE</h3>
+          <p>kWh cumac ⇄ MWh cumac ⇄ GWh cumac ⇄ TWh cumac</p>
+        </div>
+        <button class="close-btn" onclick="closeConverter()">✕</button>
+      </div>
+      <div class="sources-body" id="converterBody"></div>
+    </div>
+  </div>
+
   <div class="default-prices-card">
     <div class="dpc-label">💶 Prix CEE par défaut<span class="hint">Appliqués automatiquement à toutes les simulations</span></div>
     <div class="dpc-fields">
@@ -60,7 +73,7 @@
     <div class="chip" data-filter="res">🏠 Résidentiel</div>
     <div class="chip" data-filter="ter">🏢 Tertiaire</div>
     <div class="chip empty-chip" data-filter="indus">🏭 Industrie</div>
-    <div class="chip empty-chip" data-filter="agri">🌾 Agriculture</div>
+    <div class="chip" data-filter="agri">🌾 Agriculture</div>
     <div class="chip empty-chip" data-filter="reseaux">🔥 Réseaux</div>
     <div class="chip empty-chip" data-filter="transport">🚚 Transport</div>
   </div>
@@ -72,6 +85,7 @@
   <footer class="site-footer">
     <p><b>Avertissement :</b> les simulations proposées par cet outil sont fournies à titre purement indicatif et n'ont aucune valeur contractuelle. Les prix CEE (classique, précarité) sont des paramètres modifiables par l'utilisateur et ne reflètent pas nécessairement les tarifs pratiqués à un instant donné par un obligé CEE. Les montants réels de prime dépendent notamment de l'éligibilité effective des travaux, du dossier constitué, du signataire retenu et de la réglementation en vigueur au moment de l'engagement des travaux. EBS Énergie ne saurait être tenue responsable des écarts entre les montants estimés par ce simulateur et les montants effectivement obtenus. Cet outil ne se substitue pas à une étude personnalisée du dossier.</p>
     <button type="button" class="sources-link" onclick="openSources()">📚 Sources &amp; mises à jour</button>
+    <button type="button" class="sources-link" onclick="openConverter()">🔁 Convertisseur d'unités CEE</button>
   </footer>
 </div>
 
@@ -119,6 +133,7 @@
 
   <script src="js/core/formatters.js"></script>
   <script src="js/components/bareme.js"></script>
+  <script src="js/components/unit-converter.js"></script>
   <script src="js/components/adjustable-table.js"></script>
   <script src="js/components/reverse-solver.js"></script>
   <script src="js/simulator/grid.js"></script>
@@ -138,6 +153,7 @@
   <script src="js/fiches/bar-th-168.js"></script>
   <script src="js/fiches/isolation.js"></script>
   <script src="js/fiches/pac-mixte.js"></script>
+  <script src="js/fiches/agri-eq-110.js"></script>
   <script src="js/data/fiches.js"></script>
   <script src="js/app.js"></script>
 </body>
