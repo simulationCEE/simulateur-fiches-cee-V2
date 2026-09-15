@@ -4,21 +4,34 @@
 // ═══════════════════════════════════════════════════════════════════════
 function reverseSolver(container, opts){
   container.insertAdjacentHTML('beforeend', `
-    <div class="adj-block">
-      <div class="adj-title">🎯 Simulateur inversé — quelle ${opts.quantityLabel} pour atteindre une prime cible ?</div>
-      <div class="adj-fields">
-        <div class="adj-field">
-          <label>Prime visée <span class="hint">€</span></label>
-          <input type="number" id="revTarget" placeholder="ex : 5000">
+    <button type="button" class="bareme-toggle" id="revToggleBtn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <span id="revToggleLabel">🎯 Simulateur inversé — quelle ${opts.quantityLabel} pour atteindre une prime cible ?</span>
+    </button>
+    <div class="bareme-wrap" id="revWrap">
+      <div class="adj-block" style="border:none;padding:14px 16px;margin:0">
+        <div class="adj-fields">
+          <div class="adj-field">
+            <label>Prime visée <span class="hint">€</span></label>
+            <input type="number" id="revTarget" placeholder="ex : 5000">
+          </div>
+          ${opts.hasPrec ? `<div class="adj-field">
+            <label>Type de prime</label>
+            <select id="revType"><option value="classique">Classique</option><option value="precarite">Précarité</option></select>
+          </div>` : ''}
         </div>
-        ${opts.hasPrec ? `<div class="adj-field">
-          <label>Type de prime</label>
-          <select id="revType"><option value="classique">Classique</option><option value="precarite">Précarité</option></select>
-        </div>` : ''}
+        <div id="revResult"></div>
       </div>
-      <div id="revResult"></div>
     </div>
   `);
+  const toggleBtn = container.querySelector('#revToggleBtn');
+  const toggleWrap = container.querySelector('#revWrap');
+  const toggleLabel = container.querySelector('#revToggleLabel');
+  toggleBtn.addEventListener('click', ()=>{
+    const isOpen = toggleWrap.classList.toggle('open');
+    toggleBtn.classList.toggle('expanded', isOpen);
+    toggleLabel.textContent = isOpen ? 'Masquer le simulateur inversé' : `🎯 Simulateur inversé — quelle ${opts.quantityLabel} pour atteindre une prime cible ?`;
+  });
   const targetEl = container.querySelector('#revTarget');
   const typeEl = container.querySelector('#revType');
   const resultEl = container.querySelector('#revResult');
