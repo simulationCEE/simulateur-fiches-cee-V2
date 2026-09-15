@@ -7,21 +7,34 @@
 // ═══════════════════════════════════════════════════════════════════════
 function adjustableTable(container, opts){
   container.insertAdjacentHTML('beforeend', `
-    <div class="adj-block">
-      <div class="adj-title">📊 Comparer avec un écart</div>
-      <div class="adj-fields">
-        <div class="adj-field">
-          <label>Écart <span class="hint">${opts.unitLabel}</span></label>
-          <input type="number" id="adjStep" value="${opts.defaultStep}" min="0.1" step="0.1">
+    <button type="button" class="bareme-toggle" id="adjToggleBtn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <span id="adjToggleLabel">📊 Comparer avec un écart</span>
+    </button>
+    <div class="bareme-wrap" id="adjWrap">
+      <div class="adj-block" style="border:none;padding:14px 16px;margin:0">
+        <div class="adj-fields">
+          <div class="adj-field">
+            <label>Écart <span class="hint">${opts.unitLabel}</span></label>
+            <input type="number" id="adjStep" value="${opts.defaultStep}" min="0.1" step="0.1">
+          </div>
+          <div class="adj-field">
+            <label>Répétition <span class="hint">lignes ajoutées, pair, max 6</span></label>
+            <input type="number" id="adjRep" value="${opts.defaultRep||2}" min="2" max="6" step="2">
+          </div>
         </div>
-        <div class="adj-field">
-          <label>Répétition <span class="hint">lignes ajoutées, pair, max 6</span></label>
-          <input type="number" id="adjRep" value="${opts.defaultRep||2}" min="2" max="6" step="2">
-        </div>
+        <div id="adjTableWrap"></div>
       </div>
-      <div id="adjTableWrap"></div>
     </div>
   `);
+  const toggleBtn = container.querySelector('#adjToggleBtn');
+  const toggleWrap = container.querySelector('#adjWrap');
+  const toggleLabel = container.querySelector('#adjToggleLabel');
+  toggleBtn.addEventListener('click', ()=>{
+    const isOpen = toggleWrap.classList.toggle('open');
+    toggleBtn.classList.toggle('expanded', isOpen);
+    toggleLabel.textContent = isOpen ? 'Masquer la comparaison' : '📊 Comparer avec un écart';
+  });
   const stepEl = container.querySelector('#adjStep');
   const repEl  = container.querySelector('#adjRep');
   const wrap   = container.querySelector('#adjTableWrap');
