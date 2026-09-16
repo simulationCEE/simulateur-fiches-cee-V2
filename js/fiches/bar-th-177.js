@@ -10,7 +10,13 @@ function renderTH177(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Ménages précaires <span class="hint">nombre</span></label><input type="number" id="f-np" value="0"></div>
-      <div class="field"><label>Coup de Pouce <span class="hint">changement chauffage fossile</span></label><select id="f-cdp"><option value="oui">Oui</option><option value="non">Non</option></select></div>
+      <div class="field"><label>Coup de Pouce Rénovation performante</label>
+        <select id="f-cdp">
+          <option value="non">Aucun (hors charte CdP)</option>
+          <option value="travaux">Autres travaux (×2)</option>
+          <option value="chauffage">Chgt chauffage/ECS fossile → renouvelable (×3)</option>
+        </select>
+      </div>
     </div>
     <div class="field-row">
       <div class="field"><label>Cep initial <span class="hint">kWh/m².an</span></label><input type="number" id="f-ci" value="250"></div>
@@ -23,23 +29,25 @@ function renderTH177(body){
     <div class="divider"></div>
     <div id="condResult"></div>
     <div class="results" id="results" style="margin-top:10px"></div>
-    <div class="source-note">Source : BAR-TH-177 vA63-1 · Forfait fixe 2 100 kWhc/m² · CdP charte : 41 €/m² (avec chgt chauffage) / 27 €/m² (sans)</div>
+    <div class="source-note">Source : BAR-TH-177 vA63-1 · Forfait fixe 2 100 kWhc/m² · Arrêté du 6/09/2024 (CdP Rénovation performante) : bonification ×3 chgt chauffage/ECS fossile→renouvelable, ×2 autres travaux · Minimum charte : 41 €/m² (avec chgt chauffage) / 27 €/m² (sans) · Opérations engagées jusqu'au 31/12/2025, achevées au plus tard le 31/12/2027</div>
   `);
   function calcCore177(shab){
     const n=parseFloat(document.getElementById('f-n').value)||1;
     const np=parseFloat(document.getElementById('f-np').value)||0;
     const pc=parseFloat(document.getElementById('f-pc').value)||0;
     const pp=parseFloat(document.getElementById('f-pp').value)||0;
-    const kwhc = 2100*shab;
+    const cdp=document.getElementById('f-cdp').value;
+    const mult = cdp==='chauffage'?3:(cdp==='travaux'?2:1);
+    const kwhcBrut = 2100*shab;
+    const kwhc = kwhcBrut*mult;
     const primeMix = (kwhc/1000*pp*np/n) + (kwhc/1000*pc*(n-np)/n);
-    return {kwh: kwhc, prime: primeMix};
+    return {kwh: kwhc, kwhBrut: kwhcBrut, prime: primeMix, mult, cdp};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const shab=parseFloat(document.getElementById('f-shab').value)||0;
     const n=parseFloat(document.getElementById('f-n').value)||1;
-    const cdp=document.getElementById('f-cdp').value==='oui';
     const ci=parseFloat(document.getElementById('f-ci').value)||0;
     const cp=parseFloat(document.getElementById('f-cp').value)||0;
     const gain = ci>0 ? (ci-cp)/ci : 0;
@@ -54,11 +62,14 @@ function renderTH177(body){
         <span class="result-val" style="font-size:13px;color:${cond2?'#1E6B3A':'#B3261E'}">${cond2?'✓ ≥ 35%':'✗ < 35%'}</span>
       </div>
     `;
-    const {kwh:kwhc, prime:primeMix} = calcCore177(shab);
-    const cdpMin = cdp ? shab*41 : shab*27;
+    const {kwh:kwhc, kwhBrut, prime:primeMix, mult, cdp} = calcCore177(shab);
+    const cdpMin = cdp==='chauffage' ? shab*41 : (cdp==='travaux' ? shab*27 : 0);
+    const sousLeMinimum = cdp!=='non' && primeMix < cdpMin;
     document.getElementById('results').innerHTML = `
+      <div class="result-row"><span class="result-label">kWh cumac ${mult>1?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
       <div class="result-row hi"><span class="result-label">Prime CEE (mix précarité/classique)</span><span class="result-val">${eur(primeMix)}</span></div>
-      <div class="result-row cdp"><span class="result-label">Minimum Coup de Pouce charte</span><span class="result-val">${eur(cdpMin)}</span></div>
+      ${cdp!=='non' ? `<div class="result-row cdp"><span class="result-label">Minimum Coup de Pouce charte</span><span class="result-val">${eur(cdpMin)}</span></div>` : ''}
+      ${sousLeMinimum ? `<div class="warn-box show">⚠ <b>Prime sous le minimum de charte</b> (${eur(cdpMin)} requis). Vérifiez le prix €/MWhc saisi, ou l'opération peut ne pas être finançable au titre du Coup de Pouce.</div>` : ''}
     `;
 
     if(!adjWrap){
