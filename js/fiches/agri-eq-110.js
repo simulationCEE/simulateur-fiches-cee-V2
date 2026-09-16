@@ -33,7 +33,7 @@ function renderAGRIEQ110(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
-      <div class="field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="f-pp" value="" step="0.1" placeholder="ex : 11"></div>
+      <div class="field"></div>
     </div>
     <div class="warn-box" id="warnProductivite"></div>
     <div class="divider"></div>
@@ -47,10 +47,9 @@ function renderAGRIEQ110(body){
     const operation = document.getElementById('f-operation').value;
     const produit = document.getElementById('f-produit').value;
     const pc = parseFloat(document.getElementById('f-pc').value)||0;
-    const pp = parseFloat(document.getElementById('f-pp').value)||0;
     const forfait = FORFAIT_AGRIEQ110[operation][zone][produit];
     const kwhc = forfait*p;
-    return {kwh:kwhc, primeC:kwhc/1000*pc, primeP:kwhc/1000*pp, forfait};
+    return {kwh:kwhc, prime:kwhc/1000*pc, forfait};
   }
 
   let adjWrap;
@@ -58,7 +57,7 @@ function renderAGRIEQ110(body){
   function calc(){
     const p = parseFloat(document.getElementById('f-p').value)||0;
     const productivite = parseFloat(document.getElementById('f-productivite').value)||0;
-    const {kwh:kwhc, primeC, primeP, forfait} = calcCoreAGRIEQ110(p);
+    const {kwh:kwhc, prime, forfait} = calcCoreAGRIEQ110(p);
 
     const warn = document.getElementById('warnProductivite');
     if(productivite>0 && productivite<500){
@@ -71,8 +70,7 @@ function renderAGRIEQ110(body){
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">Forfait / kW installé</span><span class="result-val" style="font-size:14px">${num(forfait)} kWhc/kW</span></div>
       <div class="result-row"><span class="result-label">kWh cumac total</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row hi cdp"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
+      <div class="result-row hi cdp"><span class="result-label">Prime</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
     if(!adjWrap){
@@ -80,8 +78,8 @@ function renderAGRIEQ110(body){
         unitLabel:'kW', paramLabel:'Puissance', defaultStep:10, defaultRep:2,
         getBase: () => parseFloat(document.getElementById('f-p').value)||0,
         minValid: 0,
-        primeLabel:'Prime Classique', extraLabel:'Prime Précarité',
-        calc: (val) => { const r = calcCoreAGRIEQ110(val); return {kwh:r.kwh, prime:r.primeC, extra:r.primeP}; }
+        primeLabel:'Prime',
+        calc: (val) => { const r = calcCoreAGRIEQ110(val); return {kwh:r.kwh, prime:r.prime}; }
       });
     } else {
       adjWrap.refresh();
@@ -89,8 +87,8 @@ function renderAGRIEQ110(body){
 
     if(!revWrap){
       revWrap = reverseSolver(body, {
-        quantityLabel:'puissance', unitLabel:'kW', min:0, max:5000, hasPrec:true,
-        calc: (val) => { const r = calcCoreAGRIEQ110(val); return {primeC:r.primeC, primeP:r.primeP}; }
+        quantityLabel:'puissance', unitLabel:'kW', min:0, max:5000, hasPrec:false,
+        calc: (val) => { const r = calcCoreAGRIEQ110(val); return {prime:r.prime}; }
       });
     } else {
       revWrap.refresh();
