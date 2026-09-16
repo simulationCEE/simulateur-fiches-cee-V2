@@ -587,3 +587,104 @@ body{background:#F4F8FC}
   margin-left:0;
   margin-right:0;
 }
+/* ═══════════════════════════════════════════════════════════════════════
+   LIEN INSTALLATEUR
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.installer-link-btn{
+  width:100%;
+  margin-top:4px;
+  padding:9px 12px;
+  border:1.5px solid var(--navy);
+  border-radius:9px;
+  background:var(--navy);
+  color:#fff;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  transition:background .12s,border-color .12s,transform .1s;
+}
+.installer-link-btn:hover{background:var(--navy-lt);border-color:var(--navy-lt);transform:translateY(-1px)}
+
+.installer-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(18,40,63,.42);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:130;
+  padding:24px 16px;
+  backdrop-filter:blur(3px);
+}
+.installer-overlay.open{display:flex}
+.installer-panel{
+  background:var(--panel);
+  border-radius:18px;
+  width:100%;
+  max-width:760px;
+  max-height:90vh;
+  box-shadow:0 24px 70px rgba(18,40,63,.24);
+  overflow:hidden;
+  animation:slideUp .18s ease-out;
+  display:flex;
+  flex-direction:column;
+}
+.installer-header{
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-shrink:0;
+}
+.installer-header h3{margin:0;color:var(--navy-dk);font-size:17px}
+.installer-header p{margin:3px 0 0;color:var(--text-3);font-size:11.5px}
+.installer-body{padding:22px 24px 24px;overflow:auto}
+.installer-intro{padding:2px 0 18px}
+.installer-kicker{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--navy-lt);margin-bottom:4px}
+.installer-intro h3{margin:0;color:var(--navy-dk);font-size:16px}
+.installer-intro p{margin:4px 0 0;color:var(--text-2);font-size:12px}
+.installer-section{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;background:#fff}
+.installer-section-title{font-size:12.5px;font-weight:800;color:var(--navy-dk);margin-bottom:5px}
+.installer-help{font-size:11px;color:var(--text-3);margin-bottom:12px}
+.installer-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.installer-field label,.installer-exception-fields label{display:block;font-size:10.5px;font-weight:700;color:var(--text-2);margin-bottom:5px}
+.installer-field label span{font-weight:400;color:var(--text-3)}
+.installer-field input,.installer-exception-fields input{width:100%;padding:9px 10px;border:1.5px solid var(--border-dk);border-radius:8px;background:#FCFDFE;color:var(--text);font:inherit;font-size:13px;outline:none}
+.installer-field input:focus,.installer-exception-fields input:focus{border-color:var(--navy-lt)}
+.installer-fiche-list{display:flex;flex-direction:column;gap:8px}
+.installer-fiche-row{border:1px solid var(--border);border-radius:9px;padding:10px 11px;background:#FCFDFE}
+.installer-check{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+.installer-check input{margin-top:3px;accent-color:var(--navy)}
+.installer-check span{display:flex;flex-direction:column;min-width:0}
+.installer-check b{font-size:11.5px;color:var(--navy-dk)}
+.installer-check small{font-size:10.5px;color:var(--text-3);line-height:1.4;margin-top:1px}
+.installer-exception-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0 25px;padding-top:10px;border-top:1px solid var(--border)}
+.installer-exception-fields[hidden]{display:none}
+.installer-feedback{min-height:18px;font-size:11.5px;margin:3px 0 12px}
+.installer-feedback.error{color:var(--red)}
+.installer-feedback.success{color:var(--green);font-weight:600}
+.installer-actions{display:flex;gap:9px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.installer-generate{min-width:230px}
+.installer-result{margin-top:16px;border:1px solid #B9DCC2;background:var(--green-bg);border-radius:10px;padding:13px}
+.installer-result-title{font-size:11.5px;font-weight:800;color:var(--green);margin-bottom:6px}
+.installer-url{background:#fff;border:1px solid #B9DCC2;border-radius:7px;padding:8px 9px;font-size:10px;color:var(--text-2);word-break:break-all;line-height:1.45;margin-bottom:8px}
+.installer-result .btn-primary{padding:9px 12px;border-radius:8px}
+.installer-copied{font-size:10.5px;color:var(--green);font-weight:700;opacity:0;margin-left:8px;transition:opacity .15s}
+.installer-copied.show{opacity:1}
+.installer-mode-badge{display:inline-flex;margin-top:10px;padding:5px 9px;border-radius:12px;background:var(--green-bg);border:1px solid #B9DCC2;color:var(--green);font-size:10.5px;font-weight:700}
+
+html.installer-mode .default-prices-card{display:none!important}
+
+@media (max-width:560px){
+  .installer-overlay{padding:10px 7px}
+  .installer-header{padding:16px 18px}
+  .installer-body{padding:18px 16px 20px}
+  .installer-fields,.installer-exception-fields{grid-template-columns:1fr}
+  .installer-exception-fields{margin-left:0}
+  .installer-actions{flex-direction:column-reverse;align-items:stretch}
+  .installer-actions button{width:100%}
+}
