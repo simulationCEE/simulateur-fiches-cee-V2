@@ -374,13 +374,26 @@
    NOUVELLE DA — accueil simplifié, illustrations et typologies
    ═══════════════════════════════════════════════════════════════════════ */
 :root{
-  --type-res:#35A574; --type-res-bg:#E9F7F0;
-  --type-ter:#2E86DE; --type-ter-bg:#EAF3FD;
-  --type-indus:#8B5CF6; --type-indus-bg:#F1ECFF;
-  --type-agri:#1FA774; --type-agri-bg:#E8F7F0;
-  --type-reseaux:#E58B1A; --type-reseaux-bg:#FFF2DE;
-  --type-transport:#E95B82; --type-transport-bg:#FDEBF1;
-  --type-mixte:#8A63D2; --type-mixte-bg:#F1EBFB;
+ --type-res:#2E86DE;
+  --type-res-bg:#EAF3FD;
+
+  --type-ter:#F28C28;
+  --type-ter-bg:#FFF1E4;
+
+  --type-indus:#8B5CF6;
+  --type-indus-bg:#F1ECFF;
+
+  --type-agri:#1FA774;
+  --type-agri-bg:#E8F7F0;
+
+  --type-reseaux:#E5B20A;
+  --type-reseaux-bg:#FFF6D8;
+
+  --type-transport:#E5484D;
+  --type-transport-bg:#FDEBEC;
+
+  --type-mixte:#7C5AC2;
+  --type-mixte-bg:#F1EBFB;
 }
 body{background:#F4F8FC}
 .app{max-width:1180px;margin:0 auto;padding:0 20px 60px}
