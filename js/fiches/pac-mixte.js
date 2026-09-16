@@ -109,26 +109,30 @@ function renderPACMixte(body){
     // CAS 1
     const logementsConvertis = Math.floor(surfTer/65);
     const nTotal = nReel + logementsConvertis;
-    const totalKwhcCas1 = kwhcLogement*nTotal*R;
-    const primeClassiqueCas1 = totalKwhcCas1/1000*pc*mult;
-    const primePrecariteCas1 = totalKwhcCas1/1000*pp*mult;
+    const totalKwhcCas1Brut = kwhcLogement*nTotal*R;
+    const totalKwhcCas1 = totalKwhcCas1Brut*mult;
+    const primeClassiqueCas1 = totalKwhcCas1/1000*pc;
+    const primePrecariteCas1 = totalKwhcCas1/1000*pp;
 
     // CAS 2
-    const totalKwhcCas2 = kwhcM2*facteurSecteur*surfaceTotale*R;
-    const primeClassiqueCas2 = totalKwhcCas2/1000*pc*mult;
+    const totalKwhcCas2Brut = kwhcM2*facteurSecteur*surfaceTotale*R;
+    const totalKwhcCas2 = totalKwhcCas2Brut*mult;
+    const primeClassiqueCas2 = totalKwhcCas2/1000*pc;
 
     // CAS 3
-    const kwhc179Pur = kwhcLogement*nReel*R;
-    const kwhc163Pur = kwhcM2*facteurSecteur*surfaceTotale*R;
+    const kwhc179PurBrut = kwhcLogement*nReel*R;
+    const kwhc163PurBrut = kwhcM2*facteurSecteur*surfaceTotale*R;
+    const kwhc179Pur = kwhc179PurBrut*mult;
+    const kwhc163Pur = kwhc163PurBrut*mult;
     const kwhcRetenuCas3 = Math.min(kwhc179Pur, kwhc163Pur);
     const ficheRetenue = kwhc179Pur<kwhc163Pur ? 'BAR-TH-179 (moins disant)' : (kwhc179Pur>kwhc163Pur ? 'BAT-TH-163 (moins disant)' : 'Égalité — secteur majoritaire');
-    const primeClassiqueCas3 = kwhcRetenuCas3/1000*pc*mult;
+    const primeClassiqueCas3 = kwhcRetenuCas3/1000*pc;
 
     return {
       zone, usageIdx, surfRes, nReel, surfTer, surfaceTotale, pctRes, R, mult, cas,
-      logementsConvertis, nTotal, kwhcLogement, totalKwhcCas1, primeClassiqueCas1, primePrecariteCas1,
-      kwhcM2, totalKwhcCas2, primeClassiqueCas2,
-      kwhc179Pur, kwhc163Pur, kwhcRetenuCas3, ficheRetenue, primeClassiqueCas3,
+      logementsConvertis, nTotal, kwhcLogement, totalKwhcCas1, totalKwhcCas1Brut, primeClassiqueCas1, primePrecariteCas1,
+      kwhcM2, totalKwhcCas2, totalKwhcCas2Brut, primeClassiqueCas2,
+      kwhc179Pur, kwhc163Pur, kwhc179PurBrut, kwhc163PurBrut, kwhcRetenuCas3, ficheRetenue, primeClassiqueCas3,
     };
   }
 
@@ -165,22 +169,22 @@ function renderPACMixte(body){
       resultsHtml += `
         <div class="result-row"><span class="result-label">Logements convertis depuis tertiaire</span><span class="result-val" style="font-size:14px">${num(r.logementsConvertis)}</span></div>
         <div class="result-row"><span class="result-label">N total (réels + convertis)</span><span class="result-val" style="font-size:14px">${num(r.nTotal)}</span></div>
-        <div class="result-row"><span class="result-label">kWh cumac total</span><span class="result-val" style="font-size:14px">${kwh(r.totalKwhcCas1)}</span></div>
-        <div class="result-row ${r.mult>1?'cdp':'cdp'}"><span class="result-label">Prime Classique ${r.mult>1?'(CdP ×3)':''}</span><span class="result-val">${eur(r.primeClassiqueCas1)}</span></div>
-        <div class="result-row prec"><span class="result-label">Prime Précarité ${r.mult>1?'(CdP ×3)':''}</span><span class="result-val">${eur(r.primePrecariteCas1)}</span></div>
+        <div class="result-row"><span class="result-label">kWh cumac total ${r.mult>1?`(bonifié ×${r.mult}, brut ${kwh(r.totalKwhcCas1Brut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(r.totalKwhcCas1)}</span></div>
+        <div class="result-row cdp"><span class="result-label">Prime Classique</span><span class="result-val">${eur(r.primeClassiqueCas1)}</span></div>
+        <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(r.primePrecariteCas1)}</span></div>
       `;
     } else if(r.cas===2){
       resultsHtml += `
-        <div class="result-row"><span class="result-label">kWh cumac total</span><span class="result-val" style="font-size:14px">${kwh(r.totalKwhcCas2)}</span></div>
-        <div class="result-row cdp"><span class="result-label">Prime Classique ${r.mult>1?'(CdP ×3)':''}</span><span class="result-val">${eur(r.primeClassiqueCas2)}</span></div>
+        <div class="result-row"><span class="result-label">kWh cumac total ${r.mult>1?`(bonifié ×${r.mult}, brut ${kwh(r.totalKwhcCas2Brut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(r.totalKwhcCas2)}</span></div>
+        <div class="result-row cdp"><span class="result-label">Prime Classique</span><span class="result-val">${eur(r.primeClassiqueCas2)}</span></div>
         <div class="result-row"><span class="result-label">Prime Précarité</span><span class="result-val" style="font-size:13px;color:var(--text-3)">— (pas de précarité en tertiaire)</span></div>
       `;
     } else if(r.cas===3){
       resultsHtml += `
-        <div class="result-row"><span class="result-label">[179] kWhc résidentiel pur</span><span class="result-val" style="font-size:14px">${kwh(r.kwhc179Pur)}</span></div>
-        <div class="result-row"><span class="result-label">[163] kWhc tertiaire pur</span><span class="result-val" style="font-size:14px">${kwh(r.kwhc163Pur)}</span></div>
+        <div class="result-row"><span class="result-label">[179] kWhc résidentiel pur ${r.mult>1?`(bonifié ×${r.mult})`:''}</span><span class="result-val" style="font-size:14px">${kwh(r.kwhc179Pur)}</span></div>
+        <div class="result-row"><span class="result-label">[163] kWhc tertiaire pur ${r.mult>1?`(bonifié ×${r.mult})`:''}</span><span class="result-val" style="font-size:14px">${kwh(r.kwhc163Pur)}</span></div>
         <div class="result-row"><span class="result-label">Fiche retenue</span><span class="result-val" style="font-size:13px">${r.ficheRetenue}</span></div>
-        <div class="result-row cdp"><span class="result-label">Prime Classique ${r.mult>1?'(CdP ×3)':''}</span><span class="result-val">${eur(r.primeClassiqueCas3)}</span></div>
+        <div class="result-row cdp"><span class="result-label">Prime Classique</span><span class="result-val">${eur(r.primeClassiqueCas3)}</span></div>
       `;
     }
 
