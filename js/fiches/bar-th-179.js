@@ -54,20 +54,21 @@ function renderTH179(body){
     const cdp=document.getElementById('f-cdp').value==='oui';
     const R = (ppac/pch)>=0.4 ? 1 : ppac/pch;
     const kwhc = REF179[etasKey179(etas)][zone][usage];
-    const total = kwhc*n*R;
+    const totalBrut = kwhc*n*R;
     const mult = cdp?3:1;
-    return {kwh: total, primeC: total/1000*pc*mult, primeP: total/1000*pp*mult, R, cdp, n};
+    const total = totalBrut*mult;
+    return {kwh: total, kwhBrut: totalBrut, primeC: total/1000*pc, primeP: total/1000*pp, R, cdp, n, mult};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const n=parseFloat(document.getElementById('f-n').value)||0;
-    const {kwh:total, primeC, primeP, R, cdp} = calcCore179(n);
+    const {kwh:total, kwhBrut, primeC, primeP, R, cdp, mult} = calcCore179(n);
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">Facteur R</span><span class="result-val" style="font-size:14px">${R.toFixed(2)}</span></div>
-      <div class="result-row"><span class="result-label">kWh cumac total</span><span class="result-val" style="font-size:14px">${kwh(total)}</span></div>
-      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique ${cdp?'(CdP ×3)':''}</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité ${cdp?'(CdP ×3)':''}</span><span class="result-val">${eur(primeP)}</span></div>
+      <div class="result-row"><span class="result-label">kWh cumac total ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(total)}</span></div>
+      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
+      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
       <div class="result-row"><span class="result-label">Prime Classique / logement</span><span class="result-val" style="font-size:14px">${n>0?eur(primeC/n):'—'}</span></div>
     `;
 
