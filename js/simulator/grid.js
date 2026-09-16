@@ -18,12 +18,13 @@ function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_ME
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
 function illustrationFor(f){
-  if(f.tags?.includes('pac')) return 'assets/illustrations/pac.svg';
-  if(f.tags?.includes('isol')) return 'assets/illustrations/isolation.svg';
-  if(f.tags?.includes('solaire')) return 'assets/illustrations/solaire.svg';
-  if(f.tags?.includes('renov')) return 'assets/illustrations/renovation.svg';
-  if(f.sector === 'agri') return 'assets/illustrations/agriculture.svg';
-  return 'assets/illustrations/renovation.svg';
+  function illustrationFor(f){
+  if(f.tags?.includes('pac')) return 'assets/illustrations/pac.png';
+  if(f.tags?.includes('isol')) return 'assets/illustrations/isolation.png';
+  if(f.tags?.includes('solaire')) return 'assets/illustrations/solaire.png';
+  if(f.tags?.includes('renov')) return 'assets/illustrations/renovation.png';
+  if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
+  return 'assets/illustrations/renovation.png';
 }
 
 function buildCard(f){
