@@ -268,6 +268,12 @@ function escapeAttr(value){ return escapeHtml(value); }
     const card = document.querySelector('.default-prices-card');
     if(card) card.style.display = 'none';
     const intro = document.querySelector('.hero-intro');
-    if(intro) intro.insertAdjacentHTML('beforeend', '<div class="installer-mode-badge">Mode installateur · prix verrouillés</div>');
+    if(intro){
+  intro.insertAdjacentHTML(
+    'beforeend',
+    `<div class="installer-name-display">${escapeHtml(config.installerName || 'Espace installateur')}</div>
+     <div class="installer-mode-badge">Mode installateur · prix verrouillés</div>`
+  );
+}
   });
 })();
