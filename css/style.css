@@ -688,3 +688,55 @@ html.installer-mode .default-prices-card{display:none!important}
   .installer-actions{flex-direction:column-reverse;align-items:stretch}
   .installer-actions button{width:100%}
 }
+.installer-fields-single{
+  grid-template-columns:1fr;
+}
+
+.installer-selection-actions{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+
+.installer-select-btn{
+  border:1px solid var(--border-dk);
+  background:var(--panel);
+  color:var(--navy-dk);
+  border-radius:7px;
+  padding:6px 9px;
+  font-family:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.installer-select-btn:hover{
+  border-color:var(--navy-lt);
+  background:var(--bg);
+}
+
+.installer-exception-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.installer-exception-row{
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:10px 11px;
+  background:#FCFDFE;
+}
+
+.installer-name-display{
+  margin-top:12px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--navy-dk);
+}
+
+.installer-mode-badge{
+  display:inline-flex;
+  margin-top:8px;
+}
