@@ -10,6 +10,7 @@ function encodeInstallerConfig(config){
   const bytes = new TextEncoder().encode(json);
   let binary = '';
   bytes.forEach(b => binary += String.fromCharCode(b));
+
   return btoa(binary)
     .replace(/\+/g,'-')
     .replace(/\//g,'_')
@@ -26,7 +27,10 @@ function decodeInstallerConfig(value){
     const binary = atob(padded);
     const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
 
-    return JSON.parse(new TextDecoder().decode(bytes));
+    return JSON.parse(
+      new TextDecoder().decode(bytes)
+    );
+
   }catch(e){
     return null;
   }
@@ -53,8 +57,12 @@ function getInstallerPriceConfig(ficheCode){
 /* ── Ouverture du générateur ── */
 
 function openInstallerLinkBuilder(){
-  const overlay = document.getElementById('installerOverlay');
-  const body = document.getElementById('installerBody');
+
+  const overlay =
+    document.getElementById('installerOverlay');
+
+  const body =
+    document.getElementById('installerBody');
 
   if(!overlay || !body) return;
 
@@ -67,30 +75,50 @@ function openInstallerLinkBuilder(){
   body.innerHTML = `
     <div class="installer-intro">
       <div class="installer-kicker">LIEN INSTALLATEUR</div>
+
       <h3>Créer un lien de simulation</h3>
-      <p>Personnalisez l’espace de simulation de votre installateur.</p>
+
+      <p>
+        Personnalisez l’espace de simulation de votre installateur.
+      </p>
     </div>
 
     <section class="installer-section">
-      <div class="installer-section-title">Installateur</div>
+
+      <div class="installer-section-title">
+        Installateur
+      </div>
 
       <div class="installer-fields installer-fields-single">
+
         <div class="installer-field">
-          <label for="installerName">Nom de l’installateur</label>
+
+          <label for="installerName">
+            Nom de l’installateur
+          </label>
+
           <input
             id="installerName"
             type="text"
             placeholder="Ex. : Dupont Chauffage"
           >
+
         </div>
+
       </div>
+
     </section>
 
     <section class="installer-section">
-      <div class="installer-section-title">Prix CEE généraux</div>
+
+      <div class="installer-section-title">
+        Prix CEE généraux
+      </div>
 
       <div class="installer-fields">
+
         <div class="installer-field">
+
           <label for="installerClassic">
             Prix classique <span>€/MWhc</span>
           </label>
@@ -103,9 +131,11 @@ function openInstallerLinkBuilder(){
             value="${escapeAttr(currentClassic)}"
             placeholder="Ex. : 7,8"
           >
+
         </div>
 
         <div class="installer-field">
+
           <label for="installerPrec">
             Prix précarité <span>€/MWhc</span>
           </label>
@@ -118,18 +148,25 @@ function openInstallerLinkBuilder(){
             value="${escapeAttr(currentPrec)}"
             placeholder="Ex. : 12,5"
           >
+
         </div>
+
       </div>
+
     </section>
 
     <section class="installer-section">
-      <div class="installer-section-title">Fiches disponibles</div>
+
+      <div class="installer-section-title">
+        Fiches disponibles
+      </div>
 
       <div class="installer-help">
         Sélectionnez les fiches qui seront visibles sur la page de l’installateur.
       </div>
 
       <div class="installer-selection-actions">
+
         <button
           type="button"
           class="installer-select-btn"
@@ -145,19 +182,23 @@ function openInstallerLinkBuilder(){
         >
           Tout désélectionner
         </button>
+
       </div>
 
       <div
         class="installer-fiche-list"
         id="installerFicheList"
       ></div>
+
     </section>
+
     <div
       class="installer-feedback"
       id="installerFeedback"
     ></div>
 
     <div class="installer-actions">
+
       <button
         type="button"
         class="btn-secondary"
@@ -173,6 +214,7 @@ function openInstallerLinkBuilder(){
       >
         Générer le lien installateur
       </button>
+
     </div>
 
     <div
@@ -180,6 +222,7 @@ function openInstallerLinkBuilder(){
       id="installerResult"
       style="display:none"
     >
+
       <div class="installer-result-title">
         Lien généré
       </div>
@@ -203,22 +246,29 @@ function openInstallerLinkBuilder(){
       >
         ✓ Copié
       </span>
+
     </div>
   `;
 
-  const list = document.getElementById('installerFicheList');
-  const exceptionList =
-    document.getElementById('installerExceptionList');
+  const list =
+    document.getElementById('installerFicheList');
 
-  /* ── Fiches disponibles ── */
+  /* ── Fiches disponibles + prix spécifiques ── */
 
   FICHES.forEach((f, index) => {
-    const row = document.createElement('div');
 
-    row.className = 'installer-fiche-row';
+    const residential =
+      isResidentialFiche(f);
+
+    const row =
+      document.createElement('div');
+
+    row.className =
+      'installer-fiche-row';
 
     row.innerHTML = `
       <label class="installer-check">
+
         <input
           type="checkbox"
           data-index="${index}"
@@ -229,82 +279,119 @@ function openInstallerLinkBuilder(){
           <b>${escapeHtml(f.code)}</b>
           <small>${escapeHtml(f.title)}</small>
         </span>
-      </label>
-    `;
 
-    list.appendChild(row);
-  });
-
-  /* ── Exceptions de prix ── */
-
-  FICHES.forEach((f, index) => {
-    const residential = isResidentialFiche(f);
-
-    const row = document.createElement('div');
-
-    row.className = 'installer-exception-row';
-
-    row.innerHTML = `
-      <label class="installer-check">
-        <input
-          type="checkbox"
-          data-exception-index="${index}"
-        >
-
-        <span>
-          <b>${escapeHtml(f.code)}</b>
-          <small>Prix spécifique</small>
-        </span>
       </label>
 
-      <div
-        class="installer-exception-fields"
-        data-exception-fields="${index}"
-        hidden
-      >
-        <div>
-          <label>Classique</label>
+      <div class="installer-fiche-pricing">
+
+        <label class="installer-specific-toggle">
 
           <input
-            type="number"
-            min="0"
-            step="0.1"
-            data-classique="${index}"
-            placeholder="€/MWhc"
+            type="checkbox"
+            data-specific-index="${index}"
           >
+
+          <span>
+            Prix spécifique pour cette fiche
+          </span>
+
+        </label>
+
+        <div
+          class="installer-exception-fields"
+          data-specific-fields="${index}"
+          hidden
+        >
+
+          <div>
+
+            <label>
+              Classique
+            </label>
+
+            <input
+              type="number"
+              min="0"
+              step="0.1"
+              data-classique="${index}"
+              placeholder="€/MWhc"
+            >
+
+          </div>
+
+          ${
+            residential
+              ? `
+                <div>
+
+                  <label>
+                    Précarité
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    data-precarite="${index}"
+                    placeholder="€/MWhc"
+                  >
+
+                </div>
+              `
+              : ''
+          }
+
         </div>
 
-        ${
-          residential
-            ? `
-              <div>
-                <label>Précarité</label>
-
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  data-precarite="${index}"
-                  placeholder="€/MWhc"
-                >
-              </div>
-            `
-            : ''
-        }
       </div>
     `;
 
-    exceptionList.appendChild(row);
+    list.appendChild(row);
 
-    const checkbox =
-      row.querySelector('[data-exception-index]');
+    const ficheCheckbox =
+      row.querySelector('[data-index]');
 
-    const fields =
-      row.querySelector('[data-exception-fields]');
+    const pricing =
+      row.querySelector('.installer-fiche-pricing');
 
-    checkbox.addEventListener('change', () => {
-      fields.hidden = !checkbox.checked;
-    });
+    const specificCheckbox =
+      row.querySelector('[data-specific-index]');
+
+    const specificFields =
+      row.querySelector('[data-specific-fields]');
+
+    pricing.hidden =
+      false;
+
+    ficheCheckbox.addEventListener(
+      'change',
+      () => {
+
+        pricing.hidden =
+          !ficheCheckbox.checked;
+
+        if(!ficheCheckbox.checked){
+
+          specificCheckbox.checked =
+            false;
+
+          specificFields.hidden =
+            true;
+        }
+
+      }
+    );
+
+    specificCheckbox.addEventListener(
+      'change',
+      () => {
+
+        specificFields.hidden =
+          !specificCheckbox.checked;
+
+      }
+    );
+
   });
 
   overlay.classList.add('open');
@@ -313,27 +400,83 @@ function openInstallerLinkBuilder(){
 /* ── Sélection des fiches ── */
 
 function selectAllInstallerFiches(){
+
   document
-    .querySelectorAll('#installerFicheList input[data-index]')
+    .querySelectorAll(
+      '#installerFicheList input[data-index]'
+    )
     .forEach(cb => {
+
       cb.checked = true;
+
+      const row =
+        cb.closest('.installer-fiche-row');
+
+      const pricing =
+        row?.querySelector(
+          '.installer-fiche-pricing'
+        );
+
+      if(pricing){
+        pricing.hidden = false;
+      }
+
     });
 }
 
 function clearAllInstallerFiches(){
+
   document
-    .querySelectorAll('#installerFicheList input[data-index]')
+    .querySelectorAll(
+      '#installerFicheList input[data-index]'
+    )
     .forEach(cb => {
+
       cb.checked = false;
+
+      const row =
+        cb.closest('.installer-fiche-row');
+
+      if(!row) return;
+
+      const pricing =
+        row.querySelector(
+          '.installer-fiche-pricing'
+        );
+
+      const specificCheckbox =
+        row.querySelector(
+          '[data-specific-index]'
+        );
+
+      const specificFields =
+        row.querySelector(
+          '[data-specific-fields]'
+        );
+
+      if(pricing){
+        pricing.hidden = true;
+      }
+
+      if(specificCheckbox){
+        specificCheckbox.checked = false;
+      }
+
+      if(specificFields){
+        specificFields.hidden = true;
+      }
+
     });
 }
 
 /* ── Fermeture ── */
 
 function closeInstallerLinkBuilder(){
+
   document
     .getElementById('installerOverlay')
     ?.classList.remove('open');
+
 }
 
 /* ── Génération du lien ── */
@@ -342,23 +485,31 @@ function generateInstallerLink(){
 
   const classic =
     parseFloat(
-      document.getElementById('installerClassic')?.value
+      document
+        .getElementById('installerClassic')
+        ?.value
     );
 
   const prec =
     parseFloat(
-      document.getElementById('installerPrec')?.value
+      document
+        .getElementById('installerPrec')
+        ?.value
     );
 
   const installerName =
-    document.getElementById('installerName')?.value.trim() || '';
+    document
+      .getElementById('installerName')
+      ?.value
+      .trim() || '';
 
   const feedback =
-    document.getElementById('installerFeedback');
-
-  const exceptions = {};
+    document.getElementById(
+      'installerFeedback'
+    );
 
   if(!installerName){
+
     feedback.textContent =
       'Renseignez le nom de l’installateur.';
 
@@ -374,6 +525,7 @@ function generateInstallerLink(){
     !Number.isFinite(prec) ||
     prec < 0
   ){
+
     feedback.textContent =
       'Renseignez un prix classique et un prix précarité valides.';
 
@@ -399,9 +551,11 @@ function generateInstallerLink(){
       selectedFiches.push(
         FICHES[index].code
       );
+
     });
 
   if(!selectedFiches.length){
+
     feedback.textContent =
       'Sélectionnez au moins une fiche.';
 
@@ -411,27 +565,39 @@ function generateInstallerLink(){
     return;
   }
 
-  /* ── Exceptions ── */
+  /* ── Exceptions de prix ── */
 
-  let exceptionError = false;
+  const exceptions = {};
+
+  let exceptionError =
+    false;
 
   document
     .querySelectorAll(
-      '#installerExceptionList .installer-exception-row'
+      '#installerFicheList .installer-fiche-row'
     )
     .forEach(row => {
 
       if(exceptionError) return;
 
-      const checkbox =
+      const ficheCheckbox =
         row.querySelector(
-          '[data-exception-index]'
+          '[data-index]'
         );
 
-      if(!checkbox || !checkbox.checked) return;
+      if(!ficheCheckbox?.checked) return;
+
+      const specificCheckbox =
+        row.querySelector(
+          '[data-specific-index]'
+        );
+
+      if(!specificCheckbox?.checked) return;
 
       const index =
-        Number(checkbox.dataset.exceptionIndex);
+        Number(
+          ficheCheckbox.dataset.index
+        );
 
       const fiche =
         FICHES[index];
@@ -466,13 +632,15 @@ function generateInstallerLink(){
           )
         )
       ){
+
         feedback.textContent =
-          `Complétez les prix de l’exception ${fiche.code}.`;
+          `Complétez le prix spécifique de ${fiche.code}.`;
 
         feedback.className =
           'installer-feedback error';
 
-        exceptionError = true;
+        exceptionError =
+          true;
 
         return;
       }
@@ -486,6 +654,7 @@ function generateInstallerLink(){
           : {
               classique:c
             };
+
     });
 
   if(exceptionError) return;
@@ -493,14 +662,20 @@ function generateInstallerLink(){
   /* ── Configuration ── */
 
   const config = {
+
     v:2,
+
     installerName,
+
     fiches:selectedFiches,
+
     prices:{
       classique:classic,
       precarite:prec
     },
+
     exceptions
+
   };
 
   const encoded =
@@ -509,11 +684,13 @@ function generateInstallerLink(){
   const url =
     `${window.location.origin}${window.location.pathname}?${INSTALLER_QUERY_KEY}=${encoded}`;
 
-  document.getElementById('installerUrl').textContent =
-    url;
+  document
+    .getElementById('installerUrl')
+    .textContent = url;
 
-  document.getElementById('installerResult').style.display =
-    'block';
+  document
+    .getElementById('installerResult')
+    .style.display = 'block';
 
   feedback.textContent =
     'Lien prêt à être copié.';
@@ -555,22 +732,28 @@ async function copyInstallerLink(){
   }
 
   const el =
-    document.getElementById('installerCopied');
+    document.getElementById(
+      'installerCopied'
+    );
 
   if(el){
 
     el.classList.add('show');
 
     setTimeout(
-      () => el.classList.remove('show'),
+      () => {
+        el.classList.remove('show');
+      },
       1400
     );
+
   }
 }
 
 /* ── Sécurité HTML ── */
 
 function escapeHtml(value){
+
   return String(value).replace(
     /[&<>'"]/g,
     c => ({
@@ -581,6 +764,7 @@ function escapeHtml(value){
       '"':'&quot;'
     }[c])
   );
+
 }
 
 function escapeAttr(value){
@@ -620,7 +804,8 @@ function escapeAttr(value){
         );
 
       if(card){
-        card.style.display = 'none';
+        card.style.display =
+          'none';
       }
 
       const intro =
@@ -630,23 +815,26 @@ function escapeAttr(value){
 
       if(intro){
 
-  const installerName =
-    config.installerName ||
-    'Espace installateur';
+        const installerName =
+          config.installerName ||
+          'Espace installateur';
 
-  intro.insertAdjacentHTML(
-    'beforeend',
-    `
-      <div class="installer-name-display">
-        ${escapeHtml(installerName)}
-      </div>
+        intro.insertAdjacentHTML(
+          'beforeend',
+          `
+            <div class="installer-name-display">
+              ${escapeHtml(installerName)}
+            </div>
 
-      <div class="installer-mode-badge">
-        Espace installateur
-      </div>
-    `
-  );
-}
+            <div class="installer-mode-badge">
+              Espace installateur
+            </div>
+          `
+        );
+
+      }
+
     }
   );
+
 })();
