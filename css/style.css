@@ -417,11 +417,11 @@ body{background:#F4F8FC}
 .hero .dpc-field input{padding:11px 13px;border-radius:10px;border:1.5px solid #C9D8E6;font-size:14px;background:#FCFEFF}
 .hero .dpc-field input::placeholder{color:#9BAEC0}
 
-.search-wrap{margin:0 4px 16px}
+.search-wrap{margin:0 0 16px}
 .search-input{background:#FFF;border-color:#CDDBE8;border-radius:12px;padding-top:13px;padding-bottom:13px;box-shadow:0 2px 8px rgba(36,70,102,.03)}
 .search-input:focus{border-color:#6BA7DD;box-shadow:0 0 0 3px rgba(46,134,222,.09)}
 
-.chips{gap:8px;margin:0 4px 23px}
+.chips{gap:8px;margin:0 0 23px}
 .chip{height:34px;box-sizing:border-box;padding:0 13px;border-radius:18px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:all .12s;background:#FFF;white-space:nowrap;}
 .chip-icon{font-size:14px;line-height:1;opacity:.88}
 .chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
@@ -433,11 +433,11 @@ body{background:#F4F8FC}
 .chip-transport{color:var(--type-transport);border-color:#F0CCD9}.chip-transport:hover{background:var(--type-transport-bg)}
 .empty-chip{opacity:.72}
 
-.catalog-head{display:flex;align-items:center;justify-content:space-between;margin:0 4px 12px}
+.catalog-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
 .catalog-count{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--navy-dk)}
 .catalog-icon{width:25px;height:25px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#E7F2FB;color:#2E86DE;font-size:13px}
 
-.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 4px 10px}
+.grid{ width:100%; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:0 0 10px; }
 .card{position:relative;display:flex;align-items:center;gap:13px;min-height:126px;padding:14px 15px 14px 13px;border-radius:15px;border:1px solid #DCE6EE;background:#FFF;box-shadow:0 3px 12px rgba(33,63,91,.045);overflow:hidden;transition:transform .13s,box-shadow .13s,border-color .13s}
 .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#CBD6E1}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(33,63,91,.09);border-color:#C7D7E4}
@@ -577,4 +577,13 @@ body{background:#F4F8FC}
   .converter-body{
     padding:18px 16px;
   }
+}
+.search-wrap,
+.chips,
+.catalog-head,
+.grid,
+.no-results{
+  width:100%;
+  margin-left:0;
+  margin-right:0;
 }
