@@ -38,8 +38,9 @@ function renderTH168(body){
     const kwhc = forf168[zone][usage]*surf;
     const coef = profil==='autre'?4:5;
     const prix = profil==='tresmodeste'?pp:pc;
-    const prime = kwhc/1000*prix*coef;
-    return {kwh: kwhc, prime, coef};
+    const kwhcBonifie = kwhc*coef;
+    const prime = kwhcBonifie/1000*prix;
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime, coef};
   }
 
   let adjWrap;
@@ -55,11 +56,11 @@ function renderTH168(body){
     } else {
       warnEl.classList.remove('show');
     }
-    const {kwh:kwhc, prime, coef} = calcCore168(surf);
+    const {kwh:kwhc, kwhBrut, prime, coef} = calcCore168(surf);
     const profil=document.getElementById('f-profil').value;
     document.getElementById('results').innerHTML = `
-      <div class="result-row"><span class="result-label">kWh cumac</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${profil==='tresmodeste'?'prec':'cdp'}"><span class="result-label">Prime bonifiée (×${coef})</span><span class="result-val">${eur(prime)}</span></div>
+      <div class="result-row"><span class="result-label">kWh cumac (bonifié ×${coef}, brut ${kwh(kwhBrut)})</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
+      <div class="result-row ${profil==='tresmodeste'?'prec':'cdp'}"><span class="result-label">Prime bonifiée</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
     if(!adjWrap){
