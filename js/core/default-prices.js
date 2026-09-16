@@ -18,20 +18,28 @@ function saveDefaultPrices(){
     saveDefaultPrices._t = setTimeout(()=>saved.classList.remove('show'), 1200);
   }catch(e){ /* stockage indisponible */ }
 }
-function applyDefaultPrices(container){
-  const defaults = loadDefaultPrices();
+function applyDefaultPrices(container, ficheCode){
+  const defaults = (typeof getInstallerPriceConfig === 'function' && window.EBS_INSTALLER_CONFIG)
+    ? getInstallerPriceConfig(ficheCode)
+    : loadDefaultPrices();
   const pcEl = container.querySelector('#f-pc');
   const ppEl = container.querySelector('#f-pp');
-  if(pcEl && defaults.classique){ pcEl.value = defaults.classique; }
-  if(ppEl && defaults.precarite){ ppEl.value = defaults.precarite; }
+  if(pcEl && defaults.classique !== undefined && defaults.classique !== '') pcEl.value = defaults.classique;
+  if(ppEl && defaults.precarite !== undefined && defaults.precarite !== '') ppEl.value = defaults.precarite;
   if(pcEl) pcEl.dispatchEvent(new Event('input', {bubbles:true}));
   else if(ppEl) ppEl.dispatchEvent(new Event('input', {bubbles:true}));
+  if(window.EBS_INSTALLER_CONFIG){
+    if(pcEl) pcEl.closest('.field')?.style.setProperty('display','none');
+    if(ppEl) ppEl.closest('.field')?.style.setProperty('display','none');
+  }
 }
 (function initDefaultPricesUI(){
   const stored = loadDefaultPrices();
-  document.getElementById('defaultPriceClassique').value = stored.classique || '';
-  document.getElementById('defaultPricePrecarite').value = stored.precarite || '';
-  document.getElementById('defaultPriceClassique').addEventListener('input', saveDefaultPrices);
-  document.getElementById('defaultPricePrecarite').addEventListener('input', saveDefaultPrices);
+  const pc = document.getElementById('defaultPriceClassique');
+  const pp = document.getElementById('defaultPricePrecarite');
+  if(!pc || !pp) return;
+  pc.value = stored.classique || '';
+  pp.value = stored.precarite || '';
+  pc.addEventListener('input', saveDefaultPrices);
+  pp.addEventListener('input', saveDefaultPrices);
 })();
-
