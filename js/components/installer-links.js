@@ -46,8 +46,18 @@ function openInstallerLinkBuilder(){
     <div class="installer-intro">
       <div class="installer-kicker">LIEN INSTALLATEUR</div>
       <h3>Créer un lien de simulation</h3>
-      <p>Les prix définis ici seront appliqués automatiquement et masqués à l’installateur.</p>
+      <p>Personnalisez l’espace de simulation de votre installateur.</p>
     </div>
+
+    <section class="installer-section">
+      <div class="installer-section-title">Installateur</div>
+      <div class="installer-fields installer-fields-single">
+        <div class="installer-field">
+          <label for="installerName">Nom de l’installateur</label>
+          <input id="installerName" type="text" placeholder="Ex. : Dupont Chauffage">
+        </div>
+      </div>
+    </section>
 
     <section class="installer-section">
       <div class="installer-section-title">Prix CEE généraux</div>
@@ -63,10 +73,22 @@ function openInstallerLinkBuilder(){
       </div>
     </section>
 
-    <section class="installer-section">
-      <div class="installer-section-title">Exceptions par fiche</div>
-      <div class="installer-help">Cochez une fiche uniquement si son prix doit être différent du prix général.</div>
+     <section class="installer-section">
+      <div class="installer-section-title">Fiches disponibles</div>
+      <div class="installer-help">Sélectionnez les fiches qui seront visibles sur la page de l’installateur.</div>
+
+      <div class="installer-selection-actions">
+        <button type="button" class="installer-select-btn" onclick="selectAllInstallerFiches()">Tout sélectionner</button>
+        <button type="button" class="installer-select-btn" onclick="clearAllInstallerFiches()">Tout désélectionner</button>
+      </div>
+
       <div class="installer-fiche-list" id="installerFicheList"></div>
+    </section>
+
+    <section class="installer-section">
+      <div class="installer-section-title">Exceptions de prix par fiche</div>
+      <div class="installer-help">Utilisez cette section uniquement si une fiche doit avoir un prix différent du prix général.</div>
+      <div class="installer-exception-list" id="installerExceptionList"></div>
     </section>
 
     <div class="installer-feedback" id="installerFeedback"></div>
@@ -84,30 +106,71 @@ function openInstallerLinkBuilder(){
     </div>
   `;
 
-  const list = document.getElementById('installerFicheList');
+    const list = document.getElementById('installerFicheList');
+  const exceptionList = document.getElementById('installerExceptionList');
+
   FICHES.forEach((f, index) => {
     const residential = isResidentialFiche(f);
+
     const row = document.createElement('div');
     row.className = 'installer-fiche-row';
     row.innerHTML = `
       <label class="installer-check">
-        <input type="checkbox" data-index="${index}">
+        <input type="checkbox" data-index="${index}" checked>
         <span><b>${escapeHtml(f.code)}</b><small>${escapeHtml(f.title)}</small></span>
       </label>
-      <div class="installer-exception-fields" data-fields="${index}" hidden>
-        <div><label>Classique</label><input type="number" min="0" step="0.1" data-classique="${index}" placeholder="€/MWhc"></div>
-        ${residential ? `<div><label>Précarité</label><input type="number" min="0" step="0.1" data-precarite="${index}" placeholder="€/MWhc"></div>` : ''}
+    `;
+
+    list.appendChild(row);
+
+    const exceptionRow = document.createElement('div');
+    exceptionRow.className = 'installer-exception-row';
+    exceptionRow.innerHTML = `
+      <label class="installer-check">
+        <input type="checkbox" data-exception-index="${index}">
+        <span><b>${escapeHtml(f.code)}</b><small>Prix spécifique</small></span>
+      </label>
+
+      <div class="installer-exception-fields" data-exception-fields="${index}" hidden>
+        <div>
+          <label>Classique</label>
+          <input type="number" min="0" step="0.1" data-classique="${index}" placeholder="€/MWhc">
+        </div>
+        ${residential ? `
+        <div>
+          <label>Précarité</label>
+          <input type="number" min="0" step="0.1" data-precarite="${index}" placeholder="€/MWhc">
+        </div>` : ''}
       </div>
     `;
-    list.appendChild(row);
-    const checkbox = row.querySelector('input[type="checkbox"]');
-    const fields = row.querySelector('[data-fields]');
-    checkbox.addEventListener('change', () => { fields.hidden = !checkbox.checked; });
+
+    exceptionList.appendChild(exceptionRow);
+
+    const exceptionCheck = exceptionRow.querySelector('[data-exception-index]');
+    const exceptionFields = exceptionRow.querySelector('[data-exception-fields]');
+
+    exceptionCheck.addEventListener('change', () => {
+      exceptionFields.hidden = !exceptionCheck.checked;
+    });
   });
 
   overlay.classList.add('open');
 }
 
+  overlay.classList.add('open');
+}
+
+function selectAllInstallerFiches(){
+  document.querySelectorAll('#installerFicheList input[data-index]').forEach(cb => {
+    cb.checked = true;
+  });
+}
+
+function clearAllInstallerFiches(){
+  document.querySelectorAll('#installerFicheList input[data-index]').forEach(cb => {
+    cb.checked = false;
+  });
+}
 function closeInstallerLinkBuilder(){
   document.getElementById('installerOverlay')?.classList.remove('open');
 }
@@ -124,22 +187,34 @@ function generateInstallerLink(){
     return;
   }
 
-  document.querySelectorAll('#installerFicheList .installer-fiche-row').forEach((row) => {
-    const checkbox = row.querySelector('input[type="checkbox"]');
-    if(!checkbox.checked) return;
-    const index = Number(checkbox.dataset.index);
-    const fiche = FICHES[index];
-    const residential = isResidentialFiche(fiche);
-    const c = parseFloat(row.querySelector(`[data-classique="${index}"]`)?.value);
-    const p = residential ? parseFloat(row.querySelector(`[data-precarite="${index}"]`)?.value) : NaN;
+  const selectedFiches = [];
 
-    if(!Number.isFinite(c) || c < 0 || (residential && (!Number.isFinite(p) || p < 0))){
-      feedback.textContent = `Complétez les prix de l’exception ${fiche.code}.`;
-      feedback.className = 'installer-feedback error';
-      return;
-    }
-    exceptions[fiche.code] = residential ? {classique:c, precarite:p} : {classique:c};
-  });
+document.querySelectorAll('#installerFicheList input[data-index]:checked').forEach((checkbox) => {
+  const index = Number(checkbox.dataset.index);
+  selectedFiches.push(FICHES[index].code);
+});
+
+document.querySelectorAll('#installerExceptionList .installer-exception-row').forEach((row) => {
+  const checkbox = row.querySelector('[data-exception-index]');
+  if(!checkbox.checked) return;
+
+  const index = Number(checkbox.dataset.exceptionIndex);
+  const fiche = FICHES[index];
+  const residential = isResidentialFiche(fiche);
+
+  const c = parseFloat(row.querySelector(`[data-classique="${index}"]`)?.value);
+  const p = residential ? parseFloat(row.querySelector(`[data-precarite="${index}"]`)?.value) : NaN;
+
+  if(!Number.isFinite(c) || c < 0 || (residential && (!Number.isFinite(p) || p < 0))){
+    feedback.textContent = `Complétez les prix de l’exception ${fiche.code}.`;
+    feedback.className = 'installer-feedback error';
+    return;
+  }
+
+  exceptions[fiche.code] = residential
+    ? {classique:c, precarite:p}
+    : {classique:c};
+});
 
   if(feedback.classList.contains('error')) return;
 
