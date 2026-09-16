@@ -740,3 +740,41 @@ html.installer-mode .default-prices-card{display:none!important}
   display:inline-flex;
   margin-top:8px;
 }
+.installer-fiche-pricing{
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px solid var(--border);
+}
+
+.installer-specific-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:10.5px;
+  color:var(--text-2);
+  font-weight:600;
+  cursor:pointer;
+}
+
+.installer-specific-toggle input{
+  accent-color:var(--navy);
+}
+
+.installer-fiche-pricing .installer-exception-fields{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px solid var(--border);
+}
+
+.installer-fiche-pricing .installer-exception-fields[hidden]{
+  display:none;
+}
+
+@media (max-width:560px){
+  .installer-fiche-pricing .installer-exception-fields{
+    grid-template-columns:1fr;
+  }
+}
