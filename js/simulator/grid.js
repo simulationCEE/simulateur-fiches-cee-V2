@@ -49,11 +49,16 @@ function renderFlatGrid(list){
 
 function renderGrid(){
   const q = searchInput.value.trim().toLowerCase();
+  const allowedFiches = window.EBS_INSTALLER_CONFIG?.fiches || null;
+
   const filtered = FICHES.filter(f => {
+    const matchesInstaller = !allowedFiches || allowedFiches.includes(f.code);
     const matchesSector = activeFilter === 'all' || ficheHasSector(f, activeFilter);
     const matchesSearch = !q || f.code.toLowerCase().includes(q) || f.title.toLowerCase().includes(q) || f.tags.some(t => tagLabel(t).toLowerCase().includes(q));
-    return matchesSector && matchesSearch;
+
+    return matchesInstaller && matchesSector && matchesSearch;
   });
+
   renderFlatGrid(filtered);
 }
 
