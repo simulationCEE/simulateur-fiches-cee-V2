@@ -18,7 +18,7 @@ const FICHES = [
     render: renderBAT163
   },
   {
-    code:"PAC MIXTE", title:"PAC Mixte résidentiel-tertiaire", sector:["res","ter"], tags:["pac"],
+    code:"PAC MIXTE", title:"PAC collective mixte – BAR-TH-179 + BAT-TH-163", sector:["res","ter"], tags:["pac"],
     version:"interne EBS", dv:"22 ans",
     render: renderPACMixte
   },
