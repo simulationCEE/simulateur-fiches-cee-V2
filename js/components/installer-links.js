@@ -152,23 +152,6 @@ function openInstallerLinkBuilder(){
         id="installerFicheList"
       ></div>
     </section>
-
-    <section class="installer-section">
-      <div class="installer-section-title">
-        Exceptions de prix par fiche
-      </div>
-
-      <div class="installer-help">
-        Utilisez cette section uniquement si une fiche doit avoir un prix
-        différent du prix général.
-      </div>
-
-      <div
-        class="installer-exception-list"
-        id="installerExceptionList"
-      ></div>
-    </section>
-
     <div
       class="installer-feedback"
       id="installerFeedback"
