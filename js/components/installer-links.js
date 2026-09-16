@@ -647,23 +647,23 @@ function escapeAttr(value){
 
       if(intro){
 
-        const installerName =
-          config.installerName ||
-          'Espace installateur';
+  const installerName =
+    config.installerName ||
+    'Espace installateur';
 
-        intro.insertAdjacentHTML(
-          'beforeend',
-          `
-            <div class="installer-name-display">
-              ${escapeHtml(installerName)}
-            </div>
+  intro.insertAdjacentHTML(
+    'beforeend',
+    `
+      <div class="installer-name-display">
+        ${escapeHtml(installerName)}
+      </div>
 
-            <div class="installer-mode-badge">
-              Espace installateur
-            </div>
-          `
-        );
-      }
+      <div class="installer-mode-badge">
+        Espace installateur
+      </div>
+    `
+  );
+}
     }
   );
 })();
