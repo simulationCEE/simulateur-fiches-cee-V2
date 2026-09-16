@@ -56,17 +56,18 @@ function renderTH171(body){
     const idx = etas>=140 ? 1 : 0;
     const kwhc = REF171[zone][type][band][idx];
     const mult = cdp ? 5 : 1;
-    return {kwh: kwhc, primeC: kwhc/1000*pc*mult, primeP: kwhc/1000*pp*mult, cdp};
+    const kwhcBonifie = kwhc*mult;
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, primeC: kwhcBonifie/1000*pc, primeP: kwhcBonifie/1000*pp, cdp, mult};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const surf=parseFloat(document.getElementById('f-surf').value)||0;
-    const {kwh:kwhc, primeC, primeP, cdp} = calcCore171(surf);
+    const {kwh:kwhc, kwhBrut, primeC, primeP, cdp, mult} = calcCore171(surf);
     document.getElementById('results').innerHTML = `
-      <div class="result-row"><span class="result-label">kWh cumac</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique ${cdp?'(CdP ×5)':''}</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité ${cdp?'(CdP ×5)':''}</span><span class="result-val">${eur(primeP)}</span></div>
+      <div class="result-row"><span class="result-label">kWh cumac ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
+      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
+      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
     `;
 
     if(!adjWrap){
