@@ -17,7 +17,6 @@ function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov
 function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_META[f.sector] ? f.sector : 'res'); }
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
-function illustrationFor(f){
   function illustrationFor(f){
   if(f.tags?.includes('pac')) return 'assets/illustrations/pac.png';
   if(f.tags?.includes('isol')) return 'assets/illustrations/isolation.png';
