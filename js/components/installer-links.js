@@ -659,7 +659,7 @@ function escapeAttr(value){
             </div>
 
             <div class="installer-mode-badge">
-              Mode installateur · prix verrouillés
+              Espace installateur
             </div>
           `
         );
