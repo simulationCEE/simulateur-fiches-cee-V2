@@ -1,3 +1,4 @@
+console.log('INSTALLER LINKS CHARGÉ');
 /* ═══════════════════════════════════════════════════════════════════════
    LIENS INSTALLATEUR — configuration des prix + exceptions par fiche
    Les valeurs sont encodées dans l'URL pour un fonctionnement GitHub Pages.
