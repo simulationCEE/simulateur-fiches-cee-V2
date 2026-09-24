@@ -31,13 +31,20 @@ function renderTH171(body){
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="f-pp" value="" step="0.1" placeholder="ex : 11"></div>
     </div>
-    <div class="field">
-      <label>Coup de Pouce ×5 <span class="hint">(remplacement chaudière fossile)</span></label>
-      <select id="f-cdp"><option value="oui">Oui</option><option value="non">Non</option></select>
+    <div class="field-row">
+      <div class="field">
+        <label>Coup de Pouce ×5 <span class="hint">(remplacement chaudière fossile)</span></label>
+        <select id="f-cdp"><option value="oui">Oui</option><option value="non">Non</option></select>
+      </div>
+      <div class="field">
+        <label>PAC sur liste agréée <span class="hint">obligatoire depuis le 01/09/2026 pour le ×5</span></label>
+        <select id="f-agree"><option value="oui">Oui</option><option value="non">Non</option></select>
+      </div>
     </div>
+    <div class="warn-box" id="warnAgree171"></div>
     <div class="divider"></div>
     <div class="results" id="results"></div>
-    <div class="source-note">Source : BAR-TH-171 vA78.4 · Cumul CEE + MaPrimeRénov' plafonné à 12 000 €</div>
+    <div class="source-note">Source : BAR-TH-171 vA82-5 à compter du 01-09-2026 (barème inchangé depuis vA78.4) · Cumul CEE + MaPrimeRénov' plafonné à 12 000 € · CdP ×5 conditionné à l'agrément PAC (décret n°2026-413, arrêté du 02/07/2026) depuis le 01/09/2026</div>
   `);
   const baremeWrap = bareme(body, buildBareme171);
 
@@ -52,21 +59,29 @@ function renderTH171(body){
     const pc=parseFloat(document.getElementById('f-pc').value)||0;
     const pp=parseFloat(document.getElementById('f-pp').value)||0;
     const cdp=document.getElementById('f-cdp').value==='oui';
+    const agree=document.getElementById('f-agree').value==='oui';
     const band = surfBand(type, surf);
     const idx = etas>=140 ? 1 : 0;
     const kwhc = REF171[zone][type][band][idx];
-    const mult = cdp ? 5 : 1;
+    const mult = (cdp && agree) ? 5 : 1;
     const kwhcBonifie = kwhc*mult;
-    return {kwh: kwhcBonifie, kwhBrut: kwhc, primeC: kwhcBonifie/1000*pc, primeP: kwhcBonifie/1000*pp, cdp, mult};
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, primeC: kwhcBonifie/1000*pc, primeP: kwhcBonifie/1000*pp, cdp, agree, mult};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const surf=parseFloat(document.getElementById('f-surf').value)||0;
-    const {kwh:kwhc, kwhBrut, primeC, primeP, cdp, mult} = calcCore171(surf);
+    const {kwh:kwhc, kwhBrut, primeC, primeP, cdp, agree, mult} = calcCore171(surf);
+    const warn = document.getElementById('warnAgree171');
+    if(cdp && !agree){
+      warn.innerHTML = `⚠ <b>Coup de Pouce non applicable :</b> depuis le 01/09/2026, la bonification ×5 sur BAR-TH-171 exige que le modèle de PAC figure sur la liste des PAC agréées "qualité et résilience industrielle" (bonus-pac.ademe.fr). Sans agrément, seul le forfait de base s'applique.`;
+      warn.classList.add('show');
+    } else {
+      warn.classList.remove('show');
+    }
     document.getElementById('results').innerHTML = `
-      <div class="result-row"><span class="result-label">kWh cumac ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
+      <div class="result-row"><span class="result-label">kWh cumac ${mult>1?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
+      <div class="result-row ${mult>1?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
       <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
     `;
 
