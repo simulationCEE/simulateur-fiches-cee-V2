@@ -18,6 +18,7 @@ function saveCart(){
 function captureSnapshot(){
   const params = [];
   document.querySelectorAll('#simBody .field').forEach(f=>{
+    if(f.style.display === 'none') return; // champ masqué (ex. prix en mode installateur) — jamais exporté
     const label = f.querySelector('label');
     const input = f.querySelector('input,select');
     if(!label || !input) return;
