@@ -4,8 +4,18 @@
 const FICHES = [
   {
     code:"BAR-TH-171", title:"Pompe à chaleur Air/Eau individuelle", sector:"res", tags:["pac"],
-    version:"vA78.4", dv:"17 ans",
+    version:"vA82-5", dv:"17 ans",
     render: renderTH171
+  },
+  {
+    code:"BAR-TH-172", title:"Pompe à chaleur eau/eau individuelle", sector:"res", tags:["pac"],
+    version:"vA82-5", dv:"20 ans",
+    render: renderTH172
+  },
+  {
+    code:"BAR-TH-129", title:"Pompe à chaleur Air/Air", sector:"res", tags:["pac"],
+    version:"vA27-3", dv:"17 ans",
+    render: renderTH129
   },
   {
     code:"BAR-TH-179", title:"Pompe à chaleur Air/Eau collective", sector:"res", tags:["pac"],
