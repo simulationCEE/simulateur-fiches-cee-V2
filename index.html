@@ -76,33 +76,60 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
     <div class="converter-body" id="converterBody"></div>
   </div>
 </div>
-<script src="js/core/formatters.js"></script>
-<script src="js/components/bareme.js"></script>
-<script src="js/components/adjustable-table.js"></script>
-<script src="js/components/reverse-solver.js"></script>
-<script src="js/simulator/grid.js"></script>
-<script src="js/core/default-prices.js"></script>
-<script src="js/simulator/overlay.js"></script>
-<script src="js/components/tooltips.js"></script>
-<script src="js/components/regulatory-check.js"></script>
-<script src="js/components/checklist-168.js"></script>
-<script src="js/components/unit-converter.js"></script>
-<script src="js/data/sources.js"></script>
-<script src="js/simulator/sources.js"></script>
-<script src="js/compare/cart.js"></script>
-<script src="js/pdf/pdf.js"></script>
-<script src="js/fiches/bar-th-171.js"></script>
-<script src="js/fiches/bar-th-172.js"></script>
-<script src="js/fiches/bar-th-129.js"></script>
-<script src="js/fiches/bar-th-179.js"></script>
-<script src="js/fiches/bat-th-163.js"></script>
-<script src="js/fiches/pac-mixte.js"></script>
-<script src="js/fiches/bar-th-177.js"></script>
-<script src="js/fiches/bar-th-168.js"></script>
-<script src="js/fiches/agri-eq-110.js"></script>
-<script src="js/fiches/isolation.js"></script>
-<script src="js/data/fiches.js"></script>
-<script src="js/components/installer-links.js"></script>
-<script src="js/app.js"></script>
+<script>
+  // ═══════════════════════════════════════════════════════════════════════
+  // CHARGEUR AUTOMATIQUE ANTI-CACHE — aucune maintenance requise.
+  // Chaque script est rechargé frais à chaque visite (paramètre ?v=timestamp
+  // unique par chargement de page), donc plus jamais besoin de Ctrl+Maj+R
+  // après une mise à jour. L'ordre de chargement ci-dessous est identique à
+  // l'ordre précédent des balises <script> — NE PAS le modifier sans raison :
+  // certains fichiers dépendent de variables globales définies par les
+  // fichiers chargés avant eux (ex. REF179 utilisé par pac-mixte.js).
+  // ═══════════════════════════════════════════════════════════════════════
+  (function(){
+    const V = Date.now(); // change à chaque rechargement de page = jamais de cache périmé
+    const SCRIPTS = [
+      'js/core/formatters.js',
+      'js/components/bareme.js',
+      'js/components/adjustable-table.js',
+      'js/components/reverse-solver.js',
+      'js/simulator/grid.js',
+      'js/core/default-prices.js',
+      'js/simulator/overlay.js',
+      'js/components/tooltips.js',
+      'js/components/regulatory-check.js',
+      'js/components/checklist-168.js',
+      'js/components/unit-converter.js',
+      'js/data/sources.js',
+      'js/simulator/sources.js',
+      'js/compare/cart.js',
+      'js/pdf/pdf.js',
+      'js/fiches/bar-th-171.js',
+      'js/fiches/bar-th-172.js',
+      'js/fiches/bar-th-129.js',
+      'js/fiches/bar-th-179.js',
+      'js/fiches/bat-th-163.js',
+      'js/fiches/pac-mixte.js',
+      'js/fiches/bar-th-177.js',
+      'js/fiches/bar-th-168.js',
+      'js/fiches/agri-eq-110.js',
+      'js/fiches/isolation.js',
+      'js/data/fiches.js',
+      'js/components/installer-links.js',
+      'js/app.js',
+    ];
+    let i = 0;
+    function loadNext(){
+      if(i >= SCRIPTS.length) return;
+      const path = SCRIPTS[i];
+      const s = document.createElement('script');
+      s.src = path + '?v=' + V;
+      s.onload = function(){ i++; loadNext(); };
+      s.onerror = function(){ console.error('Échec de chargement du script :', path); i++; loadNext(); };
+      document.body.appendChild(s);
+    }
+    loadNext();
+  })();
+</script>
 </body>
 </html>
