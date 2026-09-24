@@ -7,6 +7,13 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-badge">CEE</div>
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Chargement du simulateur…</div>
+</div>
+
 <div class="app">
   <div class="sources-overlay" id="sourcesOverlay">
     <div class="sources-panel">
@@ -120,7 +127,14 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
     ];
     let i = 0;
     function loadNext(){
-      if(i >= SCRIPTS.length) return;
+      if(i >= SCRIPTS.length){
+        const overlay = document.getElementById('loadingOverlay');
+        if(overlay){
+          overlay.classList.add('hidden');
+          setTimeout(()=>overlay.remove(), 400); // laisse la transition CSS se terminer
+        }
+        return;
+      }
       const path = SCRIPTS[i];
       const s = document.createElement('script');
       s.src = path + '?v=' + V;
