@@ -33,11 +33,6 @@ const FICHES = [
     render: renderPACMixte
   },
   {
-    code:"AGRI-EQ-110", title:"Séchage solaire par insufflation (panneaux hybrides)", sector:"agri", tags:["solaire"],
-    version:"vA38-1", dv:"15 ans",
-    render: renderAGRIEQ110
-  },
-  {
     code:"BAR-TH-177", title:"Rénovation globale résidentiel collectif", sector:"res", tags:["renov"],
     version:"vA63-1", dv:"30 ans",
     render: renderTH177
