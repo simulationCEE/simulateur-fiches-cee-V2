@@ -141,7 +141,8 @@ function buildBareme171(wrap){
       grp.bands.forEach(([label,bandKey],i)=>{
         const [e1,e2] = REF171[zone][grp.type][bandKey];
         const isCur = zone===curZone && grp.type===curType && bandKey===curBand;
-        html += `<tr class="${isCur?'hl':''}">`;
+        const isGrpEnd = i===grp.bands.length-1;
+        html += `<tr class="${isCur?'hl':''} ${isGrpEnd?'grp-end':''}">`;
         if(grp.type==='maison' && i===0){
           html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="6">${zone}</td>`;
         }
