@@ -71,15 +71,9 @@ function addChecklist168(container){
     if(isOpen) wrap.innerHTML = buildContent();
   });
   dlBtn.addEventListener('click', ()=>{
-    const area = document.getElementById('printArea');
-    area.innerHTML = `
-      <div class="print-doc-header">
-        <h1>Cahier des charges — BAR-TH-168</h1>
-        <p>Pièces justificatives à transmettre à EBS Énergie — généré le ${new Date().toLocaleString('fr-FR')}</p>
-      </div>
-      ${buildContent()}
-    `;
-    window.print();
+    const temp = document.createElement('div');
+    temp.innerHTML = buildContent();
+    downloadChecklistPDF('BAR-TH-168 — Cahier des charges', temp.firstElementChild);
   });
 }
 
