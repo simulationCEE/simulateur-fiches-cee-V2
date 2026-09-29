@@ -256,7 +256,7 @@ function buildBareme102Bat(wrap, forf){
     [['Électricité','elec'],['Combustible','comb']].forEach(([label,key],i)=>{
       const v = forf[zone][key];
       const isCur = zone===curZone && key===curEnergie;
-      html += `<tr class="${isCur?'hl':''}">`;
+      html += `<tr class="${isCur?'hl':''} ${i===1?'grp-end':''}">`;
       if(i===0) html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="2">${zone}</td>`;
       html += `<td>${label}</td><td>${num(v)}</td>`;
       secteurs.forEach(([,f])=>{
