@@ -133,7 +133,8 @@ function buildBareme172(wrap){
       surfRows.forEach(([label,facteur],si)=>{
         const kwhc = REF172[bk]*facteur*ZONE172[zone];
         const isCur = bk===curBandKey && zone===curZone && facteur===curSurfFacteur;
-        html += `<tr class="${isCur?'hl':''}">`;
+        const isGrpEnd = si===surfRows.length-1;
+        html += `<tr class="${isCur?'hl':''} ${isGrpEnd?'grp-end':''}">`;
         if(zi===0 && si===0) html += `<td rowspan="9" style="text-align:left;font-weight:700;font-size:11px">${bandLabels[bk]}</td>`;
         if(si===0) html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="3">${zone}</td>`;
         html += `<td>${label}</td>`;
