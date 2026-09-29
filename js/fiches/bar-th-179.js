@@ -121,7 +121,8 @@ function buildBareme179(wrap){
     ['H1','H2','H3'].forEach((zone,i)=>{
       const [kc,ke] = REF179[ek][zone];
       const isCur = ek===curEtasKey && zone===curZone;
-      html += `<tr class="${isCur?'hl':''}">`;
+      const isGrpEnd = zone==='H3';
+      html += `<tr class="${isCur?'hl':''} ${isGrpEnd?'grp-end':''}">`;
       if(i===0) html += `<td rowspan="3" style="text-align:left;font-weight:700">${ETAS179_LABELS[ek]}</td>`;
       html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td>`;
       html += `<td>${num(kc)}</td><td>${num(ke)}</td>`;
