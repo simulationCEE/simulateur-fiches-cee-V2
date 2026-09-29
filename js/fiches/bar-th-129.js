@@ -115,7 +115,7 @@ function buildBareme129(wrap){
 
   html += `<tr><td rowspan="3" style="text-align:left;font-weight:700">Appartement</td><td rowspan="3">3,9 ≤ SCOP</td>`;
   ['H1','H2','H3'].forEach((zone,i)=>{
-    if(i>0) html += `<tr>`;
+    if(i>0) html += `<tr class="${i===2?'grp-end':''}">`;
     const v = REF129_APPT[zone];
     const isCur = curType==='appt' && zone===curZone;
     html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td><td>${num(v)}</td><td class="num-c">${eur(v/1000*pc)}</td><td class="num-p">${eur(v/1000*pp)}</td></tr>`;
@@ -124,7 +124,7 @@ function buildBareme129(wrap){
   ['3.9-4.3','4.3+'].forEach((band,bi)=>{
     html += `<tr><td rowspan="3" style="text-align:left;font-weight:700">${bi===0?'Maison':''}</td><td rowspan="3">${band==='4.3+'?'4,3 ≤ SCOP':'3,9 ≤ SCOP < 4,3'}</td>`;
     ['H1','H2','H3'].forEach((zone,i)=>{
-      if(i>0) html += `<tr>`;
+      if(i>0) html += `<tr class="${i===2?'grp-end':''}">`;
       const v = REF129_MAISON[band][zone];
       html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td><td>${num(v)}</td><td class="num-c">${eur(v/1000*pc)}</td><td class="num-p">${eur(v/1000*pp)}</td></tr>`;
     });
