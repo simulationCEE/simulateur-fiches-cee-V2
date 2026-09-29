@@ -225,135 +225,159 @@ function pdfFilename(code, suffix){
 
 // ── Cahier des charges / checklist (texte structuré, pas un tableau) ──
 function downloadChecklistPDF(title, containerEl){
-  const JsPDF = getJsPDFCtor();
-  if(!JsPDF){ alert("La génération PDF n'a pas pu se charger (bibliothèque indisponible). Vérifiez votre connexion et réessayez."); return; }
-  const doc = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const contentWidth = pageWidth - 28;
-  let y = drawPdfHeader(doc, title);
-
-  function ensureRoom(needed){
-    if(y + needed > pageHeight - 20){
-      doc.addPage(undefined, 'portrait');
-      y = drawPdfHeader(doc, title);
+  try {
+    const JsPDF = getJsPDFCtor();
+    if(!JsPDF){
+      alert("La génération PDF n'a pas pu se charger (bibliothèque jsPDF indisponible — vérifiez que cdnjs.cloudflare.com n'est pas bloqué par un pare-feu, un bloqueur de pub ou une extension de navigateur). Rechargez la page et réessayez.");
+      return;
     }
+    const doc = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const contentWidth = pageWidth - 28;
+    let y = drawPdfHeader(doc, title);
+
+    function ensureRoom(needed){
+      if(y + needed > pageHeight - 20){
+        doc.addPage(undefined, 'portrait');
+        y = drawPdfHeader(doc, title);
+      }
+    }
+
+    [...containerEl.children].forEach(el=>{
+      const text = pdfSafe(el.textContent.replace(/\s+/g,' ').trim());
+      if(!text) return;
+      if(el.classList.contains('checklist-cat')){
+        ensureRoom(10);
+        y += 3;
+        doc.setFillColor(...PDF_COLORS.navyLt);
+        doc.rect(14, y, contentWidth, 6, 'F');
+        doc.setTextColor(255,255,255);
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(8.5);
+        doc.text(text, 17, y+4.2);
+        y += 6 + 3;
+      } else if(el.classList.contains('checklist-item')){
+        const clean = text.replace(/^☐\s*/,'');
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(8.5);
+        const wrapped = doc.splitTextToSize(clean, contentWidth-6);
+        ensureRoom(wrapped.length*4.2+1.5);
+        doc.setDrawColor(...PDF_COLORS.text2);
+        doc.setLineWidth(0.25);
+        doc.rect(14, y-2.8, 2.6, 2.6);
+        doc.setTextColor(...PDF_COLORS.text);
+        doc.text(wrapped, 19, y);
+        y += wrapped.length*4.2 + 1.5;
+      } else if(el.classList.contains('checklist-refused')){
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(8);
+        const wrapped = doc.splitTextToSize(text, contentWidth-6);
+        ensureRoom(wrapped.length*4+1.5);
+        doc.setTextColor(...PDF_COLORS.red);
+        doc.text(wrapped, 17, y);
+        y += wrapped.length*4 + 1.5;
+      } else {
+        doc.setFont('helvetica','italic');
+        doc.setFontSize(7);
+        const wrapped = doc.splitTextToSize(text, contentWidth);
+        ensureRoom(wrapped.length*3.6+4);
+        doc.setTextColor(...PDF_COLORS.text3);
+        y += 2;
+        doc.text(wrapped, 14, y);
+        y += wrapped.length*3.6 + 2;
+      }
+    });
+
+    drawPdfFooters(doc);
+    doc.save(pdfFilename(title.split(' ')[0]||'Checklist', 'pieces-a-fournir'));
+  } catch(err){
+    console.error('Erreur génération PDF (checklist) :', err);
+    alert("La génération du PDF a échoué :\n\n" + (err && err.message ? err.message : err) + "\n\nMerci de faire une capture de ce message et de la transmettre pour correction.");
   }
-
-  [...containerEl.children].forEach(el=>{
-    const text = pdfSafe(el.textContent.replace(/\s+/g,' ').trim());
-    if(!text) return;
-    if(el.classList.contains('checklist-cat')){
-      ensureRoom(10);
-      y += 3;
-      doc.setFillColor(...PDF_COLORS.navyLt);
-      doc.rect(14, y, contentWidth, 6, 'F');
-      doc.setTextColor(255,255,255);
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(8.5);
-      doc.text(text, 17, y+4.2);
-      y += 6 + 3;
-    } else if(el.classList.contains('checklist-item')){
-      const clean = text.replace(/^☐\s*/,'');
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(8.5);
-      const wrapped = doc.splitTextToSize(clean, contentWidth-6);
-      ensureRoom(wrapped.length*4.2+1.5);
-      doc.setDrawColor(...PDF_COLORS.text2);
-      doc.setLineWidth(0.25);
-      doc.rect(14, y-2.8, 2.6, 2.6);
-      doc.setTextColor(...PDF_COLORS.text);
-      doc.text(wrapped, 19, y);
-      y += wrapped.length*4.2 + 1.5;
-    } else if(el.classList.contains('checklist-refused')){
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(8);
-      const wrapped = doc.splitTextToSize(text, contentWidth-6);
-      ensureRoom(wrapped.length*4+1.5);
-      doc.setTextColor(...PDF_COLORS.red);
-      doc.text(wrapped, 17, y);
-      y += wrapped.length*4 + 1.5;
-    } else {
-      doc.setFont('helvetica','italic');
-      doc.setFontSize(7);
-      const wrapped = doc.splitTextToSize(text, contentWidth);
-      ensureRoom(wrapped.length*3.6+4);
-      doc.setTextColor(...PDF_COLORS.text3);
-      y += 2;
-      doc.text(wrapped, 14, y);
-      y += wrapped.length*3.6 + 2;
-    }
-  });
-
-  drawPdfFooters(doc);
-  doc.save(pdfFilename(title.split(' ')[0]||'Checklist', 'pieces-a-fournir'));
 }
 
 // ═══════════════════════════════════════════════════════════════════════
 // TÉLÉCHARGEMENT — simulation / barème / tableau évolutif / tout
 // ═══════════════════════════════════════════════════════════════════════
 function downloadSimPDF(opt){
-  const s = captureSnapshot();
-  const JsPDF = getJsPDFCtor();
-  if(!JsPDF){ alert("La génération PDF n'a pas pu se charger (bibliothèque indisponible). Vérifiez votre connexion et réessayez."); return; }
-
-  const needsWideTable = (opt==='bareme' || opt==='all') && simBody.querySelector('#baremeWrap table.bareme')
-    || (opt==='adj' && simBody.querySelector('#adjTableWrap table.surftbl'));
-  const doc = new JsPDF({orientation: needsWideTable ? 'landscape' : 'portrait', unit:'mm', format:'a4'});
-
-  let y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
-  y = drawPdfSectionBand(doc, 'Paramètres du projet saisis', y);
-  y = addPdfKeyValueTable(doc, s.params, y);
-  y = drawPdfSectionBand(doc, 'Résultats de la simulation', y);
-  y = addPdfKeyValueTable(doc, s.results, y, {results:true});
-
-  if(opt === 'bareme' || opt === 'all'){
-    const wrap = simBody.querySelector('#baremeWrap');
-    if(wrap){
-      wrap.forceBuild();
-      const table = wrap.querySelector('table.bareme');
-      if(table){
-        doc.addPage(undefined, 'landscape');
-        y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
-        y = drawPdfSectionBand(doc, 'Barème complet', y);
-        y = addPdfHtmlTable(doc, table, y);
-      }
+  try {
+    const s = captureSnapshot();
+    const JsPDF = getJsPDFCtor();
+    if(!JsPDF){
+      alert("La génération PDF n'a pas pu se charger (bibliothèque jsPDF indisponible — vérifiez que cdnjs.cloudflare.com n'est pas bloqué par un pare-feu, un bloqueur de pub ou une extension de navigateur). Rechargez la page et réessayez.");
+      return;
     }
-  }
-  if(opt === 'adj' || opt === 'all'){
-    const adjWrapEl = simBody.querySelector('#adjTableWrap');
-    if(adjWrapEl){
-      const table = adjWrapEl.querySelector('table.surftbl');
-      if(table){
-        const stepEl = document.getElementById('adjStep');
-        const repEl = document.getElementById('adjRep');
-        doc.addPage(undefined, 'landscape');
-        y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
-        y = drawPdfSectionBand(doc, `Tableau évolutif (écart ${stepEl?stepEl.value:''}, ${repEl?repEl.value:''} lignes ajoutées)`, y);
-        y = addPdfHtmlTable(doc, table, y);
-      }
-    }
-  }
 
-  drawPdfFooters(doc);
-  doc.save(pdfFilename(s.code, opt==='sim'?'':opt));
-}
+    const needsWideTable = (opt==='bareme' || opt==='all') && simBody.querySelector('#baremeWrap table.bareme')
+      || (opt==='adj' && simBody.querySelector('#adjTableWrap table.surftbl'));
+    const doc = new JsPDF({orientation: needsWideTable ? 'landscape' : 'portrait', unit:'mm', format:'a4'});
 
-// ── Panier comparatif : une fiche par page ──
-function printDocument(snapshots){
-  const JsPDF = getJsPDFCtor();
-  if(!JsPDF){ alert("La génération PDF n'a pas pu se charger (bibliothèque indisponible). Vérifiez votre connexion et réessayez."); return; }
-  const doc = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-
-  snapshots.forEach((s, i)=>{
-    if(i>0) doc.addPage(undefined, 'portrait');
     let y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
     y = drawPdfSectionBand(doc, 'Paramètres du projet saisis', y);
     y = addPdfKeyValueTable(doc, s.params, y);
     y = drawPdfSectionBand(doc, 'Résultats de la simulation', y);
     y = addPdfKeyValueTable(doc, s.results, y, {results:true});
-  });
 
-  drawPdfFooters(doc);
-  doc.save(pdfFilename('Comparatif', snapshots.length+'-fiches'));
+    if(opt === 'bareme' || opt === 'all'){
+      const wrap = simBody.querySelector('#baremeWrap');
+      if(wrap){
+        wrap.forceBuild();
+        const table = wrap.querySelector('table.bareme');
+        if(table){
+          doc.addPage(undefined, 'landscape');
+          y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
+          y = drawPdfSectionBand(doc, 'Barème complet', y);
+          y = addPdfHtmlTable(doc, table, y);
+        }
+      }
+    }
+    if(opt === 'adj' || opt === 'all'){
+      const adjWrapEl = simBody.querySelector('#adjTableWrap');
+      if(adjWrapEl){
+        const table = adjWrapEl.querySelector('table.surftbl');
+        if(table){
+          const stepEl = document.getElementById('adjStep');
+          const repEl = document.getElementById('adjRep');
+          doc.addPage(undefined, 'landscape');
+          y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
+          y = drawPdfSectionBand(doc, `Tableau évolutif (écart ${stepEl?stepEl.value:''}, ${repEl?repEl.value:''} lignes ajoutées)`, y);
+          y = addPdfHtmlTable(doc, table, y);
+        }
+      }
+    }
+
+    drawPdfFooters(doc);
+    doc.save(pdfFilename(s.code, opt==='sim'?'':opt));
+  } catch(err){
+    console.error('Erreur génération PDF :', err);
+    alert("La génération du PDF a échoué :\n\n" + (err && err.message ? err.message : err) + "\n\nMerci de faire une capture de ce message et de la transmettre pour correction.");
+  }
+}
+
+// ── Panier comparatif : une fiche par page ──
+function printDocument(snapshots){
+  try {
+    const JsPDF = getJsPDFCtor();
+    if(!JsPDF){
+      alert("La génération PDF n'a pas pu se charger (bibliothèque jsPDF indisponible — vérifiez que cdnjs.cloudflare.com n'est pas bloqué par un pare-feu, un bloqueur de pub ou une extension de navigateur). Rechargez la page et réessayez.");
+      return;
+    }
+    const doc = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+
+    snapshots.forEach((s, i)=>{
+      if(i>0) doc.addPage(undefined, 'portrait');
+      let y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
+      y = drawPdfSectionBand(doc, 'Paramètres du projet saisis', y);
+      y = addPdfKeyValueTable(doc, s.params, y);
+      y = drawPdfSectionBand(doc, 'Résultats de la simulation', y);
+      y = addPdfKeyValueTable(doc, s.results, y, {results:true});
+    });
+
+    drawPdfFooters(doc);
+    doc.save(pdfFilename('Comparatif', snapshots.length+'-fiches'));
+  } catch(err){
+    console.error('Erreur génération PDF (panier) :', err);
+    alert("La génération du PDF a échoué :\n\n" + (err && err.message ? err.message : err) + "\n\nMerci de faire une capture de ce message et de la transmettre pour correction.");
+  }
 }
