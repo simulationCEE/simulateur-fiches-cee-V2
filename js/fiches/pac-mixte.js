@@ -206,7 +206,7 @@ function buildBaremeMixte(wrap){
     ['H1','H2','H3'].forEach((zone,i)=>{
       const [kc,ke] = REF179[ek][zone];
       const isCur = ek===curEtasKey && zone===curZone;
-      html += `<tr class="${isCur?'hl':''}">`;
+      html += `<tr class="${isCur?'hl':''} ${zone==='H3'?'grp-end':''}">`;
       if(i===0) html += `<td rowspan="3" style="text-align:left;font-weight:700">${ETAS179_LABELS[ek]}</td>`;
       html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td><td>${num(kc)}</td><td>${num(ke)}</td>`;
       html += `</tr>`;
@@ -221,7 +221,7 @@ function buildBaremeMixte(wrap){
     ['H1','H2','H3'].forEach((zone,i)=>{
       const v = FORFAIT_BAT163_MIXTE[bk][zone];
       const isCur = bk===curBand && zone===curZone;
-      html += `<tr class="${isCur?'hl':''}">`;
+      html += `<tr class="${isCur?'hl':''} ${zone==='H3'?'grp-end':''}">`;
       if(i===0) html += `<td rowspan="3" style="text-align:left;font-weight:700">${bandLabels[bk]}</td>`;
       html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td><td>${num(v)}</td>`;
       html += `</tr>`;
