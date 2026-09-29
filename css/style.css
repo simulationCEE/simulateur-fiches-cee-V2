@@ -184,6 +184,7 @@
   table.bareme td.num-cdp{color:var(--orange);font-weight:700}
   table.bareme tr.hl td:not(.zone-cell){background:#FFF6DD!important;box-shadow:inset 0 0 0 1.5px #E8C15A}
   table.bareme tr.hl td.zone-cell{box-shadow:inset 0 0 0 2.5px #E8C15A}
+  table.bareme tr.grp-end td{border-bottom:2.5px solid var(--navy-dk)}
 
   /* ── Actions bar (Ajouter au comparatif / Télécharger PDF) ── */
   .sim-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
