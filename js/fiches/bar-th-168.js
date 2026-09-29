@@ -106,7 +106,7 @@ function buildBareme168(wrap, forf){
       const v = forf[zone][key];
       const kwhcTotal = v*surf;
       const isCur = zone===curZone && key===curUsage;
-      html += `<tr class="${isCur?'hl':''}">`;
+      html += `<tr class="${isCur?'hl':''} ${i===1?'grp-end':''}">`;
       if(i===0) html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="2">${zone}</td>`;
       html += `<td style="text-align:left">${label}</td><td>${num(v)}</td>`;
       html += `<td class="num-cdp">${eur(kwhcTotal/1000*pc*4)}</td>`;
