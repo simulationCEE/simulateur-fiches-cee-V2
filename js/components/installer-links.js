@@ -105,6 +105,20 @@ function openInstallerLinkBuilder(){
 
         </div>
 
+        <div class="installer-field">
+
+          <label for="installerLabel">
+            Étiquette de ce lien <span style="font-weight:400;color:var(--text-3)">(pour vous y retrouver — non visible par l'installateur)</span>
+          </label>
+
+          <input
+            id="installerLabel"
+            type="text"
+            placeholder="Ex. : Dupont Chauffage — devis toiture sept. 2026"
+          >
+
+        </div>
+
       </div>
 
     </section>
@@ -700,6 +714,106 @@ function generateInstallerLink(){
 
   window.__lastInstallerLink =
     url;
+
+  const label =
+    document
+      .getElementById('installerLabel')
+      ?.value
+      .trim() || '';
+
+  saveInstallerLinkToHistory({
+    label,
+    installerName,
+    createdAt: new Date().toISOString(),
+    prices: {classique:classic, precarite:prec},
+    fiches: selectedFiches,
+    exceptions,
+    url,
+  });
+}
+
+/* ── Historique local des liens créés (ce navigateur uniquement) ── */
+
+const INSTALLER_HISTORY_KEY = 'ebsInstallerLinksHistory';
+const INSTALLER_HISTORY_CODE_HASH = 'e85107b10d07675b3e632479f34b4edeab3f72b14743674e6c2c4e7098df559f'; // code par défaut : "ebs2026" — à changer (voir instructions plus bas)
+
+function saveInstallerLinkToHistory(entry){
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem(INSTALLER_HISTORY_KEY)) || []; } catch(e){ list = []; }
+  entry.id = Date.now() + '-' + Math.random().toString(36).slice(2,8);
+  list.unshift(entry);
+  localStorage.setItem(INSTALLER_HISTORY_KEY, JSON.stringify(list));
+}
+
+function getInstallerLinkHistory(){
+  try { return JSON.parse(localStorage.getItem(INSTALLER_HISTORY_KEY)) || []; } catch(e){ return []; }
+}
+
+function deleteInstallerLinkHistoryEntry(id){
+  const list = getInstallerLinkHistory().filter(e => e.id !== id);
+  localStorage.setItem(INSTALLER_HISTORY_KEY, JSON.stringify(list));
+  renderInstallerHistory();
+}
+
+async function sha256HexInstaller(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function openInstallerHistoryGate(){
+  document.getElementById('installerHistoryCodeInput').value = '';
+  document.getElementById('installerHistoryCodeError').style.display = 'none';
+  document.getElementById('installerHistoryGateOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('installerHistoryCodeInput')?.focus(), 50);
+}
+function closeInstallerHistoryGate(){
+  document.getElementById('installerHistoryGateOverlay').classList.remove('open');
+}
+async function checkInstallerHistoryCode(){
+  const input = document.getElementById('installerHistoryCodeInput');
+  const hash = await sha256HexInstaller(input.value);
+  if(hash === INSTALLER_HISTORY_CODE_HASH){
+    closeInstallerHistoryGate();
+    renderInstallerHistory();
+    document.getElementById('installerHistoryOverlay').classList.add('open');
+  } else {
+    document.getElementById('installerHistoryCodeError').style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+function closeInstallerHistory(){
+  document.getElementById('installerHistoryOverlay').classList.remove('open');
+}
+function renderInstallerHistory(){
+  const body = document.getElementById('installerHistoryBody');
+  const list = getInstallerLinkHistory();
+  if(!list.length){
+    body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--text-3);font-size:13px">Aucun lien créé depuis ce navigateur pour l'instant.</div>`;
+    return;
+  }
+  body.innerHTML = list.map(e => {
+    const date = new Date(e.createdAt).toLocaleString('fr-FR', {dateStyle:'medium', timeStyle:'short'});
+    const ficheCount = e.fiches ? e.fiches.length : 0;
+    return `
+      <div class="installer-history-row">
+        <div class="installer-history-row-head">
+          <div>
+            <div class="installer-history-label">${escapeHtml(e.label || e.installerName)}</div>
+            <div class="installer-history-meta">${escapeHtml(e.installerName)} · créé le ${date}</div>
+          </div>
+          <button type="button" class="installer-history-del" onclick="deleteInstallerLinkHistoryEntry('${e.id}')" title="Retirer de l'historique">✕</button>
+        </div>
+        <div class="installer-history-details">
+          <span><b>Prix Classique :</b> ${e.prices.classique} €/MWhc</span>
+          <span><b>Prix Précarité :</b> ${e.prices.precarite} €/MWhc</span>
+          <span><b>${ficheCount} fiche${ficheCount>1?'s':''} :</b> ${escapeHtml((e.fiches||[]).join(', '))}</span>
+        </div>
+        <div class="installer-history-url" title="${escapeHtml(e.url)}">${escapeHtml(e.url)}</div>
+        <button type="button" class="installer-select-btn" onclick="navigator.clipboard.writeText('${e.url.replace(/'/g,"\\'")}')">Copier ce lien</button>
+      </div>
+    `;
+  }).join('');
 }
 
 /* ── Copier le lien ── */
@@ -771,6 +885,11 @@ function escapeAttr(value){
   return escapeHtml(value);
 }
 
+document.getElementById('installerHistoryUnlockBtn').addEventListener('click', checkInstallerHistoryCode);
+document.getElementById('installerHistoryCodeInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') checkInstallerHistoryCode();
+});
+
 /* ── Mode installateur ── */
 
 (function initInstallerMode(){
@@ -794,47 +913,45 @@ function escapeAttr(value){
     'installer-mode'
   );
 
-  window.addEventListener(
-    'DOMContentLoaded',
-    () => {
+  function insertInstallerBanner(){
 
-      const card =
-        document.querySelector(
-          '.default-prices-card'
-        );
+    const card =
+      document.querySelector(
+        '.default-prices-card'
+      );
 
-      if(card){
-        card.style.display =
-          'none';
-      }
+    if(card){
+      card.style.display =
+        'none';
+    }
 
-      const intro =
-        document.querySelector(
-          '.hero-intro'
-        );
+    const appEl =
+      document.querySelector('.app');
 
-      if(intro){
+    if(appEl){
 
-        const installerName =
-          config.installerName ||
-          'Espace installateur';
+      const installerName =
+        config.installerName ||
+        'Espace installateur';
 
-        intro.insertAdjacentHTML(
-          'beforeend',
-          `
-            <div class="installer-name-display">
-              ${escapeHtml(installerName)}
-            </div>
-
-            <div class="installer-mode-badge">
-              Espace installateur
-            </div>
-          `
-        );
-
-      }
+      appEl.insertAdjacentHTML(
+        'afterbegin',
+        `
+          <div class="installer-topbar">
+            <span class="installer-topbar-icon">🔧</span>
+            <span class="installer-topbar-text">Espace installateur — <b>${escapeHtml(installerName)}</b></span>
+          </div>
+        `
+      );
 
     }
-  );
+
+  }
+
+  if(document.readyState === 'loading'){
+    window.addEventListener('DOMContentLoaded', insertInstallerBanner);
+  } else {
+    insertInstallerBanner();
+  }
 
 })();
