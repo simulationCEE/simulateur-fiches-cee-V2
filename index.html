@@ -43,6 +43,22 @@
       </div>
     </div>
   </div>
+  <div class="sources-overlay" id="installerHistoryGateOverlay">
+    <div class="sources-panel" style="max-width:380px">
+      <div class="sources-header"><div><h3>Accès protégé</h3><p>Historique des liens installateur</p></div><button class="close-btn" onclick="closeInstallerHistoryGate()">✕</button></div>
+      <div class="sources-body" style="padding:18px 20px">
+        <input type="password" id="installerHistoryCodeInput" placeholder="Code d'accès" style="width:100%;padding:11px 13px;border:1.5px solid var(--border-dk);border-radius:9px;font-size:14px;box-sizing:border-box">
+        <div id="installerHistoryCodeError" style="color:var(--red);font-size:12px;font-weight:600;margin-top:8px;display:none">Code incorrect.</div>
+        <button type="button" class="btn-primary" id="installerHistoryUnlockBtn" style="width:100%;margin-top:14px;padding:11px;border-radius:9px;background:var(--navy);color:#fff;border:1.5px solid var(--navy);font-weight:700;cursor:pointer">Valider</button>
+      </div>
+    </div>
+  </div>
+  <div class="sources-overlay" id="installerHistoryOverlay">
+    <div class="sources-panel" style="max-width:820px;width:95vw">
+      <div class="sources-header"><div><h3>Liens installateur créés</h3><p>Historique local à ce navigateur — les liens déjà envoyés continuent de fonctionner même si cette liste est vidée</p></div><button class="close-btn" onclick="closeInstallerHistory()">✕</button></div>
+      <div class="sources-body" id="installerHistoryBody"></div>
+    </div>
+  </div>
   <section class="hero">
     <div class="hero-intro">
       <div class="hero-kicker"><span class="hero-kicker-mark">CEE</span> SIMULATEUR DE PRIMES CEE</div>
@@ -83,6 +99,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
     <div class="footer-tools">
       <button type="button" class="footer-tool converter-link" onclick="openConverter()">↔ Convertisseur d’unités CEE</button>
       <button type="button" class="footer-tool sources-link" onclick="openSources()">Sources &amp; mises à jour</button>
+      <button type="button" class="footer-tool installer-history-link" onclick="openInstallerHistoryGate()">🔒 Historique des liens installateur</button>
     </div>
   </footer>
 </div>
