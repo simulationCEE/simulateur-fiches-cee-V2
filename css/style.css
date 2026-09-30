@@ -794,3 +794,19 @@ html.installer-mode .default-prices-card{display:none!important}
   .loading-text{font-size:13px;font-weight:600;color:var(--text-2);letter-spacing:.01em}
   @keyframes loading-spin{to{transform:rotate(360deg)}}
   @keyframes loading-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.85}}
+
+  /* ── Options PDF + aperçu intégré ── */
+  .pdf-options-footer{display:flex;justify-content:space-between;gap:10px;padding:14px 20px 18px;
+    border-top:1px solid var(--border)}
+  .pdf-options-footer .btn-primary{background:var(--navy);color:#fff;border:1.5px solid var(--navy);
+    padding:10px 16px;border-radius:9px;font-weight:700;font-size:12.5px;cursor:pointer}
+  .pdf-options-footer .btn-primary:hover{background:var(--navy-dk)}
+  .pdf-options-footer .btn-secondary{flex:none;min-width:0}
+  .pdf-opt-row{display:flex;align-items:flex-start;gap:10px;padding:11px 20px;border-bottom:1px solid var(--border)}
+  .pdf-opt-row:last-child{border-bottom:none}
+  .pdf-opt-row input[type=checkbox]{width:17px;height:17px;margin-top:1px;accent-color:var(--navy);flex-shrink:0}
+  .pdf-opt-row label{font-size:13px;font-weight:600;color:var(--text);cursor:pointer}
+  .pdf-opt-row .pdf-opt-hint{display:block;font-size:11px;font-weight:400;color:var(--text-3);margin-top:1px}
+  .pdf-preview-frame-wrap{padding:0 20px;background:var(--bg)}
+  #pdfPreviewFrame{width:100%;height:68vh;border:1px solid var(--border);border-radius:10px;
+    background:#525659;display:block}
