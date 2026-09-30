@@ -28,10 +28,7 @@ function openSim(f){
     <div class="sim-actions">
       <button type="button" class="btn-reset" id="resetSimBtn" title="Remettre les valeurs par défaut">↺ Réinitialiser</button>
       <button type="button" class="btn-secondary" id="addToCartBtn">+ Ajouter au comparatif</button>
-      <div class="pdf-dropdown">
-        <button type="button" class="btn-secondary" id="pdfMainBtn">📄 Télécharger PDF ▾</button>
-        <div class="pdf-menu" id="pdfMenu"></div>
-      </div>
+      <button type="button" class="btn-secondary" id="pdfMainBtn">📄 Télécharger PDF</button>
     </div>
   `);
   document.getElementById('resetSimBtn').addEventListener('click', ()=>{
@@ -52,29 +49,10 @@ function openSim(f){
     setTimeout(()=>{ addBtn.textContent='+ Ajouter au comparatif'; addBtn.classList.remove('added'); }, 1500);
   });
 
-  // Menu déroulant "Télécharger PDF" — options selon ce que la fiche propose
   const hasBareme = !!simBody.querySelector('#baremeWrap');
   const hasAdj = !!simBody.querySelector('#adjTableWrap');
-  const pdfMenu = document.getElementById('pdfMenu');
-  let menuHtml = `<button type="button" data-opt="sim">Simulation uniquement</button>`;
-  if(hasBareme) menuHtml += `<button type="button" data-opt="bareme">+ Barème complet</button>`;
-  if(hasAdj) menuHtml += `<button type="button" data-opt="adj">+ Tableau évolutif</button>`;
-  if(hasBareme && hasAdj) menuHtml += `<button type="button" class="pdf-opt-all" data-opt="all">Tout inclure (simulation complète)</button>`;
-  pdfMenu.innerHTML = menuHtml;
-
-  const pdfMainBtn = document.getElementById('pdfMainBtn');
-  pdfMainBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    pdfMenu.classList.toggle('open');
-  });
-  pdfMenu.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      pdfMenu.classList.remove('open');
-      downloadSimPDF(b.dataset.opt);
-    });
-  });
-  document.addEventListener('click', (e)=>{
-    if(!e.target.closest('.pdf-dropdown')) pdfMenu.classList.remove('open');
+  document.getElementById('pdfMainBtn').addEventListener('click', ()=>{
+    openPdfOptionsPanel({hasBareme, hasAdj});
   });
 
   overlay.classList.add('open');
