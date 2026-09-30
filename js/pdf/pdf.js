@@ -37,9 +37,10 @@ function pdfInstallerName(){
 }
 
 // ── En-tête de page (bandeau EBS Énergie + fiche + éventuel nom installateur) ──
-function drawPdfHeader(doc, ficheLabel){
+function drawPdfHeader(doc, ficheLabel, opts){
+  opts = opts || {};
   const pageWidth = doc.internal.pageSize.getWidth();
-  const installerName = pdfInstallerName();
+  const installerName = opts.showInstaller!==false ? pdfInstallerName() : null;
 
   doc.setFillColor(...PDF_COLORS.navy);
   doc.rect(0, 0, pageWidth, 18, 'F');
@@ -87,7 +88,9 @@ function drawPdfSectionBand(doc, text, y){
 }
 
 // ── Pied de page (disclaimer + pagination) appliqué sur toutes les pages ──
-function drawPdfFooters(doc){
+function drawPdfFooters(doc, opts){
+  opts = opts || {};
+  const showDisclaimer = opts.showDisclaimer !== false;
   const pageCount = doc.internal.getNumberOfPages();
   for(let i=1; i<=pageCount; i++){
     doc.setPage(i);
@@ -96,13 +99,16 @@ function drawPdfFooters(doc){
     doc.setDrawColor(...PDF_COLORS.border);
     doc.setLineWidth(0.25);
     doc.line(14, pageHeight-14, pageWidth-14, pageHeight-14);
-    doc.setFont('helvetica','italic');
-    doc.setFontSize(6.8);
-    doc.setTextColor(...PDF_COLORS.text3);
-    const wrapped = doc.splitTextToSize(PDF_DISCLAIMER, pageWidth-28-38);
-    doc.text(wrapped, 14, pageHeight-10.5);
+    if(showDisclaimer){
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(6.8);
+      doc.setTextColor(...PDF_COLORS.text3);
+      const wrapped = doc.splitTextToSize(PDF_DISCLAIMER, pageWidth-28-38);
+      doc.text(wrapped, 14, pageHeight-10.5);
+    }
     doc.setFont('helvetica','normal');
     doc.setFontSize(8);
+    doc.setTextColor(...PDF_COLORS.text2);
     doc.text(`Page ${i} / ${pageCount}`, pageWidth-14, pageHeight-10.5, {align:'right'});
   }
 }
@@ -179,11 +185,11 @@ function addPdfHtmlTable(doc, tableEl, startY){
 
   doc.autoTable({
     startY,
-    margin: {left:10, right:10},
+    margin: {left:9, right:9},
     head, body,
     theme: 'grid',
-    styles: {fontSize:8, cellPadding:1.5, halign:'center', valign:'middle', lineColor:PDF_COLORS.border, lineWidth:0.15, textColor:PDF_COLORS.text},
-    headStyles: {fillColor:PDF_COLORS.navy, textColor:255, fontStyle:'bold', fontSize:7.5},
+    styles: {fontSize:7.3, cellPadding:1.4, halign:'center', valign:'middle', lineColor:PDF_COLORS.border, lineWidth:0.15, textColor:PDF_COLORS.text},
+    headStyles: {fillColor:PDF_COLORS.navy, textColor:255, fontStyle:'bold', fontSize:6.9},
     didParseCell: function(data){
       if(data.section!=='body') return;
       const raw = data.cell.raw;
@@ -298,62 +304,149 @@ function downloadChecklistPDF(title, containerEl){
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// TÉLÉCHARGEMENT — simulation / barème / tableau évolutif / tout
+// PDF DE SIMULATION — panneau d'options → aperçu intégré → téléchargement
 // ═══════════════════════════════════════════════════════════════════════
-function downloadSimPDF(opt){
-  try {
-    const s = captureSnapshot();
-    const JsPDF = getJsPDFCtor();
-    if(!JsPDF){
-      alert("La génération PDF n'a pas pu se charger (bibliothèque jsPDF indisponible — vérifiez que cdnjs.cloudflare.com n'est pas bloqué par un pare-feu, un bloqueur de pub ou une extension de navigateur). Rechargez la page et réessayez.");
-      return;
-    }
+let __pdfCtx = null;      // {hasBareme, hasAdj} de la fiche actuellement ouverte
+let __pdfPreviewDoc = null;
+let __pdfPreviewFilename = '';
+let __pdfPreviewUrl = null;
 
-    const needsWideTable = (opt==='bareme' || opt==='all') && simBody.querySelector('#baremeWrap table.bareme')
-      || (opt==='adj' && simBody.querySelector('#adjTableWrap table.surftbl'));
-    const doc = new JsPDF({orientation: needsWideTable ? 'landscape' : 'portrait', unit:'mm', format:'a4'});
+const PDF_OPTIONS_DEF = [
+  {key:'params',    label:'Paramètres du cas simulé',        hint:'Zone, surface, Etas, type de logement, etc.', default:true},
+  {key:'prix',      label:'Prix CEE saisis',                 hint:'Prix Classique et Prix Précarité (€/MWhc)',   default:true},
+  {key:'results',   label:'Résultats de la simulation',      hint:'kWh cumac et primes calculées',               default:true},
+  {key:'bareme',    label:'Barème complet',                  hint:null, default:true, needsKey:'hasBareme'},
+  {key:'adj',       label:'Tableau évolutif',                hint:'Comparaison avec un écart de surface/puissance', default:true, needsKey:'hasAdj'},
+  {key:'installer', label:"Nom de l'installateur",           hint:'Affiché uniquement si généré depuis un lien installateur', default:true},
+  {key:'disclaimer',label:'Mentions légales (bas de page)',  hint:null, default:true},
+];
 
-    let y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
+function openPdfOptionsPanel(ctx){
+  __pdfCtx = ctx || {};
+  const body = document.getElementById('pdfOptionsBody');
+  body.innerHTML = PDF_OPTIONS_DEF
+    .filter(o => !o.needsKey || __pdfCtx[o.needsKey])
+    .map(o => `
+      <div class="pdf-opt-row">
+        <input type="checkbox" id="pdfopt-${o.key}" ${o.default?'checked':''}>
+        <label for="pdfopt-${o.key}">${o.label}${o.hint?`<span class="pdf-opt-hint">${o.hint}</span>`:''}</label>
+      </div>
+    `).join('');
+  document.getElementById('pdfOptionsOverlay').classList.add('open');
+}
+function closePdfOptions(){
+  document.getElementById('pdfOptionsOverlay').classList.remove('open');
+}
+function readPdfOptions(){
+  const opts = {};
+  PDF_OPTIONS_DEF.forEach(o=>{
+    const el = document.getElementById('pdfopt-'+o.key);
+    opts[o.key] = el ? el.checked : false;
+  });
+  return opts;
+}
+
+// Construit le document (sans le sauvegarder) selon les options cochées.
+function buildSimPdfDoc(options){
+  const s = captureSnapshot();
+  const JsPDF = getJsPDFCtor();
+  if(!JsPDF) throw new Error("jsPDF indisponible (cdnjs.cloudflare.com probablement bloqué). Rechargez la page et réessayez.");
+
+  const priceRows = s.params.filter(r => /^Prix /.test(r[0]));
+  const otherRows = s.params.filter(r => !/^Prix /.test(r[0]));
+
+  const doc = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  const headerOpts = {showInstaller: options.installer};
+  let y = drawPdfHeader(doc, `${s.code} — ${s.title}`, headerOpts);
+
+  if(options.params && otherRows.length){
     y = drawPdfSectionBand(doc, 'Paramètres du projet saisis', y);
-    y = addPdfKeyValueTable(doc, s.params, y);
+    y = addPdfKeyValueTable(doc, otherRows, y);
+  }
+  if(options.prix && priceRows.length){
+    y = drawPdfSectionBand(doc, 'Prix CEE saisis', y);
+    y = addPdfKeyValueTable(doc, priceRows, y);
+  }
+  if(options.results){
     y = drawPdfSectionBand(doc, 'Résultats de la simulation', y);
     y = addPdfKeyValueTable(doc, s.results, y, {results:true});
+  }
 
-    if(opt === 'bareme' || opt === 'all'){
-      const wrap = simBody.querySelector('#baremeWrap');
-      if(wrap){
-        wrap.forceBuild();
-        const table = wrap.querySelector('table.bareme');
-        if(table){
-          doc.addPage(undefined, 'landscape');
-          y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
-          y = drawPdfSectionBand(doc, 'Barème complet', y);
-          y = addPdfHtmlTable(doc, table, y);
-        }
+  if(options.bareme){
+    const wrap = simBody.querySelector('#baremeWrap');
+    if(wrap){
+      wrap.forceBuild();
+      const table = wrap.querySelector('table.bareme');
+      if(table){
+        doc.addPage(undefined, 'portrait');
+        y = drawPdfHeader(doc, `${s.code} — ${s.title}`, headerOpts);
+        y = drawPdfSectionBand(doc, 'Barème complet', y);
+        y = addPdfHtmlTable(doc, table, y);
       }
     }
-    if(opt === 'adj' || opt === 'all'){
-      const adjWrapEl = simBody.querySelector('#adjTableWrap');
-      if(adjWrapEl){
-        const table = adjWrapEl.querySelector('table.surftbl');
-        if(table){
-          const stepEl = document.getElementById('adjStep');
-          const repEl = document.getElementById('adjRep');
-          doc.addPage(undefined, 'landscape');
-          y = drawPdfHeader(doc, `${s.code} — ${s.title}`);
-          y = drawPdfSectionBand(doc, `Tableau évolutif (écart ${stepEl?stepEl.value:''}, ${repEl?repEl.value:''} lignes ajoutées)`, y);
-          y = addPdfHtmlTable(doc, table, y);
-        }
+  }
+  if(options.adj){
+    const adjWrapEl = simBody.querySelector('#adjTableWrap');
+    if(adjWrapEl){
+      const table = adjWrapEl.querySelector('table.surftbl');
+      if(table){
+        const stepEl = document.getElementById('adjStep');
+        const repEl = document.getElementById('adjRep');
+        doc.addPage(undefined, 'portrait');
+        y = drawPdfHeader(doc, `${s.code} — ${s.title}`, headerOpts);
+        y = drawPdfSectionBand(doc, `Tableau évolutif (écart ${stepEl?stepEl.value:''}, ${repEl?repEl.value:''} lignes ajoutées)`, y);
+        y = addPdfHtmlTable(doc, table, y);
       }
     }
+  }
 
-    drawPdfFooters(doc);
-    doc.save(pdfFilename(s.code, opt==='sim'?'':opt));
+  drawPdfFooters(doc, {showDisclaimer: options.disclaimer});
+  const suffix = [options.bareme&&'bareme', options.adj&&'adj'].filter(Boolean).join('-');
+  return {doc, filename: pdfFilename(s.code, suffix)};
+}
+
+function generatePdfPreview(){
+  const btn = document.getElementById('pdfGenerateBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Génération…';
+  try {
+    const options = readPdfOptions();
+    const {doc, filename} = buildSimPdfDoc(options);
+    __pdfPreviewDoc = doc;
+    __pdfPreviewFilename = filename;
+    if(__pdfPreviewUrl) URL.revokeObjectURL(__pdfPreviewUrl);
+    __pdfPreviewUrl = doc.output('bloburl');
+    document.getElementById('pdfPreviewFrame').src = __pdfPreviewUrl;
+    document.getElementById('pdfPreviewSubtitle').textContent = filename;
+    closePdfOptions();
+    document.getElementById('pdfPreviewOverlay').classList.add('open');
   } catch(err){
     console.error('Erreur génération PDF :', err);
     alert("La génération du PDF a échoué :\n\n" + (err && err.message ? err.message : err) + "\n\nMerci de faire une capture de ce message et de la transmettre pour correction.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
 }
+function closePdfPreview(){
+  document.getElementById('pdfPreviewOverlay').classList.remove('open');
+  document.getElementById('pdfPreviewFrame').src = 'about:blank';
+  if(__pdfPreviewUrl){ URL.revokeObjectURL(__pdfPreviewUrl); __pdfPreviewUrl = null; }
+  __pdfPreviewDoc = null;
+}
+function backToPdfOptions(){
+  document.getElementById('pdfPreviewOverlay').classList.remove('open');
+  openPdfOptionsPanel(__pdfCtx);
+}
+function confirmPdfDownload(){
+  if(!__pdfPreviewDoc) return;
+  __pdfPreviewDoc.save(__pdfPreviewFilename);
+}
+
+document.getElementById('pdfGenerateBtn').addEventListener('click', generatePdfPreview);
+document.getElementById('pdfBackToOptionsBtn').addEventListener('click', backToPdfOptions);
+document.getElementById('pdfConfirmDownloadBtn').addEventListener('click', confirmPdfDownload);
 
 // ── Panier comparatif : une fiche par page ──
 function printDocument(snapshots){
