@@ -810,3 +810,38 @@ html.installer-mode .default-prices-card{display:none!important}
   .pdf-preview-frame-wrap{padding:0 20px;background:var(--bg)}
   #pdfPreviewFrame{width:100%;height:68vh;border:1px solid var(--border);border-radius:10px;
     background:#525659;display:block}
+
+  /* ── Bannière installateur (en haut de page, mode lien installateur) ── */
+  .installer-topbar{
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(90deg, var(--navy), var(--navy-lt));
+    color:#fff; padding:14px 24px; margin:-28px -20px 22px;
+    font-size:15px; font-weight:700; letter-spacing:.01em;
+    box-shadow:0 4px 14px rgba(27,58,92,.18);
+  }
+  .installer-topbar-icon{font-size:18px}
+  .installer-topbar-text b{font-weight:800}
+  @media (max-width:640px){
+    .installer-topbar{font-size:13px;padding:11px 16px;margin:-20px -14px 18px}
+  }
+
+  /* ── Historique des liens installateur ── */
+  .installer-history-row{border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:12px}
+  .installer-history-row-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .installer-history-label{font-size:13.5px;font-weight:700;color:var(--navy-dk)}
+  .installer-history-meta{font-size:11px;color:var(--text-3);margin-top:2px}
+  .installer-history-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
+  .installer-history-del:hover{background:var(--red-bg);color:var(--red)}
+  .installer-history-details{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--text-2);margin-top:9px}
+  .installer-history-url{font-size:10.5px;color:var(--text-3);margin-top:8px;word-break:break-all;background:var(--bg);padding:6px 9px;border-radius:7px}
+  .installer-history-row .installer-select-btn{margin-top:9px}
+
+  /* ── Champs Prix CEE agrandis (page d'accueil) — le "13,5" ne doit plus être coupé ── */
+  .hero .dpc-field input{
+    padding:13px 14px; font-size:17px; font-weight:600;
+  }
+  .hero .dpc-field input::-webkit-outer-spin-button,
+  .hero .dpc-field input::-webkit-inner-spin-button{
+    -webkit-appearance:none; margin:0;
+  }
+  .hero .dpc-field input[type=number]{ -moz-appearance:textfield; }
