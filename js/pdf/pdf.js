@@ -48,10 +48,6 @@ function drawPdfHeader(doc, ficheLabel, opts){
   doc.setFont('helvetica','bold');
   doc.setFontSize(14);
   doc.text('EBS ÉNERGIE', 14, 11.5);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8.5);
-  const dateStr = 'Généré le ' + new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  doc.text(pdfSafe(dateStr), pageWidth-14, 11.5, {align:'right'});
 
   let y = 18;
   if(installerName){
@@ -323,9 +319,15 @@ const PDF_OPTIONS_DEF = [
 
 function openPdfOptionsPanel(ctx){
   __pdfCtx = ctx || {};
+  const isInstaller = !!window.EBS_INSTALLER_CONFIG;
+  // En mode installateur, ces 3 choix n'ont pas lieu d'être proposés :
+  // le prix n'est jamais visible par l'installateur, le nom de l'installateur
+  // et les mentions légales restent systématiquement inclus.
+  const hiddenInInstallerMode = {prix:true, installer:true, disclaimer:true};
   const body = document.getElementById('pdfOptionsBody');
   body.innerHTML = PDF_OPTIONS_DEF
     .filter(o => !o.needsKey || __pdfCtx[o.needsKey])
+    .filter(o => !(isInstaller && hiddenInInstallerMode[o.key]))
     .map(o => `
       <div class="pdf-opt-row">
         <input type="checkbox" id="pdfopt-${o.key}" ${o.default?'checked':''}>
@@ -338,10 +340,15 @@ function closePdfOptions(){
   document.getElementById('pdfOptionsOverlay').classList.remove('open');
 }
 function readPdfOptions(){
+  const isInstaller = !!window.EBS_INSTALLER_CONFIG;
+  // Valeurs forcées pour les options masquées en mode installateur (pas de case = pas un simple "non" par défaut)
+  const forcedInInstallerMode = {prix:false, installer:true, disclaimer:true};
   const opts = {};
   PDF_OPTIONS_DEF.forEach(o=>{
     const el = document.getElementById('pdfopt-'+o.key);
-    opts[o.key] = el ? el.checked : false;
+    if(el){ opts[o.key] = el.checked; }
+    else if(isInstaller && o.key in forcedInInstallerMode){ opts[o.key] = forcedInInstallerMode[o.key]; }
+    else { opts[o.key] = false; }
   });
   return opts;
 }
