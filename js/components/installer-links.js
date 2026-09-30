@@ -785,6 +785,20 @@ async function checkInstallerHistoryCode(){
 function closeInstallerHistory(){
   document.getElementById('installerHistoryOverlay').classList.remove('open');
 }
+async function copyInstallerHistoryLink(id, btn){
+  const input = document.getElementById('hist-url-'+id);
+  if(!input) return;
+  try{
+    await navigator.clipboard.writeText(input.value);
+  }catch(e){
+    input.select();
+    document.execCommand('copy');
+  }
+  const original = btn.textContent;
+  btn.textContent = '✓ Copié';
+  setTimeout(()=>{ btn.textContent = original; }, 1400);
+}
+
 function renderInstallerHistory(){
   const body = document.getElementById('installerHistoryBody');
   const list = getInstallerLinkHistory();
@@ -809,8 +823,10 @@ function renderInstallerHistory(){
           <span><b>Prix Précarité :</b> ${e.prices.precarite} €/MWhc</span>
           <span><b>${ficheCount} fiche${ficheCount>1?'s':''} :</b> ${escapeHtml((e.fiches||[]).join(', '))}</span>
         </div>
-        <div class="installer-history-url" title="${escapeHtml(e.url)}">${escapeHtml(e.url)}</div>
-        <button type="button" class="installer-select-btn" onclick="navigator.clipboard.writeText('${e.url.replace(/'/g,"\\'")}')">Copier ce lien</button>
+        <div class="installer-history-url-row">
+          <input type="text" class="installer-history-url-input" id="hist-url-${e.id}" value="${escapeHtml(e.url)}" readonly onclick="this.select()">
+          <button type="button" class="installer-select-btn" onclick="copyInstallerHistoryLink('${e.id}', this)">Copier</button>
+        </div>
       </div>
     `;
   }).join('');
@@ -925,21 +941,24 @@ document.getElementById('installerHistoryCodeInput').addEventListener('keydown',
         'none';
     }
 
-    const appEl =
-      document.querySelector('.app');
+    const kicker =
+      document.querySelector('.hero-kicker');
 
-    if(appEl){
+    if(kicker){
 
       const installerName =
         config.installerName ||
         'Espace installateur';
 
-      appEl.insertAdjacentHTML(
-        'afterbegin',
+      kicker.insertAdjacentHTML(
+        'afterend',
         `
-          <div class="installer-topbar">
-            <span class="installer-topbar-icon">🔧</span>
-            <span class="installer-topbar-text">Espace installateur — <b>${escapeHtml(installerName)}</b></span>
+          <div class="installer-hero-badge">
+            <span class="installer-hero-icon">🔧</span>
+            <span class="installer-hero-text">
+              <span class="installer-hero-kicker">Espace installateur</span>
+              <span class="installer-hero-name">${escapeHtml(installerName)}</span>
+            </span>
           </div>
         `
       );
