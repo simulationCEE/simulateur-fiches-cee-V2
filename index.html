@@ -21,6 +21,28 @@
       <div class="sources-body" id="sourcesBody"></div>
     </div>
   </div>
+  <div class="sources-overlay" id="pdfOptionsOverlay">
+    <div class="sources-panel" style="max-width:480px">
+      <div class="sources-header"><div><h3>Générer le PDF</h3><p>Choisis ce qui doit apparaître dans le document</p></div><button class="close-btn" onclick="closePdfOptions()">✕</button></div>
+      <div class="sources-body" id="pdfOptionsBody"></div>
+      <div class="pdf-options-footer">
+        <button type="button" class="btn-secondary" onclick="closePdfOptions()">Annuler</button>
+        <button type="button" class="btn-primary" id="pdfGenerateBtn">Générer l'aperçu →</button>
+      </div>
+    </div>
+  </div>
+  <div class="sources-overlay" id="pdfPreviewOverlay">
+    <div class="sources-panel" style="max-width:920px;width:95vw">
+      <div class="sources-header"><div><h3>Aperçu du PDF</h3><p id="pdfPreviewSubtitle">Vérifie le document avant de le télécharger</p></div><button class="close-btn" onclick="closePdfPreview()">✕</button></div>
+      <div class="pdf-preview-frame-wrap">
+        <iframe id="pdfPreviewFrame" title="Aperçu PDF"></iframe>
+      </div>
+      <div class="pdf-options-footer">
+        <button type="button" class="btn-secondary" id="pdfBackToOptionsBtn">← Modifier les options</button>
+        <button type="button" class="btn-primary" id="pdfConfirmDownloadBtn">⬇ Télécharger le PDF</button>
+      </div>
+    </div>
+  </div>
   <section class="hero">
     <div class="hero-intro">
       <div class="hero-kicker"><span class="hero-kicker-mark">CEE</span> SIMULATEUR DE PRIMES CEE</div>
