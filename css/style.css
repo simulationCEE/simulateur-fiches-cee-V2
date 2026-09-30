@@ -811,19 +811,25 @@ html.installer-mode .default-prices-card{display:none!important}
   #pdfPreviewFrame{width:100%;height:68vh;border:1px solid var(--border);border-radius:10px;
     background:#525659;display:block}
 
-  /* ── Bannière installateur (en haut de page, mode lien installateur) ── */
-  .installer-topbar{
-    display:flex; align-items:center; gap:10px;
-    background:linear-gradient(90deg, var(--navy), var(--navy-lt));
-    color:#fff; padding:14px 24px; margin:-28px -20px 22px;
-    font-size:15px; font-weight:700; letter-spacing:.01em;
-    box-shadow:0 4px 14px rgba(27,58,92,.18);
+  /* ── Badge installateur (juste devant le titre principal) ── */
+  .installer-hero-badge{
+    display:inline-flex; align-items:center; gap:12px;
+    background:linear-gradient(135deg, var(--navy), var(--navy-lt));
+    color:#fff; padding:14px 22px; border-radius:14px;
+    margin:14px 0 18px; box-shadow:0 8px 22px rgba(27,58,92,.22);
   }
-  .installer-topbar-icon{font-size:18px}
-  .installer-topbar-text b{font-weight:800}
+  .installer-hero-icon{font-size:26px}
+  .installer-hero-text{display:flex; flex-direction:column; line-height:1.25}
+  .installer-hero-kicker{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.85}
+  .installer-hero-name{font-size:22px; font-weight:800}
   @media (max-width:640px){
-    .installer-topbar{font-size:13px;padding:11px 16px;margin:-20px -14px 18px}
+    .installer-hero-badge{padding:11px 16px; gap:9px}
+    .installer-hero-icon{font-size:21px}
+    .installer-hero-name{font-size:17px}
   }
+
+  /* En mode lien installateur, l'installateur ne doit pas voir ce lien (réservé à Simon) */
+  html.installer-mode .installer-history-link{display:none}
 
   /* ── Historique des liens installateur ── */
   .installer-history-row{border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:12px}
@@ -833,8 +839,10 @@ html.installer-mode .default-prices-card{display:none!important}
   .installer-history-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
   .installer-history-del:hover{background:var(--red-bg);color:var(--red)}
   .installer-history-details{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--text-2);margin-top:9px}
-  .installer-history-url{font-size:10.5px;color:var(--text-3);margin-top:8px;word-break:break-all;background:var(--bg);padding:6px 9px;border-radius:7px}
-  .installer-history-row .installer-select-btn{margin-top:9px}
+  .installer-history-url-row{display:flex;gap:8px;margin-top:9px}
+  .installer-history-url-input{flex:1;min-width:0;font-size:11px;color:var(--text-2);padding:8px 10px;
+    border:1px solid var(--border);border-radius:7px;background:var(--bg);font-family:monospace}
+  .installer-history-row .installer-select-btn{margin-top:0;flex-shrink:0}
 
   /* ── Champs Prix CEE agrandis (page d'accueil) — le "13,5" ne doit plus être coupé ── */
   .hero .dpc-field input{
