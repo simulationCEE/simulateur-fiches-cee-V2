@@ -941,24 +941,26 @@ document.getElementById('installerHistoryCodeInput').addEventListener('keydown',
         'none';
     }
 
-    const kicker =
-      document.querySelector('.hero-kicker');
+    const heroIntro =
+      document.querySelector('.hero-intro');
 
-    if(kicker){
+    if(heroIntro){
 
       const installerName =
         config.installerName ||
         'Espace installateur';
 
-      kicker.insertAdjacentHTML(
+      heroIntro.insertAdjacentHTML(
         'afterend',
         `
-          <div class="installer-hero-badge">
-            <span class="installer-hero-icon">🔧</span>
-            <span class="installer-hero-text">
-              <span class="installer-hero-kicker">Espace installateur</span>
-              <span class="installer-hero-name">${escapeHtml(installerName)}</span>
-            </span>
+          <div class="installer-hero-slot">
+            <div class="installer-hero-badge">
+              <span class="installer-hero-icon">🔧</span>
+              <span class="installer-hero-text">
+                <span class="installer-hero-kicker">Espace installateur</span>
+                <span class="installer-hero-name">${escapeHtml(installerName)}</span>
+              </span>
+            </div>
           </div>
         `
       );
