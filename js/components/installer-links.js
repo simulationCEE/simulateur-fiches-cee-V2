@@ -248,14 +248,15 @@ async function generateInstallerLink(){
   });
   if(exceptionError) return;
 
+  const label = document.getElementById('installerLabel')?.value.trim() || '';
   const config = {
     v:3,
     installerName,
+    label,
     fiches:selectedFiches,
     prices:{classique:classic, precarite:prec},
     exceptions,
   };
-  const label = document.getElementById('installerLabel')?.value.trim() || '';
 
   genBtn.disabled = true;
   const originalLabel = genBtn.textContent;
@@ -271,7 +272,6 @@ async function generateInstallerLink(){
         {merge:true}
       );
       const url = window.__lastInstallerLink;
-      updateInstallerLinkHistoryEntry(__editingHistoryId, {label, installerName, prices:config.prices, fiches:selectedFiches, exceptions});
       feedback.textContent = '✓ Lien mis à jour — le même lien reflète désormais ces changements.';
       feedback.className = 'installer-feedback success';
       document.getElementById('installerUrl').textContent = url;
@@ -286,11 +286,6 @@ async function generateInstallerLink(){
       feedback.textContent = 'Lien prêt à être copié.';
       feedback.className = 'installer-feedback success';
       window.__lastInstallerLink = url;
-      saveInstallerLinkToHistory({
-        label, installerName, firestoreId: docRef.id,
-        createdAt: new Date().toISOString(),
-        prices: config.prices, fiches: selectedFiches, exceptions, url,
-      });
     }
   }catch(err){
     console.error('Erreur génération lien installateur :', err);
@@ -304,49 +299,62 @@ async function generateInstallerLink(){
 
 /* ── Révocation instantanée (liens Firestore uniquement) ── */
 
-async function revokeInstallerLink(firestoreId, historyId){
+async function revokeInstallerLink(firestoreId){
   if(!confirm('Révoquer ce lien ? Il affichera immédiatement un message "lien invalide" chez l\'installateur.')) return;
   try{
     await __ebsFirebaseReady;
     await ebsDb.collection('installerLinks').doc(firestoreId).set({active:false, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
-    alert('Lien révoqué — effectif immédiatement, sans rien à pousser sur GitHub.');
+    await renderInstallerHistory();
   }catch(err){
     alert('Échec de la révocation : ' + (err.message||err));
   }
 }
+async function restoreInstallerLink(firestoreId){
+  try{
+    await __ebsFirebaseReady;
+    await ebsDb.collection('installerLinks').doc(firestoreId).set({active:true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+    await renderInstallerHistory();
+  }catch(err){
+    alert('Échec de la réactivation : ' + (err.message||err));
+  }
+}
 
-/* ── Historique local des liens créés (ce navigateur uniquement) ── */
+/* ── Historique des liens créés — PARTAGÉ via Firestore (tous ordinateurs) ──
+   Les très anciens liens créés avant la mise en place de Firebase restent
+   visibles séparément, localement, à titre de rattrapage uniquement. ── */
 
-const INSTALLER_HISTORY_KEY = 'ebsInstallerLinksHistory';
+const INSTALLER_HISTORY_KEY = 'ebsInstallerLinksHistory'; // ancien stockage local, conservé en lecture seule
 const INSTALLER_HISTORY_CODE_HASH = 'e85107b10d07675b3e632479f34b4edeab3f72b14743674e6c2c4e7098df559f'; // code par défaut : "ebs2026"
 
-function saveInstallerLinkToHistory(entry){
-  let list = [];
-  try { list = JSON.parse(localStorage.getItem(INSTALLER_HISTORY_KEY)) || []; } catch(e){ list = []; }
-  entry.id = Date.now() + '-' + Math.random().toString(36).slice(2,8);
-  list.unshift(entry);
-  localStorage.setItem(INSTALLER_HISTORY_KEY, JSON.stringify(list));
-}
-function updateInstallerLinkHistoryEntry(id, changes){
-  const list = getInstallerLinkHistory();
-  const idx = list.findIndex(e => e.id === id);
-  if(idx === -1) return;
-  list[idx] = {...list[idx], ...changes};
-  localStorage.setItem(INSTALLER_HISTORY_KEY, JSON.stringify(list));
-}
-function getInstallerLinkHistory(){
+function getLegacyLocalHistory(){
   try { return JSON.parse(localStorage.getItem(INSTALLER_HISTORY_KEY)) || []; } catch(e){ return []; }
 }
-function deleteInstallerLinkHistoryEntry(id){
-  const list = getInstallerLinkHistory().filter(e => e.id !== id);
+function deleteLegacyLocalHistoryEntry(id){
+  const list = getLegacyLocalHistory().filter(e => e.id !== id);
   localStorage.setItem(INSTALLER_HISTORY_KEY, JSON.stringify(list));
   renderInstallerHistory();
 }
-function editInstallerLinkFromHistory(id){
-  const entry = getInstallerLinkHistory().find(e => e.id === id);
+async function fetchInstallerLinks(){
+  await __ebsFirebaseReady;
+  const snap = await ebsDb.collection('installerLinks').orderBy('createdAt','desc').get();
+  return snap.docs.map(d => ({firestoreId: d.id, ...d.data()}));
+}
+function editInstallerLinkFromHistory(firestoreId){
+  const entry = __installerLinksCache.find(e => e.firestoreId === firestoreId);
   if(!entry) return;
+  const url = `${window.location.origin}${window.location.pathname}?${INSTALLER_ID_QUERY_KEY}=${firestoreId}`;
   closeInstallerHistory();
-  openInstallerLinkBuilder(entry);
+  openInstallerLinkBuilder({...entry, id:null, url});
+}
+async function deleteInstallerLink(firestoreId){
+  if(!confirm('Supprimer définitivement ce lien ? Il ne fonctionnera plus pour personne — cette action est irréversible.')) return;
+  try{
+    await __ebsFirebaseReady;
+    await ebsDb.collection('installerLinks').doc(firestoreId).delete();
+    await renderInstallerHistory();
+  }catch(err){
+    alert('Échec de la suppression : ' + (err.message||err));
+  }
 }
 
 async function sha256HexInstaller(str){
@@ -367,8 +375,8 @@ async function checkInstallerHistoryCode(){
   const hash = await sha256HexInstaller(input.value);
   if(hash === INSTALLER_HISTORY_CODE_HASH){
     closeInstallerHistoryGate();
-    renderInstallerHistory();
     document.getElementById('installerHistoryOverlay').classList.add('open');
+    await renderInstallerHistory();
   } else {
     document.getElementById('installerHistoryCodeError').style.display = 'block';
     input.value = '';
@@ -388,28 +396,45 @@ async function copyInstallerHistoryLink(id, btn){
   setTimeout(()=>{ btn.textContent = original; }, 1400);
 }
 
-function renderInstallerHistory(){
+let __installerLinksCache = [];
+
+async function renderInstallerHistory(){
   const body = document.getElementById('installerHistoryBody');
-  const list = getInstallerLinkHistory();
-  if(!list.length){
-    body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--text-3);font-size:13px">Aucun lien créé depuis ce navigateur pour l'instant.</div>`;
+  body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--text-3);font-size:13px">Chargement…</div>`;
+
+  let sharedList = [];
+  try{
+    sharedList = await fetchInstallerLinks();
+    __installerLinksCache = sharedList;
+  }catch(err){
+    body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--red);font-size:13px">Impossible de charger les liens depuis Firebase.<br><span style="font-size:11px;color:var(--text-3)">${escapeHtml(err.message||err)}</span></div>`;
     return;
   }
-  body.innerHTML = list.map(e => {
-    const date = new Date(e.createdAt).toLocaleString('fr-FR', {dateStyle:'medium', timeStyle:'short'});
+  const legacyList = getLegacyLocalHistory().filter(e => !e.firestoreId); // les vrais anciens liens pré-Firebase
+
+  if(!sharedList.length && !legacyList.length){
+    body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--text-3);font-size:13px">Aucun lien créé pour l'instant.</div>`;
+    return;
+  }
+
+  const sharedHtml = sharedList.map(e => {
+    const date = e.createdAt?.toDate ? e.createdAt.toDate().toLocaleString('fr-FR', {dateStyle:'medium', timeStyle:'short'}) : '—';
     const ficheCount = e.fiches ? e.fiches.length : 0;
-    const isFirestoreLink = !!e.firestoreId;
+    const url = `${window.location.origin}${window.location.pathname}?${INSTALLER_ID_QUERY_KEY}=${e.firestoreId}`;
+    const inactive = e.active === false;
     return `
-      <div class="installer-history-row">
+      <div class="installer-history-row${inactive?' installer-history-row-revoked':''}">
         <div class="installer-history-row-head">
           <div>
             <div class="installer-history-label">${escapeHtml(e.label || e.installerName)}</div>
-            <div class="installer-history-meta">${escapeHtml(e.installerName)} · créé le ${date}${isFirestoreLink ? ' · <span style="color:var(--green)">modifiable</span>' : ' · <span style="color:var(--text-3)">ancien format, figé</span>'}</div>
+            <div class="installer-history-meta">${escapeHtml(e.installerName)} · créé le ${date}${inactive ? ' · <span style="color:var(--red)">révoqué</span>' : ' · <span style="color:var(--green)">actif, modifiable</span>'}</div>
           </div>
           <div class="installer-history-row-actions">
-            ${isFirestoreLink ? `<button type="button" class="installer-history-edit" onclick="editInstallerLinkFromHistory('${e.id}')" title="Modifier fiches/prix">✏️ Modifier</button>` : ''}
-            ${isFirestoreLink ? `<button type="button" class="installer-history-revoke" onclick="revokeInstallerLink('${e.firestoreId}','${e.id}')" title="Révoquer ce lien">🔒 Révoquer</button>` : ''}
-            <button type="button" class="installer-history-del" onclick="deleteInstallerLinkHistoryEntry('${e.id}')" title="Retirer de l'historique">✕</button>
+            <button type="button" class="installer-history-edit" onclick="editInstallerLinkFromHistory('${e.firestoreId}')" title="Modifier fiches/prix">✏️ Modifier</button>
+            ${inactive
+              ? `<button type="button" class="installer-history-revoke" onclick="restoreInstallerLink('${e.firestoreId}')" title="Réactiver ce lien">↺ Réactiver</button>`
+              : `<button type="button" class="installer-history-revoke" onclick="revokeInstallerLink('${e.firestoreId}')" title="Révoquer ce lien">🔒 Révoquer</button>`}
+            <button type="button" class="installer-history-del" onclick="deleteInstallerLink('${e.firestoreId}')" title="Supprimer définitivement">🗑️</button>
           </div>
         </div>
         <div class="installer-history-details">
@@ -418,12 +443,37 @@ function renderInstallerHistory(){
           <span><b>${ficheCount} fiche${ficheCount>1?'s':''} :</b> ${escapeHtml((e.fiches||[]).join(', '))}</span>
         </div>
         <div class="installer-history-url-row">
-          <input type="text" class="installer-history-url-input" id="hist-url-${e.id}" value="${escapeHtml(e.url)}" readonly onclick="this.select()">
-          <button type="button" class="installer-select-btn" onclick="copyInstallerHistoryLink('${e.id}', this)">Copier</button>
+          <input type="text" class="installer-history-url-input" id="hist-url-${e.firestoreId}" value="${escapeHtml(url)}" readonly onclick="this.select()">
+          <button type="button" class="installer-select-btn" onclick="copyInstallerHistoryLink('${e.firestoreId}', this)">Copier</button>
         </div>
       </div>
     `;
   }).join('');
+
+  const legacyHtml = legacyList.length ? `
+    <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin:18px 0 8px">
+      Anciens liens (créés avant la synchronisation Firebase — visibles sur cet ordinateur uniquement, figés)
+    </div>
+    ${legacyList.map(e => {
+      const date = new Date(e.createdAt).toLocaleString('fr-FR', {dateStyle:'medium', timeStyle:'short'});
+      return `
+        <div class="installer-history-row">
+          <div class="installer-history-row-head">
+            <div>
+              <div class="installer-history-label">${escapeHtml(e.label || e.installerName)}</div>
+              <div class="installer-history-meta">${escapeHtml(e.installerName)} · créé le ${date}</div>
+            </div>
+            <button type="button" class="installer-history-del" onclick="deleteLegacyLocalHistoryEntry('${e.id}')" title="Retirer de cette liste locale">✕</button>
+          </div>
+          <div class="installer-history-url-row">
+            <input type="text" class="installer-history-url-input" value="${escapeHtml(e.url)}" readonly onclick="this.select()">
+          </div>
+        </div>
+      `;
+    }).join('')}
+  ` : '';
+
+  body.innerHTML = sharedHtml + legacyHtml;
 }
 
 /* ── Copier le lien (écran de génération) ── */
