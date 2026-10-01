@@ -68,14 +68,14 @@
       </div>
       <div class="sources-body" id="installersPanelBody"></div>
       <div class="pdf-options-footer">
-        <button type="button" class="btn-secondary" onclick="openInstallersManageGate()">🔒 Gérer les installateurs</button>
+        <button type="button" class="btn-secondary" onclick="openInstallersGate(openInstallersManage)">🔒 Gérer les installateurs</button>
       </div>
     </div>
   </div>
 
   <div class="sources-overlay" id="installersManageGateOverlay">
     <div class="sources-panel" style="max-width:380px">
-      <div class="sources-header"><div><h3>Accès protégé</h3><p>Gestion des installateurs</p></div><button class="close-btn" onclick="closeInstallersManageGate()">✕</button></div>
+      <div class="sources-header"><div><h3>Accès protégé</h3><p>Espace installateurs — réservé à l'équipe EBS</p></div><button class="close-btn" onclick="closeInstallersManageGate()">✕</button></div>
       <div class="sources-body" style="padding:18px 20px">
         <input type="password" id="installersManageCodeInput" placeholder="Code d'accès" style="width:100%;padding:11px 13px;border:1.5px solid var(--border-dk);border-radius:9px;font-size:14px;box-sizing:border-box">
         <div id="installersManageCodeError" style="color:var(--red);font-size:12px;font-weight:600;margin-top:8px;display:none">Code incorrect.</div>
@@ -134,7 +134,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
       <button type="button" class="footer-tool converter-link" onclick="openConverter()">↔ Convertisseur d’unités CEE</button>
       <button type="button" class="footer-tool sources-link" onclick="openSources()">Sources &amp; mises à jour</button>
       <button type="button" class="footer-tool installer-history-link" onclick="openInstallerHistoryGate()">🔒 Historique des liens installateur</button>
-      <button type="button" class="footer-tool installers-tab-link" onclick="openInstallersPanel()">👷 Installateurs</button>
+      <button type="button" class="footer-tool installers-tab-link" onclick="openInstallersGate(openInstallersPanel)">👷 Installateurs</button>
     </div>
   </footer>
 </div>
