@@ -26,6 +26,18 @@ async function fetchInstallers(){
 
 /* ── Panneau public : liste + application des prix ── */
 
+let __installersUnlocked = false;
+let __installersGateCallback = null;
+
+function openInstallersGate(onSuccess){
+  if(__installersUnlocked){ onSuccess(); return; }
+  __installersGateCallback = onSuccess;
+  document.getElementById('installersManageCodeInput').value = '';
+  document.getElementById('installersManageCodeError').style.display = 'none';
+  document.getElementById('installersManageGateOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('installersManageCodeInput')?.focus(), 50);
+}
+
 async function openInstallersPanel(){
   const body = document.getElementById('installersPanelBody');
   body.innerHTML = `<div style="padding:30px 20px;text-align:center;color:var(--text-3);font-size:13px">Chargement…</div>`;
@@ -105,13 +117,6 @@ async function sha256HexInstallers(str){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function openInstallersManageGate(){
-  document.getElementById('installersPanelOverlay').classList.remove('open');
-  document.getElementById('installersManageCodeInput').value = '';
-  document.getElementById('installersManageCodeError').style.display = 'none';
-  document.getElementById('installersManageGateOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('installersManageCodeInput')?.focus(), 50);
-}
 function closeInstallersManageGate(){
   document.getElementById('installersManageGateOverlay').classList.remove('open');
 }
@@ -119,8 +124,11 @@ async function checkInstallersManageCode(){
   const input = document.getElementById('installersManageCodeInput');
   const hash = await sha256HexInstallers(input.value);
   if(hash === INSTALLERS_MANAGE_CODE_HASH){
+    __installersUnlocked = true;
     closeInstallersManageGate();
-    await openInstallersManage();
+    const cb = __installersGateCallback;
+    __installersGateCallback = null;
+    if(cb) await cb();
   } else {
     document.getElementById('installersManageCodeError').style.display = 'block';
     input.value = '';
