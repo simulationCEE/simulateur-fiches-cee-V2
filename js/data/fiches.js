@@ -38,6 +38,11 @@ const FICHES = [
     render: renderTH177
   },
   {
+    code:"BAR-TH-113", title:"Chaudière biomasse individuelle", sector:"res", tags:["chaudiere"],
+    version:"vA79-4", dv:"17 ans",
+    render: renderTH113
+  },
+  {
     code:"BAR-TH-168", title:"Dispositif solaire thermique", sector:"res", tags:["solaire"],
     version:"vA87.4", dv:"25 ans",
     render: renderTH168
