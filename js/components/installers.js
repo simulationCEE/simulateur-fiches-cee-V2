@@ -239,7 +239,7 @@ async function deleteInstaller(id){
   }
 }
 
-document.getElementById('installersManageUnlockBtn').addEventListener('click', checkInstallersManageCode);
-document.getElementById('installersManageCodeInput').addEventListener('keydown', (e)=>{
+document.getElementById('installersManageUnlockBtn')?.addEventListener('click', checkInstallersManageCode);
+document.getElementById('installersManageCodeInput')?.addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') checkInstallersManageCode();
 });
