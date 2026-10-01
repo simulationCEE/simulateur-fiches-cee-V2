@@ -857,3 +857,33 @@ html.installer-mode .default-prices-card{display:none!important}
     -webkit-appearance:none; margin:0;
   }
   .hero .dpc-field input[type=number]{ -moz-appearance:textfield; }
+
+  /* ── Panneau Installateurs (liste publique) ── */
+  .installer-row{border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px}
+  .installer-row-name{font-size:14px;font-weight:700;color:var(--navy-dk);margin-bottom:9px}
+  .installer-row-obliges{display:flex;flex-wrap:wrap;gap:8px}
+  .installer-obligé-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+    padding:8px 12px;border-radius:9px;border:1.5px solid var(--border-dk);background:var(--panel);
+    cursor:pointer;text-align:left}
+  .installer-obligé-chip:hover{border-color:var(--navy-lt);background:var(--bg)}
+  .installer-obligé-label{font-size:11.5px;font-weight:700;color:var(--navy-dk);text-transform:uppercase;letter-spacing:.02em}
+  .installer-obligé-prices{font-size:11.5px;color:var(--text-2)}
+
+  .installer-applied-toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,12px);
+    background:var(--navy-dk);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 26px rgba(18,40,63,.3);opacity:0;transition:opacity .25s,transform .25s;z-index:10000}
+  .installer-applied-toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ── Gestion des installateurs (gated) ── */
+  .installer-manage-card{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+  .installer-manage-new{border-style:dashed;border-color:var(--border-dk);background:var(--bg)}
+  .installer-manage-obligé{margin-top:8px}
+  .installer-manage-obligé-label{font-size:11.5px;font-weight:700;color:var(--text-2);text-transform:uppercase;
+    letter-spacing:.02em;margin:10px 0 4px}
+  .installer-manage-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+  .installer-manage-actions .btn-secondary{flex:none;min-width:0}
+  .installer-manage-actions .btn-primary{background:var(--navy);color:#fff;border:1.5px solid var(--navy);
+    padding:9px 16px;border-radius:9px;font-weight:700;font-size:12.5px;cursor:pointer}
+  .installer-manage-feedback{font-size:12px;font-weight:600;margin-top:8px;min-height:16px}
+  .installer-manage-feedback.success{color:var(--green)}
+  .installer-manage-feedback.error{color:var(--red)}
