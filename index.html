@@ -59,6 +59,40 @@
       <div class="sources-body" id="installerHistoryBody"></div>
     </div>
   </div>
+
+  <div class="sources-overlay" id="installersPanelOverlay">
+    <div class="sources-panel" style="max-width:720px;width:95vw">
+      <div class="sources-header">
+        <div><h3>Installateurs</h3><p>Clique sur un obligé pour appliquer ses prix à ta simulation en cours</p></div>
+        <button class="close-btn" onclick="closeInstallersPanel()">✕</button>
+      </div>
+      <div class="sources-body" id="installersPanelBody"></div>
+      <div class="pdf-options-footer">
+        <button type="button" class="btn-secondary" onclick="openInstallersManageGate()">🔒 Gérer les installateurs</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sources-overlay" id="installersManageGateOverlay">
+    <div class="sources-panel" style="max-width:380px">
+      <div class="sources-header"><div><h3>Accès protégé</h3><p>Gestion des installateurs</p></div><button class="close-btn" onclick="closeInstallersManageGate()">✕</button></div>
+      <div class="sources-body" style="padding:18px 20px">
+        <input type="password" id="installersManageCodeInput" placeholder="Code d'accès" style="width:100%;padding:11px 13px;border:1.5px solid var(--border-dk);border-radius:9px;font-size:14px;box-sizing:border-box">
+        <div id="installersManageCodeError" style="color:var(--red);font-size:12px;font-weight:600;margin-top:8px;display:none">Code incorrect.</div>
+        <button type="button" class="btn-primary" id="installersManageUnlockBtn" style="width:100%;margin-top:14px;padding:11px;border-radius:9px;background:var(--navy);color:#fff;border:1.5px solid var(--navy);font-weight:700;cursor:pointer">Valider</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sources-overlay" id="installersManageOverlay">
+    <div class="sources-panel" style="max-width:720px;width:95vw">
+      <div class="sources-header">
+        <div><h3>Gérer les installateurs</h3><p>Visible et modifiable depuis n'importe quel ordinateur</p></div>
+        <button class="close-btn" onclick="closeInstallersManage()">✕</button>
+      </div>
+      <div class="sources-body" id="installersManageBody"></div>
+    </div>
+  </div>
   <section class="hero">
     <div class="hero-intro">
       <div class="hero-kicker"><span class="hero-kicker-mark">CEE</span> SIMULATEUR DE PRIMES CEE</div>
@@ -100,6 +134,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
       <button type="button" class="footer-tool converter-link" onclick="openConverter()">↔ Convertisseur d’unités CEE</button>
       <button type="button" class="footer-tool sources-link" onclick="openSources()">Sources &amp; mises à jour</button>
       <button type="button" class="footer-tool installer-history-link" onclick="openInstallerHistoryGate()">🔒 Historique des liens installateur</button>
+      <button type="button" class="footer-tool installers-tab-link" onclick="openInstallersPanel()">👷 Installateurs</button>
     </div>
   </footer>
 </div>
@@ -124,6 +159,9 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
   // ═══════════════════════════════════════════════════════════════════════
   // CHARGEUR AUTOMATIQUE ANTI-CACHE — aucune maintenance requise.
@@ -137,6 +175,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
   (function(){
     const V = Date.now(); // change à chaque rechargement de page = jamais de cache périmé
     const SCRIPTS = [
+      'js/core/firebase-init.js',
       'js/core/formatters.js',
       'js/components/bareme.js',
       'js/components/adjustable-table.js',
@@ -164,6 +203,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
       'js/fiches/isolation.js',
       'js/data/fiches.js',
       'js/components/installer-links.js',
+      'js/components/installers.js',
       'js/app.js',
     ];
     let i = 0;
