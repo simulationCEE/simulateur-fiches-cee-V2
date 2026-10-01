@@ -208,6 +208,11 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
     ];
     let i = 0;
     function loadNext(){
+      if(window.__EBS_LINK_REVOKED){
+        const overlay = document.getElementById('loadingOverlay');
+        if(overlay) overlay.remove();
+        return;
+      }
       if(i >= SCRIPTS.length){
         const overlay = document.getElementById('loadingOverlay');
         if(overlay){
