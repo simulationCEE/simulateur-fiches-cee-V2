@@ -451,9 +451,9 @@ function confirmPdfDownload(){
   __pdfPreviewDoc.save(__pdfPreviewFilename);
 }
 
-document.getElementById('pdfGenerateBtn').addEventListener('click', generatePdfPreview);
-document.getElementById('pdfBackToOptionsBtn').addEventListener('click', backToPdfOptions);
-document.getElementById('pdfConfirmDownloadBtn').addEventListener('click', confirmPdfDownload);
+document.getElementById('pdfGenerateBtn')?.addEventListener('click', generatePdfPreview);
+document.getElementById('pdfBackToOptionsBtn')?.addEventListener('click', backToPdfOptions);
+document.getElementById('pdfConfirmDownloadBtn')?.addEventListener('click', confirmPdfDownload);
 
 // ── Panier comparatif : une fiche par page ──
 function printDocument(snapshots){
