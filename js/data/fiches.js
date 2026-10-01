@@ -38,7 +38,7 @@ const FICHES = [
     render: renderTH177
   },
   {
-    code:"BAR-TH-113", title:"Chaudière biomasse individuelle", sector:"res", tags:["chaudiere"],
+    code:"BAR-TH-113", title:"Chaudière biomasse individuelle", sector:"res", tags:["biomasse"],
     version:"vA79-4", dv:"17 ans",
     render: renderTH113
   },
