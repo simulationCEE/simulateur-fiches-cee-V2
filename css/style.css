@@ -904,3 +904,5 @@ html.installer-mode .default-prices-card{display:none!important}
   .installer-revoked-icon{font-size:44px; margin-bottom:18px}
   .installer-revoked-screen h2{font-size:22px; color:var(--navy-dk); margin:0 0 12px}
   .installer-revoked-screen p{font-size:14px; color:var(--text-2); line-height:1.6; max-width:440px; margin:0}
+
+  .installer-history-row-revoked{opacity:.65;background:var(--bg)}
