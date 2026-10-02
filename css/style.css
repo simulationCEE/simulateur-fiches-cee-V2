@@ -408,30 +408,28 @@ body{background:#F4F8FC}
 .hero h1 span{color:#2D89E5}
 .hero-intro p{max-width:560px;font-size:14px;line-height:1.65;color:var(--text-2);margin:0}
 .hero .default-prices-card{margin:0;padding:23px 26px;border:1px solid #D9E6F1;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 10px 28px rgba(36,70,102,.06)}
-.dpc-row{display:flex;align-items:center;gap:22px}
+.dpc-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;max-width:100%}
 .dpc-head{flex:0 0 auto;min-width:150px;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .dpc-title{font-size:20px;font-weight:750;color:var(--navy-dk);display:flex;align-items:center;gap:8px}
 .dpc-leaf{width:26px;height:26px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:#E8F7F0;color:#36A874;font-size:20px;line-height:1;transform:rotate(-30deg)}
 .dpc-subtitle{font-size:10.5px;color:var(--text-3)}
-.dpc-subtitle.dpc-subtitle-active{font-size:20px;font-weight:750;color:var(--navy-dk);
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dpc-refresh-target{background:none;border:none;color:var(--navy-lt);cursor:pointer;
-  font-size:17px;line-height:1;padding:0 2px}
-.dpc-refresh-target:hover{color:var(--navy-dk);transform:rotate(55deg);display:inline-block;transition:transform .2s}
-.dpc-clear-target{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:0 2px}
-.dpc-clear-target:hover{color:var(--red)}
-.hero .dpc-fields{display:grid;grid-template-columns:max-content max-content;gap:18px;flex:0 1 auto}
+.dpc-subtitle.dpc-subtitle-active{
+  display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
+  background:var(--navy);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:8px 13px;border-radius:9px;
+  max-width:100%;box-sizing:border-box;
+}
+.dpc-refresh-target{background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;
+  font-size:16px;line-height:1;padding:0 1px}
+.dpc-refresh-target:hover{color:#fff;transform:rotate(55deg);display:inline-block;transition:transform .2s}
+.dpc-clear-target{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:13px;padding:0 1px}
+.dpc-clear-target:hover{color:#fff}
+.hero .dpc-fields{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,max-content);gap:18px;flex:0 1 auto;max-width:100%}
 .hero .dpc-field{min-width:0;position:relative}
 .hero .dpc-field label{font-size:11.5px;color:var(--text-2);margin-bottom:7px;display:flex;align-items:center;gap:6px}
-.hero .dpc-field input{padding:11px 26px 11px 13px;border-radius:10px;border:1.5px solid #C9D8E6;font-size:14px;background:#FCFEFF;width:100%;box-sizing:border-box}
+.hero .dpc-field input{padding:11px 13px;border-radius:10px;border:1.5px solid #C9D8E6;font-size:14px;background:#FCFEFF;width:100%;box-sizing:border-box}
 .hero .dpc-field input::placeholder{color:#9BAEC0}
-.dpc-input-wrap{position:relative}
-.dpc-stepper{position:absolute;top:1.5px;right:1.5px;bottom:1.5px;width:22px;
-  display:flex;flex-direction:column;border-left:1px solid #E1EBF3;border-radius:0 9px 9px 0;overflow:hidden}
-.dpc-stepper button{flex:1;border:none;background:#F5F9FC;color:var(--text-3);cursor:pointer;
-  font-size:7px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
-.dpc-stepper button:hover{background:var(--navy);color:#fff}
-.dpc-stepper button:first-child{border-bottom:1px solid #E1EBF3}
 .dpc-reset-target{background:none;border:none;color:var(--orange);cursor:pointer;font-size:13px;
   padding:0 2px;line-height:1;margin-left:auto}
 .dpc-reset-target:hover{color:var(--navy-dk)}
@@ -884,12 +882,6 @@ html.installer-mode .default-prices-card{display:none!important}
   .hero .dpc-field input{
     padding:13px 14px; font-size:17px; font-weight:600;
   }
-  .hero .dpc-field input::-webkit-outer-spin-button,
-  .hero .dpc-field input::-webkit-inner-spin-button{
-    -webkit-appearance:none; margin:0;
-  }
-  .hero .dpc-field input[type=number]{ -moz-appearance:textfield; }
-
   /* ── Panneau Installateurs (liste publique) ── */
   .installer-row{border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px}
   .installer-row-name{font-size:14px;font-weight:700;color:var(--navy-dk);margin-bottom:9px}
