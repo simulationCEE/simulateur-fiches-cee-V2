@@ -111,12 +111,24 @@
         <div class="dpc-fields">
           <div class="dpc-field">
             <label>Prix Classique <span class="hint">€/MWhc</span><button type="button" class="dpc-reset-target" id="dpcResetC" style="display:none" title="Revenir au prix de l'installateur" onclick="resetDpcToTarget('classique')">↺</button></label>
-            <input type="number" id="defaultPriceClassique" step="0.1" placeholder="Ex. : 7,8">
+            <div class="dpc-input-wrap">
+              <input type="number" id="defaultPriceClassique" step="0.1" placeholder="Ex. : 7,8">
+              <div class="dpc-stepper">
+                <button type="button" tabindex="-1" onclick="stepDpcPrice('classique',0.1)" aria-label="Augmenter de 0,1">▲</button>
+                <button type="button" tabindex="-1" onclick="stepDpcPrice('classique',-0.1)" aria-label="Diminuer de 0,1">▼</button>
+              </div>
+            </div>
             <span class="dpc-mismatch-text" id="dpcMismatchC" style="display:none">Prix différent de la cible</span>
           </div>
           <div class="dpc-field">
             <label>Prix Précarité <span class="hint">€/MWhc</span><button type="button" class="dpc-reset-target" id="dpcResetP" style="display:none" title="Revenir au prix de l'installateur" onclick="resetDpcToTarget('precarite')">↺</button></label>
-            <input type="number" id="defaultPricePrecarite" step="0.1" placeholder="Ex. : 12,5">
+            <div class="dpc-input-wrap">
+              <input type="number" id="defaultPricePrecarite" step="0.1" placeholder="Ex. : 12,5">
+              <div class="dpc-stepper">
+                <button type="button" tabindex="-1" onclick="stepDpcPrice('precarite',0.1)" aria-label="Augmenter de 0,1">▲</button>
+                <button type="button" tabindex="-1" onclick="stepDpcPrice('precarite',-0.1)" aria-label="Diminuer de 0,1">▼</button>
+              </div>
+            </div>
             <span class="dpc-mismatch-text" id="dpcMismatchP" style="display:none">Prix différent de la cible</span>
           </div>
         </div>
