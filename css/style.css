@@ -408,15 +408,27 @@ body{background:#F4F8FC}
 .hero h1 span{color:#2D89E5}
 .hero-intro p{max-width:560px;font-size:14px;line-height:1.65;color:var(--text-2);margin:0}
 .hero .default-prices-card{margin:0;padding:23px 26px;border:1px solid #D9E6F1;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 10px 28px rgba(36,70,102,.06)}
-.dpc-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+.dpc-row{display:flex;align-items:center;gap:22px}
+.dpc-head{flex:0 0 auto;min-width:150px;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .dpc-title{font-size:20px;font-weight:750;color:var(--navy-dk);display:flex;align-items:center;gap:8px}
 .dpc-leaf{width:26px;height:26px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:#E8F7F0;color:#36A874;font-size:20px;line-height:1;transform:rotate(-30deg)}
 .dpc-subtitle{font-size:10.5px;color:var(--text-3)}
-.hero .dpc-fields{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.hero .dpc-field{min-width:0}
-.hero .dpc-field label{font-size:11.5px;color:var(--text-2);margin-bottom:7px}
-.hero .dpc-field input{padding:11px 13px;border-radius:10px;border:1.5px solid #C9D8E6;font-size:14px;background:#FCFEFF}
+.dpc-clear-target{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:10px;padding:0 2px}
+.dpc-clear-target:hover{color:var(--red)}
+.hero .dpc-fields{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1}
+.hero .dpc-field{min-width:0;position:relative}
+.hero .dpc-field label{font-size:11.5px;color:var(--text-2);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.hero .dpc-field input{padding:11px 13px;border-radius:10px;border:1.5px solid #C9D8E6;font-size:14px;background:#FCFEFF;width:100%;box-sizing:border-box}
 .hero .dpc-field input::placeholder{color:#9BAEC0}
+.dpc-reset-target{background:none;border:none;color:var(--orange);cursor:pointer;font-size:13px;
+  padding:0 2px;line-height:1;margin-left:auto}
+.dpc-reset-target:hover{color:var(--navy-dk)}
+.hero .dpc-field input.dpc-mismatch{border-color:var(--orange);background:var(--orange-bg);color:#8A5A00}
+.dpc-mismatch-text{display:block;font-size:10px;color:var(--orange);font-weight:600;margin-top:4px}
+@media (max-width:640px){
+  .dpc-row{flex-direction:column;align-items:stretch;gap:12px}
+  .dpc-head{min-width:0}
+}
 
 .search-wrap{margin:0 0 16px}
 .search-input{background:#FFF;border-color:#CDDBE8;border-radius:12px;padding-top:13px;padding-bottom:13px;box-shadow:0 2px 8px rgba(36,70,102,.03)}
@@ -907,15 +919,4 @@ html.installer-mode .default-prices-card{display:none!important}
 
   .installer-history-row-revoked{opacity:.65;background:var(--bg)}
 
-  /* ── Installateur actif (affiché en permanence près des prix CEE) ── */
-  .active-installer-display{
-    display:flex; align-items:center; gap:8px;
-    background:var(--blue-bg); border:1px solid #BFD7EE; border-radius:9px;
-    padding:8px 11px; margin-top:10px; font-size:12.5px;
-  }
-  .active-installer-icon{font-size:14px}
-  .active-installer-text{flex:1; color:var(--navy-dk)}
-  .active-installer-text b{font-weight:700}
-  .active-installer-clear{background:none; border:none; color:var(--text-3); cursor:pointer;
-    font-size:13px; padding:2px 5px; border-radius:6px; flex-shrink:0}
-  .active-installer-clear:hover{background:rgba(0,0,0,0.06); color:var(--text)}
+
