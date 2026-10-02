@@ -361,7 +361,12 @@ async function sha256HexInstaller(str){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function openInstallerHistoryGate(){
+async function openInstallerHistoryGate(){
+  if(isEbsAdminUnlocked()){
+    document.getElementById('installerHistoryOverlay').classList.add('open');
+    await renderInstallerHistory();
+    return;
+  }
   document.getElementById('installerHistoryCodeInput').value = '';
   document.getElementById('installerHistoryCodeError').style.display = 'none';
   document.getElementById('installerHistoryGateOverlay').classList.add('open');
@@ -374,6 +379,7 @@ async function checkInstallerHistoryCode(){
   const input = document.getElementById('installerHistoryCodeInput');
   const hash = await sha256HexInstaller(input.value);
   if(hash === INSTALLER_HISTORY_CODE_HASH){
+    setEbsAdminUnlocked();
     closeInstallerHistoryGate();
     document.getElementById('installerHistoryOverlay').classList.add('open');
     await renderInstallerHistory();
