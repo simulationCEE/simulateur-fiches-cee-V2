@@ -109,7 +109,7 @@ function applyInstallerPrices(installerId, obligeId){
 
   const oblige = OBLIGES.find(o=>o.id===obligeId);
   if(typeof setActiveInstallerTarget === 'function'){
-    setActiveInstallerTarget(inst.name, oblige?.label || obligeId, classique, precarite);
+    setActiveInstallerTarget(inst.name, oblige?.label || obligeId, classique, precarite, installerId, obligeId);
   }
 
   const banner = document.createElement('div');
@@ -120,6 +120,45 @@ function applyInstallerPrices(installerId, obligeId){
   setTimeout(()=>{ banner.classList.remove('show'); setTimeout(()=>banner.remove(), 300); }, 2200);
 
   closeInstallersPanel();
+}
+
+/* ── Actualisation du prix actif depuis la base (icône ⟳ à côté du nom) ── */
+async function refreshActiveInstallerPrices(){
+  const target = (typeof getActiveInstallerTarget === 'function') ? getActiveInstallerTarget() : null;
+  if(!target?.installerId || !target?.obligeId){
+    alert("Impossible d'actualiser : relance une sélection depuis la liste des installateurs.");
+    return;
+  }
+  try{
+    await __ebsFirebaseReady;
+    const doc = await ebsDb.collection('installers').doc(target.installerId).get();
+    if(!doc.exists){
+      alert('Cet installateur a été supprimé de la base.');
+      return;
+    }
+    const data = doc.data();
+    const p = data.prices?.[target.obligeId];
+    if(!p){
+      alert("Ce prix n'existe plus pour cet obligé.");
+      return;
+    }
+    const classique = p.classique ?? '';
+    const precarite = p.precarite ?? '';
+
+    const homeC = document.getElementById('defaultPriceClassique');
+    const homeP = document.getElementById('defaultPricePrecarite');
+    if(homeC){ homeC.value = classique; homeC.dispatchEvent(new Event('input', {bubbles:true})); }
+    if(homeP){ homeP.value = precarite; homeP.dispatchEvent(new Event('input', {bubbles:true})); }
+    const simC = document.getElementById('f-pc');
+    const simP = document.getElementById('f-pp');
+    if(simC){ simC.value = classique; simC.dispatchEvent(new Event('input', {bubbles:true})); }
+    if(simP){ simP.value = precarite; simP.dispatchEvent(new Event('input', {bubbles:true})); }
+
+    const obligeLabel = OBLIGES.find(o=>o.id===target.obligeId)?.label || target.obligeId;
+    setActiveInstallerTarget(data.name, obligeLabel, classique, precarite, target.installerId, target.obligeId);
+  }catch(err){
+    alert("Échec de l'actualisation : " + (err.message||err));
+  }
 }
 
 /* ── Gate + gestion (ajout / édition / suppression) ── */
