@@ -26,11 +26,18 @@ async function fetchInstallers(){
 
 /* ── Panneau public : liste + application des prix ── */
 
-let __installersUnlocked = false;
+const EBS_ADMIN_UNLOCK_KEY = 'ebsAdminUnlocked'; // partagé avec installer-links.js (un seul code pour les deux écrans)
 let __installersGateCallback = null;
 
+function isEbsAdminUnlocked(){
+  try { return sessionStorage.getItem(EBS_ADMIN_UNLOCK_KEY) === '1'; } catch(e){ return false; }
+}
+function setEbsAdminUnlocked(){
+  try { sessionStorage.setItem(EBS_ADMIN_UNLOCK_KEY, '1'); } catch(e){ /* stockage indisponible */ }
+}
+
 function openInstallersGate(onSuccess){
-  if(__installersUnlocked){ onSuccess(); return; }
+  if(isEbsAdminUnlocked()){ onSuccess(); return; }
   __installersGateCallback = onSuccess;
   document.getElementById('installersManageCodeInput').value = '';
   document.getElementById('installersManageCodeError').style.display = 'none';
@@ -124,7 +131,7 @@ async function checkInstallersManageCode(){
   const input = document.getElementById('installersManageCodeInput');
   const hash = await sha256HexInstallers(input.value);
   if(hash === INSTALLERS_MANAGE_CODE_HASH){
-    __installersUnlocked = true;
+    setEbsAdminUnlocked();
     closeInstallersManageGate();
     const cb = __installersGateCallback;
     __installersGateCallback = null;
