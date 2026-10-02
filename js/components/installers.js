@@ -86,39 +86,6 @@ function renderInstallersPanel(){
     </div>
   `).join('');
 }
-const ACTIVE_INSTALLER_KEY = 'cee_active_installer';
-
-function saveActiveInstallerDisplay(name, obligeLabel){
-  try{ localStorage.setItem(ACTIVE_INSTALLER_KEY, JSON.stringify({name, obligeLabel})); }catch(e){ /* stockage indisponible */ }
-  renderActiveInstallerDisplay(name, obligeLabel);
-}
-function clearActiveInstallerDisplay(){
-  try{ localStorage.removeItem(ACTIVE_INSTALLER_KEY); }catch(e){ /* stockage indisponible */ }
-  const el = document.getElementById('activeInstallerDisplay');
-  if(el){ el.style.display = 'none'; el.innerHTML = ''; }
-}
-function renderActiveInstallerDisplay(name, obligeLabel){
-  const el = document.getElementById('activeInstallerDisplay');
-  if(!el) return;
-  el.innerHTML = `
-    <span class="active-installer-icon">👷</span>
-    <span class="active-installer-text"><b>${escapeHtmlInstallers(name)}</b> · ${escapeHtmlInstallers(obligeLabel)}</span>
-    <button type="button" class="active-installer-clear" onclick="clearActiveInstallerDisplay()" title="Retirer">✕</button>
-  `;
-  el.style.display = 'flex';
-}
-function initActiveInstallerDisplay(){
-  try{
-    const stored = JSON.parse(localStorage.getItem(ACTIVE_INSTALLER_KEY) || 'null');
-    if(stored?.name) renderActiveInstallerDisplay(stored.name, stored.obligeLabel);
-  }catch(e){ /* rien à afficher */ }
-}
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', initActiveInstallerDisplay);
-} else {
-  initActiveInstallerDisplay();
-}
-
 function applyInstallerPrices(installerId, obligeId){
   const inst = __installersCache.find(i => i.id === installerId);
   const p = inst?.prices?.[obligeId];
@@ -141,7 +108,9 @@ function applyInstallerPrices(installerId, obligeId){
   if(simP){ simP.value = precarite; simP.dispatchEvent(new Event('input', {bubbles:true})); }
 
   const oblige = OBLIGES.find(o=>o.id===obligeId);
-  saveActiveInstallerDisplay(inst.name, oblige?.label || obligeId);
+  if(typeof setActiveInstallerTarget === 'function'){
+    setActiveInstallerTarget(inst.name, oblige?.label || obligeId, classique, precarite);
+  }
 
   const banner = document.createElement('div');
   banner.className = 'installer-applied-toast';
