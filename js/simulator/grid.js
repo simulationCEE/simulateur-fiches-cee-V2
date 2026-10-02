@@ -23,6 +23,7 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
   if(f.tags?.includes('solaire')) return 'assets/illustrations/solaire.png';
   if(f.tags?.includes('renov')) return 'assets/illustrations/renovation.png';
   if(f.tags?.includes('biomasse')) return 'assets/illustrations/biomasse.png';
+  if(f.tags?.includes('chauffage-bois')) return 'assets/illustrations/chauffage-bois.png';
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
   return 'assets/illustrations/renovation.png';
 }
