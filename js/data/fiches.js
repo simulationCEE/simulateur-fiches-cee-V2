@@ -38,7 +38,7 @@ const FICHES = [
     render: renderTH177
   },
   {
-    code:"BAR-TH-112", title:"Appareil indépendant de chauffage au bois", sector:"res", tags:["biomasse"],
+    code:"BAR-TH-112", title:"Appareil indépendant de chauffage au bois", sector:"res", tags:["chauffage-bois"],
     version:"vA46-3", dv:"15 ans",
     render: renderTH112
   },
