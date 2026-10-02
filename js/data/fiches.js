@@ -38,6 +38,11 @@ const FICHES = [
     render: renderTH177
   },
   {
+    code:"BAR-TH-112", title:"Appareil indépendant de chauffage au bois", sector:"res", tags:["biomasse"],
+    version:"vA46-3", dv:"15 ans",
+    render: renderTH112
+  },
+  {
     code:"BAR-TH-113", title:"Chaudière biomasse individuelle", sector:"res", tags:["biomasse"],
     version:"vA79-4", dv:"17 ans",
     render: renderTH113
