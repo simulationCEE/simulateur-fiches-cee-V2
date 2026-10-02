@@ -33,6 +33,57 @@ function applyDefaultPrices(container, ficheCode){
     if(ppEl) ppEl.closest('.field')?.style.setProperty('display','none');
   }
 }
+/* ── Installateur « cible » actif (dernier choisi dans l'onglet Installateurs) ── */
+const ACTIVE_INSTALLER_KEY = 'cee_active_installer';
+
+function getActiveInstallerTarget(){
+  try{ return JSON.parse(localStorage.getItem(ACTIVE_INSTALLER_KEY) || 'null'); }catch(e){ return null; }
+}
+function setActiveInstallerTarget(name, obligeLabel, classique, precarite){
+  try{ localStorage.setItem(ACTIVE_INSTALLER_KEY, JSON.stringify({name, obligeLabel, classique, precarite})); }catch(e){ /* stockage indisponible */ }
+  updateDpcTargetUI();
+}
+function clearActiveInstallerTarget(){
+  try{ localStorage.removeItem(ACTIVE_INSTALLER_KEY); }catch(e){ /* stockage indisponible */ }
+  updateDpcTargetUI();
+}
+function setDpcFieldMismatch(which, mismatched){
+  const input = document.getElementById(which==='classique' ? 'defaultPriceClassique' : 'defaultPricePrecarite');
+  const resetBtn = document.getElementById(which==='classique' ? 'dpcResetC' : 'dpcResetP');
+  const text = document.getElementById(which==='classique' ? 'dpcMismatchC' : 'dpcMismatchP');
+  if(!input) return;
+  input.classList.toggle('dpc-mismatch', mismatched);
+  if(resetBtn) resetBtn.style.display = mismatched ? 'inline' : 'none';
+  if(text) text.style.display = mismatched ? 'block' : 'none';
+}
+function resetDpcToTarget(which){
+  const target = getActiveInstallerTarget();
+  if(!target) return;
+  const input = document.getElementById(which==='classique' ? 'defaultPriceClassique' : 'defaultPricePrecarite');
+  if(!input) return;
+  input.value = which==='classique' ? target.classique : target.precarite;
+  input.dispatchEvent(new Event('input', {bubbles:true}));
+}
+function updateDpcTargetUI(){
+  const subtitle = document.getElementById('dpcSubtitle');
+  const pc = document.getElementById('defaultPriceClassique');
+  const pp = document.getElementById('defaultPricePrecarite');
+  if(!subtitle || !pc || !pp) return;
+  const target = getActiveInstallerTarget();
+  if(!target){
+    subtitle.textContent = 'À renseigner selon vos valeurs';
+    setDpcFieldMismatch('classique', false);
+    setDpcFieldMismatch('precarite', false);
+    return;
+  }
+  subtitle.innerHTML = `${escapeHtmlDpc(target.name)} · ${escapeHtmlDpc(target.obligeLabel)} <button type="button" class="dpc-clear-target" onclick="clearActiveInstallerTarget()" title="Revenir à l'affichage par défaut">✕</button>`;
+  setDpcFieldMismatch('classique', String(pc.value) !== String(target.classique));
+  setDpcFieldMismatch('precarite', String(pp.value) !== String(target.precarite));
+}
+function escapeHtmlDpc(value){
+  return String(value==null?'':value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
 (function initDefaultPricesUI(){
   const stored = loadDefaultPrices();
   const pc = document.getElementById('defaultPriceClassique');
@@ -40,6 +91,7 @@ function applyDefaultPrices(container, ficheCode){
   if(!pc || !pp) return;
   pc.value = stored.classique || '';
   pp.value = stored.precarite || '';
-  pc.addEventListener('input', saveDefaultPrices);
-  pp.addEventListener('input', saveDefaultPrices);
+  pc.addEventListener('input', () => { saveDefaultPrices(); updateDpcTargetUI(); });
+  pp.addEventListener('input', () => { saveDefaultPrices(); updateDpcTargetUI(); });
+  updateDpcTargetUI();
 })();
