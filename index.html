@@ -9,9 +9,11 @@
 <body>
 
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-badge">CEE</div>
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Chargement du simulateur…</div>
+  <div class="loading-badge-wrap">
+    <div class="loading-badge-outline">CEE</div>
+    <div class="loading-badge-fill" id="loadingFill">CEE</div>
+  </div>
+  <div class="loading-text" id="loadingText">Chargement du simulateur…</div>
 </div>
 
 <div class="app">
@@ -221,6 +223,13 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
       'js/app.js',
     ];
     let i = 0;
+    function updateLoadingProgress(){
+      const pct = Math.min(100, Math.round((i / SCRIPTS.length) * 100));
+      const fill = document.getElementById('loadingFill');
+      const text = document.getElementById('loadingText');
+      if(fill) fill.style.clipPath = 'inset(' + (100 - pct) + '% 0 0 0)';
+      if(text) text.textContent = 'Chargement du simulateur… ' + pct + '%';
+    }
     function loadNext(){
       if(window.__EBS_LINK_REVOKED){
         const overlay = document.getElementById('loadingOverlay');
@@ -228,6 +237,7 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
         return;
       }
       if(i >= SCRIPTS.length){
+        updateLoadingProgress();
         const overlay = document.getElementById('loadingOverlay');
         if(overlay){
           overlay.classList.add('hidden');
@@ -238,8 +248,8 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
       const path = SCRIPTS[i];
       const s = document.createElement('script');
       s.src = path + '?v=' + V;
-      s.onload = function(){ i++; loadNext(); };
-      s.onerror = function(){ console.error('Échec de chargement du script :', path); i++; loadNext(); };
+      s.onload = function(){ i++; updateLoadingProgress(); loadNext(); };
+      s.onerror = function(){ console.error('Échec de chargement du script :', path); i++; updateLoadingProgress(); loadNext(); };
       document.body.appendChild(s);
     }
     loadNext();
