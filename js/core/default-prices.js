@@ -39,8 +39,8 @@ const ACTIVE_INSTALLER_KEY = 'cee_active_installer';
 function getActiveInstallerTarget(){
   try{ return JSON.parse(localStorage.getItem(ACTIVE_INSTALLER_KEY) || 'null'); }catch(e){ return null; }
 }
-function setActiveInstallerTarget(name, obligeLabel, classique, precarite){
-  try{ localStorage.setItem(ACTIVE_INSTALLER_KEY, JSON.stringify({name, obligeLabel, classique, precarite})); }catch(e){ /* stockage indisponible */ }
+function setActiveInstallerTarget(name, obligeLabel, classique, precarite, installerId, obligeId){
+  try{ localStorage.setItem(ACTIVE_INSTALLER_KEY, JSON.stringify({name, obligeLabel, classique, precarite, installerId, obligeId})); }catch(e){ /* stockage indisponible */ }
   updateDpcTargetUI();
 }
 function clearActiveInstallerTarget(){
@@ -71,12 +71,16 @@ function updateDpcTargetUI(){
   if(!subtitle || !pc || !pp) return;
   const target = getActiveInstallerTarget();
   if(!target){
+    subtitle.classList.remove('dpc-subtitle-active');
     subtitle.textContent = 'À renseigner selon vos valeurs';
     setDpcFieldMismatch('classique', false);
     setDpcFieldMismatch('precarite', false);
     return;
   }
-  subtitle.innerHTML = `${escapeHtmlDpc(target.name)} · ${escapeHtmlDpc(target.obligeLabel)} <button type="button" class="dpc-clear-target" onclick="clearActiveInstallerTarget()" title="Revenir à l'affichage par défaut">✕</button>`;
+  subtitle.classList.add('dpc-subtitle-active');
+  subtitle.innerHTML = `${escapeHtmlDpc(target.name)} · ${escapeHtmlDpc(target.obligeLabel)}
+    <button type="button" class="dpc-refresh-target" onclick="refreshActiveInstallerPrices()" title="Actualiser depuis la base installateurs">⟳</button>
+    <button type="button" class="dpc-clear-target" onclick="clearActiveInstallerTarget()" title="Revenir à l'affichage par défaut">✕</button>`;
   setDpcFieldMismatch('classique', String(pc.value) !== String(target.classique));
   setDpcFieldMismatch('precarite', String(pp.value) !== String(target.precarite));
 }
