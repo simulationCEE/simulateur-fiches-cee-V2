@@ -906,3 +906,16 @@ html.installer-mode .default-prices-card{display:none!important}
   .installer-revoked-screen p{font-size:14px; color:var(--text-2); line-height:1.6; max-width:440px; margin:0}
 
   .installer-history-row-revoked{opacity:.65;background:var(--bg)}
+
+  /* ── Installateur actif (affiché en permanence près des prix CEE) ── */
+  .active-installer-display{
+    display:flex; align-items:center; gap:8px;
+    background:var(--blue-bg); border:1px solid #BFD7EE; border-radius:9px;
+    padding:8px 11px; margin-top:10px; font-size:12.5px;
+  }
+  .active-installer-icon{font-size:14px}
+  .active-installer-text{flex:1; color:var(--navy-dk)}
+  .active-installer-text b{font-weight:700}
+  .active-installer-clear{background:none; border:none; color:var(--text-3); cursor:pointer;
+    font-size:13px; padding:2px 5px; border-radius:6px; flex-shrink:0}
+  .active-installer-clear:hover{background:rgba(0,0,0,0.06); color:var(--text)}
