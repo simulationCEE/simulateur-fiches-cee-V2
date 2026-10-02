@@ -56,15 +56,6 @@ function setDpcFieldMismatch(which, mismatched){
   if(resetBtn) resetBtn.style.display = mismatched ? 'inline' : 'none';
   if(text) text.style.display = mismatched ? 'block' : 'none';
 }
-function stepDpcPrice(which, delta){
-  const input = document.getElementById(which==='classique' ? 'defaultPriceClassique' : 'defaultPricePrecarite');
-  if(!input) return;
-  const current = parseFloat(input.value) || 0;
-  let next = Math.round((current + delta) * 10) / 10; // évite les approximations flottantes (0.1+0.2 etc.)
-  if(next < 0) next = 0;
-  input.value = next.toFixed(1);
-  input.dispatchEvent(new Event('input', {bubbles:true}));
-}
 function resetDpcToTarget(which){
   const target = getActiveInstallerTarget();
   if(!target) return;
@@ -88,7 +79,7 @@ function updateDpcTargetUI(){
   }
   subtitle.classList.add('dpc-subtitle-active');
   subtitle.innerHTML = `${escapeHtmlDpc(target.name)} · ${escapeHtmlDpc(target.obligeLabel)}
-    <button type="button" class="dpc-refresh-target" onclick="refreshActiveInstallerPrices()" title="Actualiser depuis la base installateurs">⟳</button>
+    <button type="button" class="dpc-refresh-target" onclick="refreshActiveInstallerPrices()" title="Rafraîchir le prix">⟳</button>
     <button type="button" class="dpc-clear-target" onclick="clearActiveInstallerTarget()" title="Revenir à l'affichage par défaut">✕</button>`;
   setDpcFieldMismatch('classique', String(pc.value) !== String(target.classique));
   setDpcFieldMismatch('precarite', String(pp.value) !== String(target.precarite));
