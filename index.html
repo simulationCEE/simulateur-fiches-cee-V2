@@ -101,13 +101,25 @@
       <div id="installerNameDisplay" class="installer-name-display" style="display:none"></div>
     </div>
     <div class="default-prices-card">
-      <div class="dpc-head"><div class="dpc-title"><span class="dpc-leaf">⌁</span> Prix CEE</div><div class="dpc-subtitle">À renseigner selon vos valeurs</div></div>
-      <div class="dpc-fields">
-        <div class="dpc-field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="defaultPriceClassique" step="0.1" placeholder="Ex. : 7,8"></div>
-        <div class="dpc-field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="defaultPricePrecarite" step="0.1" placeholder="Ex. : 12,5"></div>
+      <div class="dpc-row">
+        <div class="dpc-head">
+          <div class="dpc-title"><span class="dpc-leaf">⌁</span> Prix CEE</div>
+          <div class="dpc-subtitle" id="dpcSubtitle">À renseigner selon vos valeurs</div>
+        </div>
+        <div class="dpc-fields">
+          <div class="dpc-field">
+            <label>Prix Classique <span class="hint">€/MWhc</span><button type="button" class="dpc-reset-target" id="dpcResetC" style="display:none" title="Revenir au prix de l'installateur" onclick="resetDpcToTarget('classique')">↺</button></label>
+            <input type="number" id="defaultPriceClassique" step="0.1" placeholder="Ex. : 7,8">
+            <span class="dpc-mismatch-text" id="dpcMismatchC" style="display:none">Prix différent de la cible</span>
+          </div>
+          <div class="dpc-field">
+            <label>Prix Précarité <span class="hint">€/MWhc</span><button type="button" class="dpc-reset-target" id="dpcResetP" style="display:none" title="Revenir au prix de l'installateur" onclick="resetDpcToTarget('precarite')">↺</button></label>
+            <input type="number" id="defaultPricePrecarite" step="0.1" placeholder="Ex. : 12,5">
+            <span class="dpc-mismatch-text" id="dpcMismatchP" style="display:none">Prix différent de la cible</span>
+          </div>
+        </div>
       </div>
       <span class="dpc-saved" id="dpcSaved">✓ Enregistré</span>
-      <div id="activeInstallerDisplay" class="active-installer-display" style="display:none"></div>
       <button type="button" class="installer-link-btn" onclick="openInstallerLinkBuilder()">Créer un lien installateur</button>
     </div>
   </section>
