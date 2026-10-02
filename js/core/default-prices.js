@@ -56,6 +56,15 @@ function setDpcFieldMismatch(which, mismatched){
   if(resetBtn) resetBtn.style.display = mismatched ? 'inline' : 'none';
   if(text) text.style.display = mismatched ? 'block' : 'none';
 }
+function stepDpcPrice(which, delta){
+  const input = document.getElementById(which==='classique' ? 'defaultPriceClassique' : 'defaultPricePrecarite');
+  if(!input) return;
+  const current = parseFloat(input.value) || 0;
+  let next = Math.round((current + delta) * 10) / 10; // évite les approximations flottantes (0.1+0.2 etc.)
+  if(next < 0) next = 0;
+  input.value = next.toFixed(1);
+  input.dispatchEvent(new Event('input', {bubbles:true}));
+}
 function resetDpcToTarget(which){
   const target = getActiveInstallerTarget();
   if(!target) return;
