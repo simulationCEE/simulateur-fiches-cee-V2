@@ -41,7 +41,7 @@ function renderINDUT103(body){
     <div class="cond-box"><b>Conditions :</b> Secteur industrie uniquement · Valorisation sur site (chauffage de locaux, ECS ou procédé) · Mise en place par un professionnel · Exclu : récupération interne au compresseur pour régénérer un sécheur d'air · Non cumulable avec IND-BA-112 si le compresseur est raccordé à la tour aéroréfrigérante</div>
   `);
   body.insertAdjacentHTML('beforeend', `
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Valorisation de la chaleur</label>
         <select id="f-usage103">
           <option value="chauffage">Chauffage de locaux ou eau chaude sanitaire</option>
@@ -54,19 +54,19 @@ function renderINDUT103(body){
         </select>
       </div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field" id="field-zone103"><label>Zone climatique</label>
         <select id="f-zone"><option>H1</option><option>H2</option><option>H3</option></select>
       </div>
       <div class="field"><label>Puissance électrique nominale du compresseur <span class="hint">kW, plaque signalétique</span></label><input type="number" id="f-pcomp103" value="90" min="0" step="0.1"></div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Système avec échangeur</label>
         <select id="f-ech103"><option value="oui">Oui</option><option value="non">Non (tuyauterie / gainage)</option></select>
       </div>
       <div class="field" id="field-pech103"><label>Puissance thermique de l'échangeur <span class="hint">kW thermiques</span></label><input type="number" id="f-pech103" value="70" min="0" step="0.1"></div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"></div>
     </div>
