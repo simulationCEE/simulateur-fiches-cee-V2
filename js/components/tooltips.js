@@ -16,6 +16,16 @@ const GLOSSARY = [
   ["puissance chaufferie", "Puissance totale utile de la chaufferie après travaux, hors équipements de secours."],
   ["énergie de chauffage", "Type d'énergie utilisée par le système de chauffage (électricité ou combustible), qui détermine le forfait applicable."],
   ["type de logement", "Maison individuelle ou appartement : la surface de référence et le forfait CEE diffèrent selon le type de logement."],
+  ["mode de fonctionnement", "Organisation horaire du site (1, 2 ou 3 équipes de 8 h, avec ou sans arrêt le week-end) : plus le compresseur tourne longtemps, plus la chaleur récupérée est importante."],
+  ["avec échangeur", "Échangeur huile/eau ou air/eau qui transfère la chaleur du compresseur vers un circuit d'eau. Sans échangeur (simple gainage d'air chaud), le calcul se fait sur la puissance électrique du compresseur."],
+  ["puissance thermique de l'échangeur", "Puissance figurant sur la plaque signalétique de l'échangeur, à défaut sur la note de dimensionnement de l'installateur ou un document du fabricant. Elle est plafonnée à la puissance électrique du compresseur."],
+  ["puissance électrique nominale du compresseur", "Puissance figurant sur la plaque signalétique du compresseur, à défaut sur un document du fabricant. Elle sert de plafond au calcul."],
+  ["valorisation de la chaleur", "Usage sur site de la chaleur récupérée : chauffage de locaux / eau chaude sanitaire (forfait selon la zone climatique) ou procédé industriel (forfait identique dans toutes les zones)."],
+  ["situation du site", "Remplacement total : toutes les chaudières à combustible du site alimentant le fluide caloporteur sont déposées (hors secours consigné). Site nouveau : aucune chaudière exploitée à l'engagement, ou extension / nouveau besoin de chaleur. L'hybridation n'est pas éligible."],
+  ["chaudières à combustible remplacées", "Puissance thermique nominale totale des chaudières gaz, fioul, charbon, coke ou biomasse du site avant travaux. Doit être inférieure à 20 MW et sert de plafond à P en cas de remplacement."],
+  ["chaudières électriques installées", "Somme des puissances thermiques nominales des chaudières électriques posées au titre de l'opération (P). Elle détermine le forfait et le coefficient de bonification α."],
+  ["chaudières électriques déjà présentes", "Chaudières électriques installées avant l'opération sur le même fluide caloporteur : elles comptent dans le seuil de 20 MW, mais pas dans le calcul des CEE."],
+  ["puissance maximale du besoin", "Puissance maximale du besoin de chaleur déterminée au point III de l'étude de dimensionnement. P ne peut pas la dépasser."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
