@@ -924,3 +924,6 @@ html.installer-mode .default-prices-card{display:none!important}
   .installer-history-row-revoked{opacity:.65;background:var(--bg)}
 
 
+
+  /* Lignes de champs avec étiquettes longues (fiches industrie) : les champs restent alignés sur une même ligne */
+  .field-row.align-inputs .field{display:flex;flex-direction:column;justify-content:flex-end}
