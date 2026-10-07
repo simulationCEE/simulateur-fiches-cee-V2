@@ -30,7 +30,7 @@ function renderINDUT141(body){
     <div class="cond-box"><b>Conditions :</b> Secteur industrie · Chaudière(s) électrique(s) neuve(s) à jet, à électrodes ou à thermoplongeur, rendement ≥ 99 % · Fluide caloporteur &gt; 110 °C (vapeur, eau surchauffée, fluide thermique) · <b>Électrification totale</b> : remplacement de toutes les chaudières à combustible ou site nouveau / extension / nouveau besoin · Hybridation exclue · Chaudières à combustible avant travaux &lt; 20 MW et chaudières électriques &lt; 20 MW · Étude de dimensionnement signée à l'engagement · Mesure de température (ou pression) quotidienne et compteur électrique au pas de 10 min, conservés 6 ans · Secours consigné ≤ 500 h/an et ≤ 8 % de la consommation · Contrôle sur site 100 %</div>
   `);
   body.insertAdjacentHTML('beforeend', `
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Situation du site</label>
         <select id="f-cas141">
           <option value="remplacement">Remplacement total des chaudières à combustible</option>
@@ -39,17 +39,17 @@ function renderINDUT141(body){
       </div>
       <div class="field" id="field-pcomb141"><label>Puissance des chaudières à combustible remplacées <span class="hint">MW, nominale totale avant travaux</span></label><input type="number" id="f-pcomb141" value="5" min="0" step="0.1"></div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Puissance des chaudières électriques installées <span class="hint">MW, nominale totale de l'opération</span></label><input type="number" id="f-pelec141" value="4" min="0" step="0.1"></div>
       <div class="field"><label>Chaudières électriques déjà présentes <span class="hint">MW, installées avant l'opération</span></label><input type="number" id="f-pexist141" value="0" min="0" step="0.1"></div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Puissance maximale du besoin de chaleur <span class="hint">MW, étude de dimensionnement (point III)</span></label><input type="number" id="f-pbesoin141" value="4" min="0" step="0.1"></div>
       <div class="field"><label>Température du fluide caloporteur supérieure à 110 °C</label>
         <select id="f-temp141"><option value="oui">Oui</option><option value="non">Non</option></select>
       </div>
     </div>
-    <div class="field-row">
+    <div class="field-row align-inputs">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"></div>
     </div>
