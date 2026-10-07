@@ -24,6 +24,8 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
   if(f.tags?.includes('renov')) return 'assets/illustrations/renovation.png';
   if(f.tags?.includes('biomasse')) return 'assets/illustrations/biomasse.png';
   if(f.tags?.includes('chauffage-bois')) return 'assets/illustrations/chauffage-bois.png';
+  if(f.tags?.includes('recup-chaleur')) return 'assets/illustrations/recup-chaleur.png';
+  if(f.tags?.includes('electrification')) return 'assets/illustrations/electrification.png';
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
   return 'assets/illustrations/renovation.png';
 }
