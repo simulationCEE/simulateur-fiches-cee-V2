@@ -13,7 +13,7 @@ const SECTOR_META = {
   agri:{label:'Agriculture',cls:'agri'}, reseaux:{label:'Réseaux',cls:'reseaux'}, transport:{label:'Transport',cls:'transport'}, mixte:{label:'Mixte',cls:'mixte'}
 };
 
-function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation'}[t] || t; }
+function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle'}[t] || t; }
 function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_META[f.sector] ? f.sector : 'res'); }
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
@@ -24,8 +24,8 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
   if(f.tags?.includes('renov')) return 'assets/illustrations/renovation.png';
   if(f.tags?.includes('biomasse')) return 'assets/illustrations/biomasse.png';
   if(f.tags?.includes('chauffage-bois')) return 'assets/illustrations/chauffage-bois.png';
-  if(f.tags?.includes('recup-chaleur')) return 'assets/illustrations/recup-chaleur.png';
-  if(f.tags?.includes('electrification')) return 'assets/illustrations/electrification.png';
+  if(f.tags?.includes('recuperation-chaleur')) return 'assets/illustrations/recuperation-chaleur.png';
+  if(f.tags?.includes('chaudiere-industrielle')) return 'assets/illustrations/chaudiere-industrielle.png';
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
   return 'assets/illustrations/renovation.png';
 }
