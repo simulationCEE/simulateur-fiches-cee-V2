@@ -33,6 +33,12 @@ const REGULATORY_WINDOWS = {
     start: null, end: '2030-12-31',
     source: 'BAT-TH-163 vA81-2'
   },
+  'IND-UT-141': {
+    type: 'validite',
+    label: 'Validité de la fiche (bonification α à partir du 27/09/2026)',
+    start: '2026-09-05', end: '2031-08-31',
+    source: 'Arrêté du 01/09/2026 — JORF du 04/09/2026 ; bonification : arrêté du 18/09/2026 — JORF du 26/09/2026'
+  },
 };
 
 function addRegulatoryCheck(container, ficheCode){
