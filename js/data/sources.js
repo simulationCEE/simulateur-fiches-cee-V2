@@ -12,6 +12,8 @@ const FICHE_SOURCES = [
   { code:'BAR-EN-103', version:'vA64-6', detail:'Fiche abrogée à compter du 01/05/2027 (texte réglementaire officiel).' },
   { code:'BAT-EN-101', version:'vA64-4', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
   { code:'BAT-EN-102', version:'vA64-3', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
+  { code:'IND-UT-103', version:'vA17.2', detail:'Version issue de la fiche transmise (annexe partie A v.A17.2). ⚠ Version ancienne : vérifier sur ecologie.gouv.fr qu\'aucune révision ou abrogation n\'est intervenue avant tout engagement. Non cumulable avec IND-BA-112 si le compresseur est raccordé à la tour aéroréfrigérante.' },
+  { code:'IND-UT-141', version:'arrêté du 01/09/2026', detail:'Fiche créée par l\'arrêté du 01/09/2026 (JO du 04/09/2026), applicable aux opérations engagées du 05/09/2026 au 31/08/2031. Bonification α = 3 − P/5 (P ≤ 10 MW) instaurée par l\'arrêté du 18/09/2026 (JO du 26/09/2026), pour les opérations engagées à partir du 27/09/2026. Contrôle sur site 100 %. ⚠ Le projet soumis à consultation (multiplication par 2 sous 10 MW, fin au 01/07/2031) a été modifié : se fier au texte publié au JO.' },
   { code:'BAT-EN-103', version:'vA64-4', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
 ];
 
