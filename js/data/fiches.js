@@ -82,4 +82,14 @@ const FICHES = [
     version:"vA64-4", dv:"30 ans",
     render: r=>renderENBat(r,{H1:5200,H2:4200,H3:2800},"BAT-EN-103")
   },
+  {
+    code:"IND-UT-103", title:"Récupération de chaleur sur compresseur d'air", sector:"indus", tags:["recup-chaleur"],
+    version:"vA17.2", dv:"13 ans",
+    render: renderINDUT103
+  },
+  {
+    code:"IND-UT-141", title:"Chaudière industrielle électrique", sector:"indus", tags:["electrification"],
+    version:"arrêté du 01/09/2026", dv:"22 ans",
+    render: renderINDUT141
+  },
 ];
