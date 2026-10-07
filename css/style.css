@@ -927,3 +927,5 @@ html.installer-mode .default-prices-card{display:none!important}
 
   /* Lignes de champs avec étiquettes longues (fiches industrie) : les champs restent alignés sur une même ligne */
   .field-row.align-inputs .field{display:flex;flex-direction:column;justify-content:flex-end}
+  .field-row.align-inputs .field input,
+  .field-row.align-inputs .field select{box-sizing:border-box;height:38px}
