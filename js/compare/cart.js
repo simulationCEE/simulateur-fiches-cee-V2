@@ -33,6 +33,14 @@ function captureSnapshot(){
     const isHi = r.classList.contains('hi') || r.classList.contains('cdp');
     if(label && val) results.push([label.textContent.trim(), val.textContent.trim(), isHi]);
   });
+  // Lignes purement informatives (4e élément = true) : jamais sélectionnables pour le total du dossier.
+  // Isolation : prime au m² (valeur exacte exposée par la fiche dans #results).
+  const resEl = document.getElementById('results');
+  if(resEl){
+    const perC = parseFloat(resEl.dataset.perM2C), perP = parseFloat(resEl.dataset.perM2P);
+    if(Number.isFinite(perC)) results.push(['Prime Classique / m²', eur2(perC), false, true]);
+    if(Number.isFinite(perP)) results.push(['Prime Précarité / m²', eur2(perP), false, true]);
+  }
   return {
     id: 'snap_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
     code: currentFiche.code,
@@ -117,7 +125,7 @@ function renderCompareTable(){
           <span class="cr-value">${v}</span>
         </div>`).join('')}
       <div class="compare-section-label">Résultats — cocher la ligne à inclure au total du dossier</div>
-      ${s.results.map(([l,v],ri)=>`
+      ${s.results.map(([l,v,hi,info],ri)=> info ? '' : `
         <div class="compare-row result" style="display:flex;align-items:center;gap:6px">
           <input type="radio" name="dossier-${s.id}" value="${ri}" ${dossierSelections[s.id]===ri?'checked':''}
             onchange="setDossierSelection('${s.id}', ${ri})" style="flex-shrink:0">
@@ -129,6 +137,13 @@ function renderCompareTable(){
           onchange="setDossierSelection('${s.id}', null)" style="flex-shrink:0">
         <span class="cr-label" style="flex:1;font-style:italic">Ne pas inclure au total</span>
       </div>
+      ${s.results.some(r=>r[3]) ? `
+        <div class="compare-section-label">Prix au m²</div>
+        ${s.results.filter(r=>r[3]).map(([l,v])=>`
+          <div class="compare-row result" style="display:flex;align-items:center;gap:6px">
+            <span class="cr-label" style="flex:1">${l}</span>
+            <span class="cr-value">${v}</span>
+          </div>`).join('')}` : ''}
     </div>
   `).join('');
 
