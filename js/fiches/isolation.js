@@ -36,6 +36,7 @@ function renderEN(body, forfaits, hasPrec, code){
       <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
     `;
 
+    {const resEl=document.getElementById('results'); resEl.dataset.perM2C = surf>0 ? primeC/surf : ''; resEl.dataset.perM2P = surf>0 ? primeP/surf : '';}
     if(!adjWrap){
       adjWrap = adjustableTable(body, {
         unitLabel:'m²', paramLabel:'Surface', defaultStep:10, defaultRep:2,
@@ -124,6 +125,7 @@ function renderENBat(body, forfaits, code){
       <div class="result-row hi"><span class="result-label">Prime Classique</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
+    {const resEl=document.getElementById('results'); resEl.dataset.perM2C = surf>0 ? prime/surf : '';}
     if(!adjWrap){
       adjWrap = adjustableTable(body, {
         unitLabel:'m²', paramLabel:'Surface', defaultStep:50, defaultRep:2,
@@ -216,6 +218,7 @@ function renderEN102Bat(body){
       <div class="result-row hi"><span class="result-label">Prime Classique</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
+    {const resEl=document.getElementById('results'); resEl.dataset.perM2C = surf>0 ? prime/surf : '';}
     if(!adjWrap){
       adjWrap = adjustableTable(body, {
         unitLabel:'m²', paramLabel:'Surface', defaultStep:50, defaultRep:2,
