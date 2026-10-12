@@ -12,8 +12,12 @@ const FICHE_SOURCES = [
   { code:'BAR-EN-103', version:'vA64-6', detail:'Fiche abrogée à compter du 01/05/2027 (texte réglementaire officiel).' },
   { code:'BAT-EN-101', version:'vA64-4', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
   { code:'BAT-EN-102', version:'vA64-3', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
-  { code:'IND-UT-103', version:'vA17.2', detail:'Version issue de la fiche transmise (annexe partie A v.A17.2). ⚠ Version ancienne : vérifier sur ecologie.gouv.fr qu\'aucune révision ou abrogation n\'est intervenue avant tout engagement. Non cumulable avec IND-BA-112 si le compresseur est raccordé à la tour aéroréfrigérante.' },
+  { code:'IND-UT-103', version:'vA17.2', detail:'Version en vigueur : le ministère publie la partie A vA17.2 applicable à compter du 01/07/2026. Non cumulable avec IND-BA-112 si le compresseur est raccordé à la tour aéroréfrigérante.' },
   { code:'IND-UT-141', version:'arrêté du 01/09/2026', detail:'Fiche créée par l\'arrêté du 01/09/2026 (JO du 04/09/2026), applicable aux opérations engagées du 05/09/2026 au 31/08/2031. Bonification α = 3 − P/5 (P ≤ 10 MW) instaurée par l\'arrêté du 18/09/2026 (JO du 26/09/2026), pour les opérations engagées à partir du 27/09/2026. Contrôle sur site 100 %. ⚠ Le projet soumis à consultation (multiplication par 2 sous 10 MW, fin au 01/07/2031) a été modifié : se fier au texte publié au JO.' },
+  { code:'IND-UT-116', version:'vA14.1', detail:'Version issue de la fiche transmise (partie A v. A14.1). Version ancienne, sans date de fin dans le texte : vérifier sur ecologie.gouv.fr qu\'aucune révision ou abrogation n\'est intervenue.' },
+  { code:'BAT-TH-134', version:'vA22.1', detail:'Version issue de la fiche transmise (partie A v. A22.1). Version ancienne, sans date de fin dans le texte : vérifier sur ecologie.gouv.fr qu\'aucune révision ou abrogation n\'est intervenue. Climatisation de confort exclue dans les bâtiments neufs de catégorie CE1.' },
+  { code:'IND-BA-110', version:'vA71-4', detail:'Version applicable à compter du 01/08/2025, pour les opérations engagées avant le 01/08/2030. Note de dimensionnement et calepinage obligatoires (OPQIBI 1327 ou 1717, ou NF X 50-091 / NF EN 16247).' },
+  { code:'BAT-TH-142', version:'vA71-4', detail:'Version applicable à compter du 01/08/2025, pour les opérations engagées avant le 01/08/2030. Note de dimensionnement et calepinage obligatoires (OPQIBI 1327 ou 1905, ou NF X 50-091 / NF EN 16247). Bruit au sol < 45 dB(A).' },
   { code:'BAT-EN-103', version:'vA64-4', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
 ];
 
