@@ -92,4 +92,24 @@ const FICHES = [
     version:"arrêté du 01/09/2026", dv:"22 ans",
     render: renderINDUT141
   },
+  {
+    code:"IND-UT-116", title:"Haute pression flottante sur groupe de froid", sector:"indus", tags:["froid"],
+    version:"vA14.1", dv:"14 ans",
+    render: r=>renderHPFlottante(r,"IND-UT-116")
+  },
+  {
+    code:"BAT-TH-134", title:"Haute pression flottante sur groupe de froid tertiaire", sector:"ter", tags:["froid"],
+    version:"vA22.1", dv:"14 ans",
+    render: r=>renderHPFlottante(r,"BAT-TH-134")
+  },
+  {
+    code:"IND-BA-110", title:"Déstratification d'air en local industriel", sector:"indus", tags:["destratification"],
+    version:"vA71-4", dv:"15 ans",
+    render: r=>renderDestrat(r,"IND-BA-110")
+  },
+  {
+    code:"BAT-TH-142", title:"Déstratification d'air en local tertiaire", sector:"ter", tags:["destratification"],
+    version:"vA71-4", dv:"15 ans",
+    render: r=>renderDestrat(r,"BAT-TH-142")
+  },
 ];
