@@ -26,6 +26,14 @@ const GLOSSARY = [
   ["chaudières électriques installées", "Somme des puissances thermiques nominales des chaudières électriques posées au titre de l'opération (P). Elle détermine le forfait et le coefficient de bonification α."],
   ["chaudières électriques déjà présentes", "Chaudières électriques installées avant l'opération sur le même fluide caloporteur : elles comptent dans le seuil de 20 MW, mais pas dans le calcul des CEE."],
   ["puissance maximale du besoin", "Puissance maximale du besoin de chaleur déterminée au point III de l'étude de dimensionnement. P ne peut pas la dépasser."],
+  ["application du groupe de froid", "Usage du froid produit : climatisation de confort (forfait faible), datacenter ou réfrigération / conditionnement d'ambiance hors confort (forfaits élevés). Une seule case possible."],
+  ["bâtiment neuf de catégorie ce1", "Catégorie de bâtiment définie par la réglementation thermique (arrêtés du 26/10/2010 et du 28/12/2012). La climatisation de confort y est exclue de la fiche."],
+  ["type de condensation", "Atmosphère : condenseur à air (adiabatique ou non), évaporatif, ou condenseur à eau associé à un aéroréfrigérant ou à une tour. Eau seule : condenseur refroidi par l'eau d'une nappe ou d'un cours d'eau."],
+  ["puissance électrique nominale du groupe de froid", "Puissance électrique nominale du groupe (mono ou multi-compresseurs) sur sa plaque signalétique, à défaut sur un document du fabricant. Les compresseurs de secours ne sont pas comptés."],
+  ["type d'écoulement", "Vertical : l'air chaud est aspiré dans le cinquième supérieur du local et soufflé vers le sol. Horizontal : l'air est aspiré sur toute la hauteur et remis en mouvement horizontalement. Dans les deux cas, vitesse ≤ 0,2 m/s à 1 m du sol."],
+  ["chauffage convectif", "Chauffage qui chauffe l'air : aérothermes, centrales de traitement d'air, rooftops, générateurs d'air chaud, ventilo-convecteurs. Somme de leurs puissances nominales pour le local."],
+  ["chauffage radiatif", "Chauffage par rayonnement : tubes et panneaux radiants, cassettes, plancher chauffant. Somme de leurs puissances nominales pour le local. Cumulable avec la part convective."],
+  ["affectation du local", "Les entrepôts logistiques, réserves, entrepôts et locaux de stockage sont exclus de la fiche, même s'ils sont chauffés."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
