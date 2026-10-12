@@ -33,6 +33,18 @@ const REGULATORY_WINDOWS = {
     start: null, end: '2030-12-31',
     source: 'BAT-TH-163 vA81-2'
   },
+  'IND-BA-110': {
+    type: 'validite',
+    label: 'Version vA71-4 (opérations engagées avant le 01/08/2030)',
+    start: '2025-08-01', end: '2030-07-31',
+    source: 'IND-BA-110 vA71-4 à compter du 01/08/2025'
+  },
+  'BAT-TH-142': {
+    type: 'validite',
+    label: 'Version vA71-4 (opérations engagées avant le 01/08/2030)',
+    start: '2025-08-01', end: '2030-07-31',
+    source: 'BAT-TH-142 vA71-4 à compter du 01/08/2025'
+  },
   'IND-UT-141': {
     type: 'validite',
     label: 'Validité de la fiche (bonification α à partir du 27/09/2026)',
