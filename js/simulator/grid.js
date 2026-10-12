@@ -26,8 +26,8 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
   if(f.tags?.includes('chauffage-bois')) return 'assets/illustrations/chauffage-bois.png';
   if(f.tags?.includes('recuperation-chaleur')) return 'assets/illustrations/récupération de chaleur.png';
   if(f.tags?.includes('chaudiere-industrielle')) return 'assets/illustrations/chaudière industrielle.png';
-  if(f.tags?.includes('froid')) return 'assets/illustrations/froid.png';
-  if(f.tags?.includes('destratification')) return 'assets/illustrations/destratification.png';
+  if(f.tags?.includes('froid')) return 'assets/illustrations/systeme de regulation hp flottante.png';
+  if(f.tags?.includes('destratification')) return "assets/illustrations/destratificateur d'air.png"; // apostrophe : guillemets doubles obligatoires
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
   return 'assets/illustrations/renovation.png';
 }
