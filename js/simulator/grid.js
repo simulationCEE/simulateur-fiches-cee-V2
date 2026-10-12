@@ -13,7 +13,7 @@ const SECTOR_META = {
   agri:{label:'Agriculture',cls:'agri'}, reseaux:{label:'Réseaux',cls:'reseaux'}, transport:{label:'Transport',cls:'transport'}, mixte:{label:'Mixte',cls:'mixte'}
 };
 
-function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle'}[t] || t; }
+function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle',froid:'Froid',destratification:'Déstratification'}[t] || t; }
 function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_META[f.sector] ? f.sector : 'res'); }
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
@@ -26,6 +26,8 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
   if(f.tags?.includes('chauffage-bois')) return 'assets/illustrations/chauffage-bois.png';
   if(f.tags?.includes('recuperation-chaleur')) return 'assets/illustrations/récupération de chaleur.png';
   if(f.tags?.includes('chaudiere-industrielle')) return 'assets/illustrations/chaudière industrielle.png';
+  if(f.tags?.includes('froid')) return 'assets/illustrations/froid.png';
+  if(f.tags?.includes('destratification')) return 'assets/illustrations/destratification.png';
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
   return 'assets/illustrations/renovation.png';
 }
@@ -36,7 +38,7 @@ function buildCard(f){
   div.className = `card card-type-${meta.cls}`;
   div.onclick = () => openSim(f);
   div.innerHTML = `
-    <div class="card-illustration"><img src="${illustrationFor(f)}" alt="Illustration ${f.title}" loading="lazy"></div>
+    <div class="card-illustration"><img src="${illustrationFor(f)}" alt="Illustration ${f.title}" loading="lazy" onerror="this.onerror=null;this.src='assets/illustrations/renovation.png'"></div>
     <div class="card-content"><div class="card-code">${f.code}</div><div class="card-title">${f.title}</div><span class="sector-badge">${meta.label}</span></div>
     <div class="card-arrow" aria-hidden="true">›</div>`;
   return div;
