@@ -28,6 +28,11 @@ const FICHES = [
     render: renderBAT163
   },
   {
+    code:"BAT-TH-162", title:"Système géothermique tertiaire", sector:"ter", tags:["geothermie"],
+    version:"vA81-2", dv:"25 ans",
+    render: renderBAT162
+  },
+  {
     code:"PAC MIXTE", title:"PAC collective mixte – BAR-TH-179 + BAT-TH-163", sector:["res","ter"], tags:["pac"],
     version:"interne EBS", dv:"22 ans",
     render: renderPACMixte
