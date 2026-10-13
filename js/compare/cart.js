@@ -31,6 +31,8 @@ function captureSnapshot(){
     const label = r.querySelector('.result-label');
     const val = r.querySelector('.result-val');
     const isHi = r.classList.contains('hi') || r.classList.contains('cdp');
+    // Ligne purement informative (ex. projet d'arrêté) : jamais sélectionnable pour le total du dossier
+    if(label && val && r.classList.contains('result-info')){ results.push([label.textContent.trim(), val.textContent.trim(), false, true, r.dataset.group || 'Information']); return; }
     if(label && val) results.push([label.textContent.trim(), val.textContent.trim(), isHi]);
   });
   // Lignes purement informatives (4e élément = true) : jamais sélectionnables pour le total du dossier.
@@ -38,8 +40,8 @@ function captureSnapshot(){
   const resEl = document.getElementById('results');
   if(resEl){
     const perC = parseFloat(resEl.dataset.perM2C), perP = parseFloat(resEl.dataset.perM2P);
-    if(Number.isFinite(perC)) results.push(['Prime Classique / m²', eur2(perC), false, true]);
-    if(Number.isFinite(perP)) results.push(['Prime Précarité / m²', eur2(perP), false, true]);
+    if(Number.isFinite(perC)) results.push(['Prime Classique / m²', eur2(perC), false, true, 'Prix au m²']);
+    if(Number.isFinite(perP)) results.push(['Prime Précarité / m²', eur2(perP), false, true, 'Prix au m²']);
   }
   return {
     id: 'snap_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
@@ -137,13 +139,19 @@ function renderCompareTable(){
           onchange="setDossierSelection('${s.id}', null)" style="flex-shrink:0">
         <span class="cr-label" style="flex:1;font-style:italic">Ne pas inclure au total</span>
       </div>
-      ${s.results.some(r=>r[3]) ? `
-        <div class="compare-section-label">Prix au m²</div>
-        ${s.results.filter(r=>r[3]).map(([l,v])=>`
-          <div class="compare-row result" style="display:flex;align-items:center;gap:6px">
-            <span class="cr-label" style="flex:1">${l}</span>
-            <span class="cr-value">${v}</span>
-          </div>`).join('')}` : ''}
+      ${(()=>{
+        const infos = s.results.filter(r=>r[3]);
+        if(!infos.length) return '';
+        const groups = {};
+        infos.forEach(r=>{ const g = r[4] || 'Prix au m²'; (groups[g] = groups[g] || []).push(r); });
+        return Object.entries(groups).map(([g, rows]) => `
+          <div class="compare-section-label">${g}</div>
+          ${rows.map(([l,v])=>`
+            <div class="compare-row result" style="display:flex;align-items:center;gap:6px">
+              <span class="cr-label" style="flex:1">${l}</span>
+              <span class="cr-value">${v}</span>
+            </div>`).join('')}`).join('');
+      })()}
     </div>
   `).join('');
 
