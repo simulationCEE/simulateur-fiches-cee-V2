@@ -112,4 +112,9 @@ const FICHES = [
     version:"vA71-4", dv:"15 ans",
     render: r=>renderDestrat(r,"BAT-TH-142")
   },
+  {
+    code:"AGRI-TH-108", title:"Pompe à chaleur air/eau ou eau/eau pour serres", sector:"agri", tags:["pac-agriculture"],
+    version:"vA35-2", dv:"17 ans",
+    render: renderAGRITH108
+  },
 ];
