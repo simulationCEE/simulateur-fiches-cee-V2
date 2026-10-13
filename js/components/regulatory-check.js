@@ -45,6 +45,12 @@ const REGULATORY_WINDOWS = {
     start: '2025-08-01', end: '2030-07-31',
     source: 'BAT-TH-142 vA71-4 à compter du 01/08/2025'
   },
+  'BAT-TH-162': {
+    type: 'validite',
+    label: 'Version vA81-2 (opérations engagées jusqu\'au 31/12/2030)',
+    start: '2026-04-30', end: '2030-12-31',
+    source: 'BAT-TH-162 vA81-2 à compter du 30/04/2026'
+  },
   'IND-UT-137': {
     type: 'validite',
     label: 'Version vA84-3 (opérations engagées avant le 01/01/2031)',
