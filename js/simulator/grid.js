@@ -47,12 +47,50 @@ function buildCard(f){
   return div;
 }
 
-function renderFlatGrid(list){
-  grid.style.display = '';
-  document.getElementById('groupedContainer').style.display = 'none';
+/* ── Affichage par secteur : une section par secteur, fiches triées par technologie ── */
+const SECTOR_ORDER = ['res','ter','indus','agri','reseaux','transport','mixte'];
+const SECTOR_ICONS = {res:'⌂', ter:'▥', indus:'▦', agri:'⌁', reseaux:'⚡', transport:'▸', mixte:'◈'};
+const SECTOR_NOTES = {mixte:'Résidentiel et tertiaire'};
+// Ordre des technologies à l'intérieur d'un secteur (les fiches d'une même famille sont voisines)
+const TECH_ORDER = ['pac','geothermie','pac-rehausse','pac-agriculture','chauffage-bois','biomasse','solaire','renov','isol','chaudiere-industrielle','recuperation-chaleur','froid','destratification'];
+function techRank(f){
+  const ranks = (f.tags || []).map(t => TECH_ORDER.indexOf(t)).filter(i => i >= 0);
+  return ranks.length ? Math.min(...ranks) : TECH_ORDER.length;
+}
+function compareFiches(a, b){
+  return techRank(a) - techRank(b) || a.code.localeCompare(b.code, 'fr', {numeric:true});
+}
+
+function renderGroupedGrid(list){
+  grid.style.display = 'none';
   grid.innerHTML = '';
+  const container = document.getElementById('groupedContainer');
+  container.style.display = '';
+  container.innerHTML = '';
   document.getElementById('noResults').style.display = list.length ? 'none' : 'block';
-  list.forEach(f => grid.appendChild(buildCard(f)));
+
+  const groups = {};
+  list.forEach(f => { const k = ficheCategory(f); (groups[k] = groups[k] || []).push(f); });
+
+  SECTOR_ORDER.filter(k => groups[k]).forEach(k => {
+    const meta = SECTOR_META[k] || SECTOR_META.res;
+    const fiches = groups[k].slice().sort(compareFiches);
+    const section = document.createElement('section');
+    section.className = `sector-section sector-section-${meta.cls}`;
+    section.innerHTML = `
+      <div class="sector-head">
+        <span class="sector-head-icon" aria-hidden="true">${SECTOR_ICONS[k] || '•'}</span>
+        <h2>${meta.label}</h2>
+        ${SECTOR_NOTES[k] ? `<span class="sector-head-note">${SECTOR_NOTES[k]}</span>` : ''}
+        <span class="sector-head-count">${fiches.length} fiche${fiches.length > 1 ? 's' : ''}</span>
+      </div>`;
+    const sectionGrid = document.createElement('div');
+    sectionGrid.className = 'grid sector-grid';
+    fiches.forEach(f => sectionGrid.appendChild(buildCard(f)));
+    section.appendChild(sectionGrid);
+    container.appendChild(section);
+  });
+
   document.getElementById('ficheCount').textContent = `${list.length} fiche${list.length > 1 ? 's' : ''} disponible${list.length > 1 ? 's' : ''}`;
 }
 
@@ -68,7 +106,7 @@ function renderGrid(){
     return matchesInstaller && matchesSector && matchesSearch;
   });
 
-  renderFlatGrid(filtered);
+  renderGroupedGrid(filtered);
 }
 
 searchInput.addEventListener('input', renderGrid);
