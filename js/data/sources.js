@@ -18,6 +18,7 @@ const FICHE_SOURCES = [
   { code:'BAT-TH-134', version:'vA22.1', detail:'Version issue de la fiche transmise (partie A v. A22.1). Version ancienne, sans date de fin dans le texte : vérifier sur ecologie.gouv.fr qu\'aucune révision ou abrogation n\'est intervenue. Climatisation de confort exclue dans les bâtiments neufs de catégorie CE1.' },
   { code:'IND-BA-110', version:'vA71-4', detail:'Version applicable à compter du 01/08/2025, pour les opérations engagées avant le 01/08/2030. Note de dimensionnement et calepinage obligatoires (OPQIBI 1327 ou 1717, ou NF X 50-091 / NF EN 16247).' },
   { code:'BAT-TH-142', version:'vA71-4', detail:'Version applicable à compter du 01/08/2025, pour les opérations engagées avant le 01/08/2030. Note de dimensionnement et calepinage obligatoires (OPQIBI 1327 ou 1905, ou NF X 50-091 / NF EN 16247). Bruit au sol < 45 dB(A).' },
+  { code:'AGRI-TH-108', version:'vA35-2', detail:'Version en vigueur à compter du 01/10/2020 (partie A à compter du 01/07/2026), publiée par le ministère. ⚠ Un projet d\'arrêté de révision (v. AXX.4 : forfaits environ ×3, soit 2 600 à 2 900 kWhc/m² en maraîchage, PAC air/eau d\'au moins 300 kW par unité, ballon de stockage, gestion climatique fixe, contrôle COFRAC 100 %) n\'était pas publié au Journal officiel au 13/10/2026 et n\'est donc pas appliqué : à reprendre dès sa parution.' },
   { code:'BAT-EN-103', version:'vA64-4', detail:'Date d\'abrogation non communiquée dans le texte transmis — à vérifier.' },
 ];
 
