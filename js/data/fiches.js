@@ -117,4 +117,9 @@ const FICHES = [
     version:"vA35-2", dv:"17 ans",
     render: renderAGRITH108
   },
+  {
+    code:"IND-UT-137", title:"Pompe à chaleur en rehausse de température de chaleur fatale", sector:"indus", tags:["pac-rehausse"],
+    version:"vA84-3", dv:"14 ans",
+    render: renderINDUT137
+  },
 ];
