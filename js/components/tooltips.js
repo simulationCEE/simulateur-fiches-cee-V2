@@ -34,6 +34,13 @@ const GLOSSARY = [
   ["chauffage convectif", "Chauffage qui chauffe l'air : aérothermes, centrales de traitement d'air, rooftops, générateurs d'air chaud, ventilo-convecteurs. Somme de leurs puissances nominales pour le local."],
   ["chauffage radiatif", "Chauffage par rayonnement : tubes et panneaux radiants, cassettes, plancher chauffant. Somme de leurs puissances nominales pour le local. Cumulable avec la part convective."],
   ["affectation du local", "Les entrepôts logistiques, réserves, entrepôts et locaux de stockage sont exclus de la fiche, même s'ils sont chauffés."],
+  ["type de serre", "Serre maraîchère (légumes, fruits…) ou horticole (fleurs, plantes ornementales) : le montant au m² et le plafond de surface par kW diffèrent."],
+  ["surface de serre chauffée", "Surface totale de serre chauffée par la pompe à chaleur. La surface retenue est la plus petite valeur entre cette surface et 15 × P (maraîchère) ou 31 × P (horticole), P étant la puissance thermique nominale en kW."],
+  ["puissance thermique nominale de la pac", "Puissance thermique nominale de la pompe à chaleur (somme des PAC en parallèle). Jusqu'à 400 kW, la performance se mesure par l'efficacité énergétique saisonnière ηs ; au-delà, par le COP."],
+  ["type de pac", "Basse température : ηs minimal de 126 %. Moyenne ou haute température : ηs minimal de 111 %. Le type de PAC doit figurer sur la preuve de réalisation."],
+  ["efficacité énergétique saisonnière", "ηs de la PAC seule pour le chauffage des serres (hors dispositif de régulation), selon le règlement UE 813/2013. Classes de la fiche : de 111 % à moins de 126 %, puis 126 % et plus."],
+  ["cop de la pac", "Coefficient de performance mesuré selon la norme EN 14511-2 à une température de 35 °C en sortie de l'échangeur thermique intérieur. Minimum 3,4 ; classes de la fiche : de 3,4 à moins de 4, puis 4 et plus."],
+  ["relève d'une chaudière", "Une PAC installée en relève d'une chaudière à haute performance énergétique (la chaudière reste le générateur principal) ne donne pas lieu à la délivrance de certificats."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
