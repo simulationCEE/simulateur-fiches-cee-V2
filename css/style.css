@@ -929,3 +929,24 @@ html.installer-mode .default-prices-card{display:none!important}
   .field-row.align-inputs .field{display:flex;flex-direction:column;justify-content:flex-end}
   .field-row.align-inputs .field input,
   .field-row.align-inputs .field select{box-sizing:border-box;height:38px}
+
+
+  /* ── Page d'accueil : fiches regroupées par secteur ── */
+  .sector-section{margin:0 0 28px}
+  .sector-head{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:0 0 10px;border-bottom:2px solid var(--sec-color,#CBD6E1)}
+  .sector-head-icon{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:var(--sec-bg,#EEF3F8);color:var(--sec-color,#547088);font-size:15px;flex-shrink:0}
+  .sector-head h2{margin:0;font-size:17px;font-weight:800;color:var(--navy-dk);letter-spacing:.1px}
+  .sector-head-note{font-size:11.5px;color:var(--text-3)}
+  .sector-head-count{margin-left:auto;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+    color:var(--sec-color,#547088);background:var(--sec-bg,#EEF3F8);white-space:nowrap}
+  .sector-section-res{--sec-color:var(--type-res);--sec-bg:var(--type-res-bg)}
+  .sector-section-ter{--sec-color:var(--type-ter);--sec-bg:var(--type-ter-bg)}
+  .sector-section-indus{--sec-color:var(--type-indus);--sec-bg:var(--type-indus-bg)}
+  .sector-section-agri{--sec-color:var(--type-agri);--sec-bg:var(--type-agri-bg)}
+  .sector-section-reseaux{--sec-color:var(--type-reseaux);--sec-bg:var(--type-reseaux-bg)}
+  .sector-section-transport{--sec-color:var(--type-transport);--sec-bg:var(--type-transport-bg)}
+  .sector-section-mixte{--sec-color:var(--type-mixte);--sec-bg:var(--type-mixte-bg)}
+  /* le titre de section indique déjà le secteur : le badge de chaque carte devient redondant */
+  .sector-section .sector-badge{display:none}
+  .sector-section .card-title{margin-bottom:0}
