@@ -49,7 +49,6 @@ function buildCard(f){
 
 /* ── Affichage par secteur : une section par secteur, fiches triées par technologie ── */
 const SECTOR_ORDER = ['res','ter','indus','agri','reseaux','transport','mixte'];
-const SECTOR_ICONS = {res:'⌂', ter:'▥', indus:'▦', agri:'⌁', reseaux:'⚡', transport:'▸', mixte:'◈'};
 const SECTOR_NOTES = {mixte:'Résidentiel et tertiaire'};
 // Ordre des technologies à l'intérieur d'un secteur (les fiches d'une même famille sont voisines)
 const TECH_ORDER = ['pac','geothermie','pac-rehausse','pac-agriculture','chauffage-bois','biomasse','solaire','renov','isol','chaudiere-industrielle','recuperation-chaleur','froid','destratification'];
@@ -79,7 +78,6 @@ function renderGroupedGrid(list){
     section.className = `sector-section sector-section-${meta.cls}`;
     section.innerHTML = `
       <div class="sector-head">
-        <span class="sector-head-icon" aria-hidden="true">${SECTOR_ICONS[k] || '•'}</span>
         <h2>${meta.label}</h2>
         ${SECTOR_NOTES[k] ? `<span class="sector-head-note">${SECTOR_NOTES[k]}</span>` : ''}
         <span class="sector-head-count">${fiches.length} fiche${fiches.length > 1 ? 's' : ''}</span>
