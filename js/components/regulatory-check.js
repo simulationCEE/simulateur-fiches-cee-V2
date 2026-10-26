@@ -45,6 +45,42 @@ const REGULATORY_WINDOWS = {
     start: '2025-08-01', end: '2030-07-31',
     source: 'BAT-TH-142 vA71-4 à compter du 01/08/2025'
   },
+  'AGRI-EQ-102': {
+    type: 'validite',
+    label: 'Version vA65-2 (opérations engagées avant le 01/04/2030)',
+    start: '2025-04-01', end: '2030-03-31',
+    source: 'AGRI-EQ-102 vA65-2 à compter du 01/04/2025'
+  },
+  'AGRI-EQ-104': {
+    type: 'validite',
+    label: 'Version vA62-2 (opérations engagées avant le 01/01/2030)',
+    start: '2025-01-01', end: '2029-12-31',
+    source: 'AGRI-EQ-104 vA62-2 à compter du 01/01/2025'
+  },
+  'AGRI-EQ-107': {
+    type: 'validite',
+    label: 'Version vA38-1 (pas de date de fin dans le texte)',
+    start: '2021-07-31', end: null,
+    source: 'AGRI-EQ-107 vA38-1 à compter du 31/07/2021'
+  },
+  'AGRI-EQ-109': {
+    type: 'validite',
+    label: "Version vA58-2 (opérations engagées jusqu'au 31/12/2028)",
+    start: '2024-02-01', end: '2028-12-31',
+    source: 'AGRI-EQ-109 vA58-2 à compter du 01/02/2024'
+  },
+  'AGRI-EQ-112': {
+    type: 'validite',
+    label: 'Version vA73-3 — FICHE ABROGÉE à compter du 24/06/2026 (engagement avant cette date uniquement)',
+    start: '2025-09-01', end: '2026-06-23',
+    source: 'AGRI-EQ-112 vA73-3 à compter du 01/09/2025 ; abrogée à compter du 24/06/2026'
+  },
+  'AGRI-EQ-111': {
+    type: 'validite',
+    label: 'Version vA62-1 (opérations engagées avant le 01/08/2029)',
+    start: '2024-08-31', end: '2029-07-31',
+    source: 'AGRI-EQ-111 vA62-1 à compter du 31/08/2024'
+  },
   'BAT-TH-162': {
     type: 'validite',
     label: 'Version vA81-2 (opérations engagées jusqu\'au 31/12/2030)',
