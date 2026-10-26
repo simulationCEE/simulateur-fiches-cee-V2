@@ -127,4 +127,34 @@ const FICHES = [
     version:"vA84-3", dv:"14 ans",
     render: renderINDUT137
   },
+  {
+    code:"AGRI-EQ-111", title:"Simple écran thermique", sector:"agri", tags:["ecran thermique simple"],
+    version:"vA62-1", dv:"8 ans",
+    render: renderAGRIEQ111
+  },
+  {
+    code:"AGRI-EQ-112", title:"Double paroi gonflable (abrogée au 24/06/2026)", sector:"agri", tags:["double paroi gonflable"],
+    version:"vA73-3", dv:"5 ans",
+    render: renderAGRIEQ112
+  },
+  {
+    code:"AGRI-EQ-102", title:"Double écran thermique", sector:"agri", tags:["double ecran thermique"],
+    version:"vA65-2", dv:"8 ans",
+    render: renderAGRIEQ102
+  },
+  {
+    code:"AGRI-EQ-104", title:"Écrans thermiques latéraux", sector:"agri", tags:["ecran thermique lateral"],
+    version:"vA62-2", dv:"8 ans",
+    render: renderAGRIEQ104
+  },
+  {
+    code:"AGRI-EQ-107", title:"Isolation des parois de serre", sector:"agri", tags:["isolation parois serre"],
+    version:"vA38-1", dv:"15 ans",
+    render: renderAGRIEQ107
+  },
+  {
+    code:"AGRI-EQ-109", title:"Couverture performante de serre", sector:"agri", tags:["couverture serre"],
+    version:"vA58-2", dv:"20 ans",
+    render: renderAGRIEQ109
+  },
 ];
