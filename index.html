@@ -259,6 +259,13 @@ Les montants réels de prime dépendent notamment de l'éligibilité effective d
         return;
       }
       const path = SCRIPTS[i];
+      // Lien installateur : on attend que sa configuration soit chargée (réseau) avant de démarrer l'application
+      if(path === 'js/app.js' && window.__ebsInstallerReady){
+        const ready = window.__ebsInstallerReady;
+        window.__ebsInstallerReady = null;
+        ready.then(loadNext, loadNext);
+        return;
+      }
       const s = document.createElement('script');
       s.src = path + '?v=' + V;
       s.onload = function(){ i++; updateLoadingProgress(); loadNext(); };
