@@ -20,9 +20,20 @@ function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_ME
 // Équipements de serre (AGRI-EQ) : le fichier image porte le nom du tag, ex. « ecran thermique simple.png »
 const AGRI_EQ_TAGS = ['double paroi gonflable','double ecran thermique','ecran thermique lateral','ecran thermique simple','isolation parois serre','couverture serre'];
 // Autres orthographes acceptées pour le nom du fichier (tirets, mots collés), essayées si la première échoue
+// Noms de fichier avec accents acceptés (ex. « double écran thermique.png »)
+const AGRI_EQ_IMAGE_ALIASES = {
+  'double ecran thermique': ['double écran thermique'],
+  'ecran thermique lateral': ['écran thermique latéral', 'écran thermique latéraux', 'écrans thermiques latéraux'],
+  'ecran thermique simple': ['écran thermique simple', 'simple écran thermique'],
+  'isolation parois serre': ['isolation parois de serre', 'isolation des parois de serre'],
+  'couverture serre': ['couverture de serre', 'couverture performante de serre'],
+  'double paroi gonflable': ['double paroi gonflable'],
+};
 function illustrationAlternatives(f){
   const t = (f.tags || []).find(x => AGRI_EQ_TAGS.includes(x));
-  return t ? ['assets/illustrations/' + t.replace(/ /g, '-') + '.png', 'assets/illustrations/' + t.replace(/ /g, '') + '.png'] : [];
+  if(!t) return [];
+  const names = [...(AGRI_EQ_IMAGE_ALIASES[t] || []), t.replace(/ /g, '-'), t.replace(/ /g, '')];
+  return [...new Set(names)].filter(n => n !== t).map(n => 'assets/illustrations/' + n + '.png');
 }
 // Image de repli si aucun fichier n'est trouvé
 function illustrationFallback(f){
