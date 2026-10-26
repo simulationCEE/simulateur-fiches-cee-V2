@@ -57,6 +57,17 @@ const GLOSSARY = [
   ["puissance utile de la chaufferie", "Somme des puissances thermiques nominales des équipements de chauffage (ou chauffage et ECS) de la chaufferie après travaux, PAC de la fiche incluses, hors équipements de secours. Si les PAC installées représentent moins de 40 % de cette puissance, le facteur R est égal au rapport des deux ; sinon R = 1."],
   ["refroidissement du bâtiment", "Optionnel. Rafraîchissement actif (PAC réversible, thermofrigopompe) : EER ≥ 3,6. Geocooling (rafraîchissement passif) : SEER supérieur à 20 sur sondes, supérieur à 14 sur nappe."],
   ["eer ou seer", "EER : coefficient de performance frigorifique du rafraîchissement actif (minimum 3,6, EN 14511). SEER : coefficient de performance annuel froid du geocooling (supérieur à 20 sur sondes, supérieur à 14 sur nappe)."],
+  ["nature de la serre", "Serre maraîchère (légumes, fruits…) ou serre horticole (fleurs, plantes ornementales) : le montant de kWh cumac par m² diffère."],
+  ["surface de la serre équipée", "Surface de serre équipée par le dispositif (m²). Le montant de kWh cumac par m² est multiplié par cette surface."],
+  ["surface au sol de serre équipée", "Surface au sol de la serre équipée de l'écran thermique latéral (m²). Le montant de kWh cumac par m² est multiplié par cette surface."],
+  ["serre chauffée", "Ces fiches ne concernent que les serres chauffées : une serre non chauffée ne donne pas droit aux certificats."],
+  ["dispositif piloté automatiquement", "L'écran thermique doit être piloté automatiquement (gestion automatique de son ouverture et de sa fermeture) pour ouvrir droit aux certificats."],
+  ["thermicité", "Capacité de l'écran thermique à retenir la chaleur, exprimée en % et indiquée par le fabricant. La fiche exige au moins 40 %."],
+  ["type de couverture", "Double paroi ETFE, double paroi verre-ETFE ou simple paroi verre : même montant. Double paroi en verre : montant plus élevé."],
+  ["coefficient de transmission thermique", "Coefficient U en W/m².K : plus il est faible, plus la paroi isole. Maximum 4 pour la couverture de serre (AGRI-EQ-109), 3 pour l'isolation des parois (AGRI-EQ-107)."],
+  ["transmission lumineuse", "Part de la lumière transmise par la couverture, évaluée selon la norme NF EN 410. La fiche exige au moins 80 %."],
+  ["parois verticales", "La fiche vise la couverture multicouche gonflable posée au-dessus des cultures, éventuellement complétée sur les parois verticales. Une pose uniquement sur les parois verticales est exclue."],
+  ["cumul avec agri-eq-108", "AGRI-EQ-108 (stockage d'eau pour une serre bioclimatique, également abrogée le 24/06/2026) n'est pas cumulable avec la double paroi gonflable."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
