@@ -548,7 +548,10 @@ function insertInstallerBanner(installerName){
   }
 }
 
-(async function initInstallerMode(){
+// Promesse attendue par le chargeur (index.html) AVANT de démarrer l'application : sans cela, la liste des
+// fiches pouvait être dessinée avant l'arrivée de la configuration du lien (course réseau) et afficher
+// toutes les fiches. Si le lien ne peut pas être chargé, on n'affiche JAMAIS le simulateur complet.
+window.__ebsInstallerReady = (async function initInstallerMode(){
   const params = new URLSearchParams(window.location.search);
   const instId = params.get(INSTALLER_ID_QUERY_KEY);
   const legacyRaw = params.get(INSTALLER_QUERY_KEY);
@@ -557,8 +560,11 @@ function insertInstallerBanner(installerName){
 
   if(instId){
     try{
-      await __ebsFirebaseReady;
-      const doc = await ebsDb.collection('installerLinks').doc(instId).get();
+      const timeoutMs = window.__EBS_INSTALLER_TIMEOUT_MS || 15000;
+      const doc = await Promise.race([
+        (async () => { await __ebsFirebaseReady; return ebsDb.collection('installerLinks').doc(instId).get(); })(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('délai dépassé')), timeoutMs)),
+      ]);
       if(!doc.exists || doc.data().active === false){
         showInstallerLinkInvalidScreen();
         return;
@@ -577,6 +583,7 @@ function insertInstallerBanner(installerName){
 
   window.EBS_INSTALLER_CONFIG = config;
   document.documentElement.classList.add('installer-mode');
+  if(typeof renderGrid === 'function') renderGrid();   // sécurité : redessine la liste avec la restriction du lien
 
   if(document.readyState === 'loading'){
     window.addEventListener('DOMContentLoaded', () => insertInstallerBanner(config.installerName));
