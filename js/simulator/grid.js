@@ -13,12 +13,12 @@ const SECTOR_META = {
   agri:{label:'Agriculture',cls:'agri'}, reseaux:{label:'Réseaux',cls:'reseaux'}, transport:{label:'Transport',cls:'transport'}, mixte:{label:'Mixte',cls:'mixte'}
 };
 
-function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle',froid:'Froid',destratification:'Déstratification','pac-agriculture':'PAC agriculture','pac-rehausse':'PAC de rehausse industrielle',geothermie:'Système géothermique','ecran thermique simple':'Simple écran thermique','double ecran thermique':'Double écran thermique','ecran thermique lateral':'Écran thermique latéral','isolation parois serre':'Isolation des parois de serre','couverture serre':'Couverture performante de serre','double paroi gonflable':'Double paroi gonflable'}[t] || t; }
+function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle',froid:'Froid',destratification:'Déstratification','pac-agriculture':'PAC agriculture','pac-rehausse':'PAC de rehausse industrielle',geothermie:'Système géothermique','ecran thermique simple':'Simple écran thermique','double ecran thermique':'Double écran thermique','ecran thermique lateral':'Écran thermique latéral','isolation parois serre':'Isolation des parois de serre','couverture serre':'Couverture performante de serre','double paroi gonflable':'Double paroi gonflable','double tube de chauffage':'Double tube de chauffage'}[t] || t; }
 function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_META[f.sector] ? f.sector : 'res'); }
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
 // Équipements de serre (AGRI-EQ) : le fichier image porte le nom du tag, ex. « ecran thermique simple.png »
-const AGRI_EQ_TAGS = ['double paroi gonflable','double ecran thermique','ecran thermique lateral','ecran thermique simple','isolation parois serre','couverture serre'];
+const AGRI_EQ_TAGS = ['double tube de chauffage','double paroi gonflable','double ecran thermique','ecran thermique lateral','ecran thermique simple','isolation parois serre','couverture serre'];
 // Autres orthographes acceptées pour le nom du fichier (tirets, mots collés), essayées si la première échoue
 // Noms de fichier avec accents acceptés (ex. « double écran thermique.png »)
 const AGRI_EQ_IMAGE_ALIASES = {
@@ -28,6 +28,7 @@ const AGRI_EQ_IMAGE_ALIASES = {
   'isolation parois serre': ['isolation parois de serre', 'isolation des parois de serre'],
   'couverture serre': ['couverture de serre', 'couverture performante de serre'],
   'double paroi gonflable': ['double paroi gonflable'],
+  'double tube de chauffage': ['double tube chauffage', 'double tube'],
 };
 function illustrationAlternatives(f){
   const t = (f.tags || []).find(x => AGRI_EQ_TAGS.includes(x));
@@ -86,7 +87,7 @@ function buildCard(f){
 const SECTOR_ORDER = ['res','ter','indus','agri','reseaux','transport','mixte'];
 const SECTOR_NOTES = {mixte:'Résidentiel et tertiaire'};
 // Ordre des technologies à l'intérieur d'un secteur (les fiches d'une même famille sont voisines)
-const TECH_ORDER = ['pac','geothermie','pac-rehausse','pac-agriculture','ecran thermique simple','double ecran thermique','ecran thermique lateral','double paroi gonflable','isolation parois serre','couverture serre','chauffage-bois','biomasse','solaire','renov','isol','chaudiere-industrielle','recuperation-chaleur','froid','destratification'];
+const TECH_ORDER = ['pac','geothermie','pac-rehausse','pac-agriculture','ecran thermique simple','double ecran thermique','ecran thermique lateral','double paroi gonflable','double tube de chauffage','isolation parois serre','couverture serre','chauffage-bois','biomasse','solaire','renov','isol','chaudiere-industrielle','recuperation-chaleur','froid','destratification'];
 function techRank(f){
   const ranks = (f.tags || []).map(t => TECH_ORDER.indexOf(t)).filter(i => i >= 0);
   return ranks.length ? Math.min(...ranks) : TECH_ORDER.length;
