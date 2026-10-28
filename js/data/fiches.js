@@ -118,8 +118,8 @@ const FICHES = [
     render: r=>renderDestrat(r,"BAT-TH-142")
   },
   {
-    code:"AGRI-TH-108", title:"Pompe à chaleur air/eau ou eau/eau pour serres", sector:"agri", tags:["pac-agriculture"],
-    version:"vA35-2", dv:"17 ans",
+    code:"AGRI-TH-108", title:"Pompe à chaleur air/eau pour serres", sector:"agri", tags:["pac-agriculture"],
+    version:"arrêté du 26/10/2026", dv:"17 ans",
     render: renderAGRITH108
   },
   {
@@ -136,6 +136,11 @@ const FICHES = [
     code:"AGRI-EQ-112", title:"Double paroi gonflable (abrogée au 24/06/2026)", sector:"agri", tags:["double paroi gonflable"],
     version:"vA73-3", dv:"5 ans",
     render: renderAGRIEQ112
+  },
+  {
+    code:"AGRI-TH-118", title:"Double tube de chauffage pour serres maraîchères", sector:"agri", tags:["double tube de chauffage"],
+    version:"vA14-1", dv:"15 ans",
+    render: renderAGRITH118
   },
   {
     code:"AGRI-EQ-102", title:"Double écran thermique", sector:"agri", tags:["double ecran thermique"],
