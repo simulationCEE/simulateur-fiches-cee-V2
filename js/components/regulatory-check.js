@@ -45,6 +45,12 @@ const REGULATORY_WINDOWS = {
     start: '2025-08-01', end: '2030-07-31',
     source: 'BAT-TH-142 vA71-4 à compter du 01/08/2025'
   },
+  'AGRI-TH-108': {
+    type: 'validite',
+    label: "vA35-2 jusqu'au 28/10/2026, puis arrêté du 26/10/2026 à partir du 29/10/2026 (engagement avant le 01/10/2031)",
+    start: '2020-10-01', end: '2031-09-30',
+    source: 'AGRI-TH-108 vA35-2 à compter du 01/10/2020 ; arrêté du 26/10/2026 (JO du 28/10/2026)'
+  },
   'AGRI-EQ-102': {
     type: 'validite',
     label: 'Version vA65-2 (opérations engagées avant le 01/04/2030)',
