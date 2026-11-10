@@ -38,6 +38,11 @@ function renderTH129(body){
       <div class="field"><label>SCOP</label><input type="number" id="f-scop" value="4" step="0.1"></div>
     </div>
     <div class="field-row">
+      ${hhFieldHtml()}
+      <div class="field"></div>
+    </div>
+    ${hhNoteHtml()}
+    <div class="field-row">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="f-pp" value="" step="0.1" placeholder="ex : 11"></div>
     </div>
@@ -65,17 +70,18 @@ function renderTH129(body){
       facteur = surfFacteur129(surf, SURF129_MAISON);
     }
     const kwhc = montantUnitaire * facteur;
-    return {kwh: kwhc, primeC: kwhc/1000*pc, primeP: kwhc/1000*pp, montantUnitaire, facteur};
+    const hh = hhCtx('BAR-TH-129', pc, pp);
+    return {kwh: kwhc, prime: kwhc/1000*hh.price, hh, montantUnitaire, facteur};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const surf=parseFloat(document.getElementById('f-surf').value)||0;
-    const {kwh:kwhc, primeC, primeP} = calcCore129(surf);
+    const {kwh:kwhc, prime, hh} = calcCore129(surf);
+    hhUpdateNote('BAR-TH-129');
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">kWh cumac</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row hi"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
+      <div class="result-row ${hhRowClass(hh, false)}"><span class="result-label">${hhPrimeLabel(hh)}</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
     if(!adjWrap){
@@ -83,8 +89,7 @@ function renderTH129(body){
         unitLabel:'m²', paramLabel:'Surface', defaultStep:10, defaultRep:2,
         getBase: () => parseFloat(document.getElementById('f-surf').value)||0,
         minValid: 0,
-        primeLabel:'Prime Classique', extraLabel:'Prime Précarité',
-        calc: (val) => { const r = calcCore129(val); return {kwh:r.kwh, prime:r.primeC, extra:r.primeP}; }
+        calc: (val) => { const r = calcCore129(val); return {kwh:r.kwh, prime:r.prime}; }
       });
     } else {
       adjWrap.refresh();
@@ -92,8 +97,8 @@ function renderTH129(body){
 
     if(!revWrap){
       revWrap = reverseSolver(body, {
-        quantityLabel:'surface', unitLabel:'m²', min:0, max:500, hasPrec:true,
-        calc: (val) => { const r = calcCore129(val); return {primeC:r.primeC, primeP:r.primeP}; }
+        quantityLabel:'surface', unitLabel:'m²', min:0, max:500,
+        calc: (val) => { const r = calcCore129(val); return {prime:r.prime}; }
       });
     } else {
       revWrap.refresh();
@@ -103,6 +108,7 @@ function renderTH129(body){
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
 function buildBareme129(wrap){
