@@ -22,12 +22,17 @@ function renderTH113(body){
       </div>
     </div>
     <div class="field-row">
+      ${hhFieldHtml()}
+      <div class="field"></div>
+    </div>
+    ${hhNoteHtml()}
+    <div class="field-row">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="f-pp" value="" step="0.1" placeholder="ex : 11"></div>
     </div>
     <div class="field-row">
       <div class="field">
-        <label>Coup de Pouce ×5 <span class="hint">remplacement chaudière charbon/fioul/gaz hors condensation</span></label>
+        <label>Coup de Pouce <span class="hint">remplacement chaudière charbon/fioul/gaz hors condensation ; ×5 / ×3 selon le ménage</span></label>
         <select id="f-cdp"><option value="non">Non</option><option value="oui">Oui</option></select>
       </div>
       <div class="field"></div>
@@ -36,7 +41,7 @@ function renderTH113(body){
     <div class="warn-box" id="warnPuissance113"></div>
     <div class="divider"></div>
     <div class="results" id="results"></div>
-    <div class="source-note">Source : BAR-TH-113 vA79-4 à compter du 01-01-2026 · Durée de vie 17 ans · CdP ×5 uniforme (pas de distinction classique/modeste sur le coefficient, contrairement à d'autres fiches PAC) · Dépose de l'équipement fossile obligatoire par l'installateur, à mentionner explicitement sur la facture sous peine de validation hors Coup de Pouce</div>
+    <div class="source-note">Source : BAR-TH-113 vA79-4 à compter du 01-01-2026 · Durée de vie 17 ans · CdP : ×5 très modestes, ×3 modestes (précarité énergétique), ×5 autres ménages pour un engagement à partir du 16/11/2026 (×5 pour tous avant) · Dépose de l'équipement fossile obligatoire par l'installateur, à mentionner explicitement sur la facture sous peine de validation hors Coup de Pouce</div>
   `);
   const baremeWrap = bareme(body, buildBareme113);
 
@@ -44,10 +49,11 @@ function renderTH113(body){
     const pc = parseFloat(document.getElementById('f-pc').value)||0;
     const pp = parseFloat(document.getElementById('f-pp').value)||0;
     const cdp = document.getElementById('f-cdp').value==='oui';
-    const mult = cdp ? 5 : 1;
+    const hh = hhCtx('BAR-TH-113', pc, pp);
+    const mult = cdp ? hh.coef : 1;
     const kwhcBrut = FORFAIT_BARTH113[zone];
     const kwhc = kwhcBrut*mult;
-    return {kwh:kwhc, kwhBrut:kwhcBrut, primeC:kwhc/1000*pc, primeP:kwhc/1000*pp, mult};
+    return {kwh:kwhc, kwhBrut:kwhcBrut, prime:kwhc/1000*hh.price, hh, mult};
   }
   function calc(){
     const zone = document.getElementById('f-zone').value;
@@ -70,36 +76,36 @@ function renderTH113(body){
       warnPuissance.classList.remove('show');
     }
 
-    const {kwh:kwhc, kwhBrut, primeC, primeP, mult} = calcCore113(zone);
+    const {kwh:kwhc, kwhBrut, prime, hh, mult} = calcCore113(zone);
+    hhUpdateNote('BAR-TH-113');
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">kWh cumac ${mult>1?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${mult>1?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
+      <div class="result-row ${hhRowClass(hh, mult>1)}"><span class="result-label">${hhPrimeLabel(hh)}</span><span class="result-val">${eur(prime)}</span></div>
     `;
     baremeWrap.refresh();
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
 function buildBareme113(wrap){
   const pc = parseFloat(document.getElementById('f-pc').value)||0;
   const pp = parseFloat(document.getElementById('f-pp').value)||0;
+  const hh = hhCtx('BAR-TH-113', pc, pp);
   const curZone = document.getElementById('f-zone').value;
 
-  let html = `<table class="bareme"><thead><tr><th>Zone</th><th>kWh cumac</th><th>Classique</th><th>Précarité</th><th>CdP ×5 Classique</th><th>CdP ×5 Précarité</th></tr></thead><tbody>`;
+  let html = `<table class="bareme"><thead><tr><th>Zone</th><th>kWh cumac</th><th>Prime sans bonification</th><th>Prime avec Coup de Pouce ×${hh.coef}</th></tr></thead><tbody>`;
   Object.keys(FORFAIT_BARTH113).forEach(zone=>{
     const v = FORFAIT_BARTH113[zone];
     const isCur = zone===curZone;
     html += `<tr class="${isCur?'hl':''} grp-end">`;
     html += `<td class="zone-cell z-${zone.toLowerCase()}">${zone}</td>`;
     html += `<td>${num(v)}</td>`;
-    html += `<td class="num-c">${eur(v/1000*pc)}</td>`;
-    html += `<td class="num-p">${eur(v/1000*pp)}</td>`;
-    html += `<td class="num-cdp">${eur(v*5/1000*pc)}</td>`;
-    html += `<td class="num-cdp">${eur(v*5/1000*pp)}</td>`;
+    html += `<td class="${hh.kind==='prec'?'num-p':'num-c'}">${eur(v/1000*hh.price)}</td>`;
+    html += `<td class="num-cdp">${eur(v*hh.coef/1000*hh.price)}</td>`;
     html += `</tr>`;
   });
-  html += `</tbody></table>`;
+  html += `</tbody></table><div class="source-note">Montants pour le profil sélectionné : ${HH_LABELS[hh.profil]} (${hh.priceLabel}).</div>`;
   wrap.innerHTML = html;
 }
