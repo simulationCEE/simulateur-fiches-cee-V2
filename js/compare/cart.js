@@ -40,7 +40,7 @@ function captureSnapshot(){
   const resEl = document.getElementById('results');
   if(resEl){
     const perC = parseFloat(resEl.dataset.perM2C), perP = parseFloat(resEl.dataset.perM2P);
-    if(Number.isFinite(perC)) results.push(['Prime Classique / m²', eur2(perC), false, true, 'Prix au m²']);
+    if(Number.isFinite(perC)) results.push([resEl.dataset.perM2Label || 'Prime Classique / m²', eur2(perC), false, true, 'Prix au m²']);
     if(Number.isFinite(perP)) results.push(['Prime Précarité / m²', eur2(perP), false, true, 'Prix au m²']);
   }
   return {
