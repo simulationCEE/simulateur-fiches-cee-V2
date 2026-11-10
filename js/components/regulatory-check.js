@@ -2,7 +2,22 @@
 // VÉRIFICATION DE FENÊTRE RÉGLEMENTAIRE — fenêtres vérifiées sur documents officiels
 // (voir onglet Sources pour le détail et les dates de dernière vérification)
 // ═══════════════════════════════════════════════════════════════════════
+// Fiches résidentielles sans fenêtre réglementaire propre : le champ « date d'engagement » sert uniquement
+// à appliquer les règles « profil du ménage » (arrêté du 5 novembre 2026, en vigueur le 16/11/2026).
+const HH_INFO_WINDOW = {
+  type: 'info',
+  label: "Profil du ménage : les règles dépendent de la date d'engagement (nouvelle définition de la précarité énergétique à partir du 16/11/2026)",
+  start: null, end: null,
+  source: 'Arrêté du 5 novembre 2026 (JO du 10/11/2026, NOR ECOR2625692A)'
+};
 const REGULATORY_WINDOWS = {
+  'BAR-TH-172': HH_INFO_WINDOW,
+  'BAR-TH-112': HH_INFO_WINDOW,
+  'BAR-TH-113': HH_INFO_WINDOW,
+  'BAR-TH-129': HH_INFO_WINDOW,
+  'BAR-EN-101': HH_INFO_WINDOW,
+  'BAR-EN-102': HH_INFO_WINDOW,
+  'BAR-EN-103': HH_INFO_WINDOW,
   'BAR-TH-168': {
     type: 'bonification',
     label: 'Bonification ×4 / ×5',
@@ -11,7 +26,7 @@ const REGULATORY_WINDOWS = {
   },
   'BAR-TH-171': {
     type: 'bonification',
-    label: 'Coup de Pouce ×5',
+    label: 'Coup de Pouce (×5 / ×3 selon le ménage à partir du 16/11/2026)',
     start: '2025-10-01', end: '2030-12-31',
     source: 'Charte Coup de Pouce Chauffage'
   },
@@ -125,6 +140,7 @@ function addRegulatoryCheck(container, ficheCode){
   const statusEl = container.querySelector('#regStatus');
   const boxEl = container.querySelector('#regCheckBox');
   function evaluate(){
+    if(win.type === 'info'){ statusEl.textContent = ''; boxEl.style.background = 'var(--blue-bg)'; return; }
     const d = dateEl.value;
     const beforeStart = win.start && d < win.start;
     const afterEnd = win.end && d > win.end;
