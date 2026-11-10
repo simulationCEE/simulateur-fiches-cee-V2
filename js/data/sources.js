@@ -2,6 +2,7 @@
 // SOURCES & MISES À JOUR — modale discrète, distincte du simulateur
 // ═══════════════════════════════════════════════════════════════════════
 const FICHE_SOURCES = [
+  { code:'Profil du ménage (BAR-*)', version:'arrêté du 05/11/2026', detail:'Arrêté du 5 novembre 2026 (JO du 10/11/2026, NOR ECOR2625692A), applicable aux opérations engagées à partir du 16/11/2026 : ménages très modestes (II bis), ménages en situation de précarité énergétique = « modestes » (II ter, déciles de revenus 1 à 5) et autres ménages. Prix : très modestes et modestes au prix précarité, autres au prix classique (avant le 16/11/2026 : seuls les très modestes au prix précarité). Coup de Pouce très modeste / modeste / autre : BAR-TH-171, 172 et 113 ×5 / ×3 / ×5 ; BAR-TH-112 (remplacement d\'un chauffage au charbon) ×5 / ×3 / ×4 ; BAR-TH-168 ×5 / ×3 / ×4 (⚠ rattachement à l\'article 3-9 supposé, à confirmer). BAR-TH-179 et BAR-TH-177 : coefficient inchangé, seul le prix dépend de la répartition des ménages ; PAC MIXTE non modifiée. Arrêté du 6/11/2026 (offres intégrées PAC, ADEME) non intégré.' },
   { code:'BAR-TH-171', version:'vA78.4', detail:'Coup de Pouce ×5 : du 01/10/2025 au 31/12/2030. Aucune date d\'abrogation générale connue à ce jour.' },
   { code:'BAR-TH-179', version:'vA75.1', detail:'Fiche applicable aux opérations engagées jusqu\'au 31/12/2030 (texte réglementaire officiel).' },
   { code:'BAT-TH-163', version:'vA81-2', detail:'Fiche applicable aux opérations engagées jusqu\'au 31/12/2030 (texte réglementaire officiel, vérifié le 08/09/2026).' },
