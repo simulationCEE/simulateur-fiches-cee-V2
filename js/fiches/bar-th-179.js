@@ -24,8 +24,13 @@ function renderTH179(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Etas de la PAC (%)</label><input type="number" id="f-etas" value="140"></div>
-      <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30"></div>
+      <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30" min="1"></div>
     </div>
+    <div class="field-row">
+      <div class="field"><label>Ménages très modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+    </div>
+    <div class="hh-note" id="hhNote"></div>
     <div class="field-row">
       <div class="field"><label>Puissance PAC <span class="hint">kW</span></label><input type="number" id="f-ppac" value="200"></div>
       <div class="field"><label>Puissance chaufferie <span class="hint">kW</span></label><input type="number" id="f-pch" value="400"></div>
@@ -57,19 +62,23 @@ function renderTH179(body){
     const totalBrut = kwhc*n*R;
     const mult = cdp?3:1;
     const total = totalBrut*mult;
-    return {kwh: total, kwhBrut: totalBrut, primeC: total/1000*pc, primeP: total/1000*pp, R, cdp, n, mult};
+    // Prix moyen pondéré selon la répartition des ménages (part constante quand on fait varier le nombre de logements)
+    const nRef = parseFloat(document.getElementById('f-n').value)||0;
+    const share = hhShare(parseFloat(document.getElementById('f-ntm').value)||0, parseFloat(document.getElementById('f-nm').value)||0, nRef);
+    const prix = pp*share + pc*(1-share);
+    return {kwh: total, kwhBrut: totalBrut, prime: total/1000*prix, share, R, cdp, n, mult};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const n=parseFloat(document.getElementById('f-n').value)||0;
-    const {kwh:total, kwhBrut, primeC, primeP, R, cdp, mult} = calcCore179(n);
+    const {kwh:total, kwhBrut, prime, share, R, cdp, mult} = calcCore179(n);
+    document.getElementById('hhNote').innerHTML = hhMixNoteText(parseFloat(document.getElementById('f-ntm').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">Facteur R</span><span class="result-val" style="font-size:14px">${R.toFixed(2)}</span></div>
       <div class="result-row"><span class="result-label">kWh cumac total ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(total)}</span></div>
-      <div class="result-row ${cdp?'cdp':'hi'}"><span class="result-label">Prime Classique</span><span class="result-val">${eur(primeC)}</span></div>
-      <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(primeP)}</span></div>
-      <div class="result-row"><span class="result-label">Prime Classique / logement</span><span class="result-val" style="font-size:14px">${n>0?eur(primeC/n):'—'}</span></div>
+      <div class="result-row ${cdp?'cdp':(share>0?'hi prec':'hi')}"><span class="result-label">Prime — ${(share*100).toLocaleString('fr-FR',{maximumFractionDigits:1})} % des logements au prix précarité</span><span class="result-val">${eur(prime)}</span></div>
+      <div class="result-row"><span class="result-label">Prime / logement</span><span class="result-val" style="font-size:14px">${n>0?eur(prime/n):'—'}</span></div>
     `;
 
     if(!adjWrap){
@@ -77,8 +86,7 @@ function renderTH179(body){
         unitLabel:'logts', paramLabel:'Nb logements', defaultStep:5, defaultRep:2,
         getBase: () => parseFloat(document.getElementById('f-n').value)||0,
         minValid: 1,
-        primeLabel:'Prime Classique', extraLabel:'Prime Précarité',
-        calc: (val) => { const r = calcCore179(Math.round(val)); return {kwh:r.kwh, prime:r.primeC, extra:r.primeP}; }
+        calc: (val) => { const r = calcCore179(Math.round(val)); return {kwh:r.kwh, prime:r.prime}; }
       });
     } else {
       adjWrap.refresh();
@@ -86,8 +94,8 @@ function renderTH179(body){
 
     if(!revWrap){
       revWrap = reverseSolver(body, {
-        quantityLabel:'nombre de logements', unitLabel:'logts', integer:true, min:1, max:2000, hasPrec:true,
-        calc: (val) => { const r = calcCore179(Math.round(val)); return {primeC:r.primeC, primeP:r.primeP}; }
+        quantityLabel:'nombre de logements', unitLabel:'logts', integer:true, min:1, max:2000,
+        calc: (val) => { const r = calcCore179(Math.round(val)); return {prime:r.prime}; }
       });
     } else {
       revWrap.refresh();
@@ -97,6 +105,7 @@ function renderTH179(body){
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
 const ETAS179_LABELS = {
