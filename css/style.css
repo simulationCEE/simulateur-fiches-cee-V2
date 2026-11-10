@@ -950,3 +950,9 @@ html.installer-mode .default-prices-card{display:none!important}
   /* le titre de section indique déjà le secteur : le badge de chaque carte devient redondant */
   .sector-section .sector-badge{display:none}
   .sector-section .card-title{margin-bottom:0}
+
+
+  /* ── Profil du ménage : rappel des règles applicables à la date d'engagement ── */
+  .hh-note{margin:2px 0 14px;padding:9px 12px;border-radius:9px;background:var(--blue-bg);border:1px solid #B9CDE5;
+    font-size:11.5px;line-height:1.55;color:var(--text-2)}
+  .hh-note b{color:var(--navy-dk)}
