@@ -2,10 +2,10 @@
 // GLOSSAIRE — info-bulles pédagogiques sur les champs techniques
 // ═══════════════════════════════════════════════════════════════════════
 const GLOSSARY = [
-  ["profil du ménage", "Catégorie de revenus du bénéficiaire (très modeste, modeste, ou autre) : elle détermine le coefficient de bonification et le tarif CEE applicable."],
-  ["ménages précaires", "Nombre de logements occupés par des ménages aux ressources modestes ou très modestes, éligibles au tarif Précarité."],
-  ["prix précarité", "Tarif CEE plus élevé, réservé aux ménages aux revenus modestes ou très modestes selon les plafonds ANAH."],
-  ["prix classique", "Tarif CEE standard, applicable aux ménages ne relevant pas de la précarité énergétique."],
+  ["profil du ménage", "Catégorie de revenus du ménage bénéficiaire : très modeste, modeste (situation de précarité énergétique : déciles de revenus 1 à 5) ou autre. Elle détermine le tarif CEE (précarité ou classique) et, sur les fiches bonifiées, le coefficient Coup de Pouce. Règles de l'arrêté du 5 novembre 2026 pour un engagement à partir du 16/11/2026."],
+  ["ménages précaires", "Nombre de logements occupés par des ménages très modestes ou modestes, éligibles au tarif Précarité."],
+  ["prix précarité", "Tarif CEE plus élevé, appliqué aux ménages très modestes et, pour un engagement à partir du 16/11/2026, aux ménages modestes (précarité énergétique, déciles de revenus 1 à 5)."],
+  ["prix classique", "Tarif CEE standard, appliqué aux autres ménages (au-delà du 5e décile de revenus) et, pour un engagement avant le 16/11/2026, aux ménages modestes."],
   ["coup de pouce", "Dispositif qui multiplie la prime CEE lorsque les travaux remplacent un chauffage fossile (charbon, fioul, gaz) par un équipement performant."],
   ["etas", "Efficacité énergétique saisonnière de la pompe à chaleur (règlement UE 813/2013). Plus elle est élevée, plus le forfait CEE est important."],
   ["secteur d'activité", "Coefficient qui ajuste le forfait CEE selon l'usage du bâtiment tertiaire (bureaux, santé, commerces...), car leurs besoins de chauffage diffèrent."],
@@ -80,6 +80,8 @@ const GLOSSARY = [
   ["réseau de chauffage basse température", "Réseau à eau de température inférieure à 60 °C, circulant dans des tubes placés dans la végétation, en complément du chauffage principal au sol qui fonctionne en général à 60-80 °C."],
   ["tubes de chauffage métalliques", "Les tubes doivent être métalliques : les tubes en polyéthylène, plastique ou composite ne sont pas éligibles."],
   ["au moins deux tubes par rangée", "Au moins deux tubes par rangée de culture, ou un second tube en complément d'un premier tube existant. Un seul tube sans tube existant en complément n'est pas éligible."],
+  ["ménages très modestes", "Nombre de logements occupés par des ménages très modestes (justificatifs : avis d'imposition, attestation de droit à la complémentaire santé solidaire ou attestation du chèque énergie). Ils sont facturés au prix précarité."],
+  ["ménages modestes", "Nombre de logements occupés par des ménages en situation de précarité énergétique au sens de l'arrêté du 5 novembre 2026 (déciles de revenus 1 à 5), hors très modestes. Prix précarité pour un engagement à partir du 16/11/2026, prix classique avant."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
