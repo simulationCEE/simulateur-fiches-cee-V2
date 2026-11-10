@@ -6,13 +6,27 @@ const simTitle = document.getElementById('simTitle');
 const simSubtitle = document.getElementById('simSubtitle');
 const simBody = document.getElementById('simBody');
 
+// simBody est RÉUTILISÉ d'une fiche à l'autre. Les écouteurs qu'une fiche y accroche pendant son rendu
+// (ex. recalcul quand la date d'engagement change) doivent donc être retirés à l'ouverture de la fiche
+// suivante, sinon ils s'accumulent et font tourner le calcul des fiches déjà fermées.
+let simBodyFicheListeners = [];
+let simBodyCapture = false;
+const simBodyAddListener = simBody.addEventListener.bind(simBody);
+simBody.addEventListener = function(type, fn, opts){
+  if(simBodyCapture) simBodyFicheListeners.push([type, fn, opts]);
+  simBodyAddListener(type, fn, opts);
+};
+
 function openSim(f){
   currentFiche = f;
   simTitle.textContent = f.code + " — " + f.title;
   simSubtitle.textContent = `${f.version} · Durée de vie ${f.dv}`;
+  simBodyFicheListeners.forEach(([t, fn, o]) => simBody.removeEventListener(t, fn, o));
+  simBodyFicheListeners = [];
   simBody.innerHTML = '';
   document.querySelector('.sim-panel').classList.toggle('wide', f.code !== 'BAR-TH-177');
-  f.render(simBody);
+  simBodyCapture = true;
+  try { f.render(simBody); } finally { simBodyCapture = false; }
   addTooltips(simBody);
   applyDefaultPrices(simBody);
   addRegulatoryCheck(simBody, f.code);
