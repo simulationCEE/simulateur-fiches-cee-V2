@@ -53,7 +53,7 @@ const FICHES = [
     render: renderTH113
   },
   {
-    code:"BAR-TH-168", title:"Dispositif solaire thermique", sector:"res", tags:["solaire"],
+    code:"BAR-TH-168", title:"Dispositif solaire thermique — SUPPRIMÉE", sector:"res", tags:["solaire"],
     version:"vA87.4", dv:"25 ans",
     render: renderTH168
   },
