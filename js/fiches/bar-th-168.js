@@ -10,10 +10,9 @@ function renderTH168(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Surface capteurs <span class="hint">m²</span></label><input type="number" id="f-surf" value="10"></div>
-      <div class="field"><label>Profil du ménage</label>
-        <select id="f-profil"><option value="autre">Autre ménage (×4)</option><option value="modeste">Modeste (×5)</option><option value="tresmodeste">Très modeste (×5)</option></select>
-      </div>
+      ${hhFieldHtml('f-profil')}
     </div>
+    ${hhNoteHtml()}
     <div class="warn-box" id="warnSurf"></div>
     <div class="field-row">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
@@ -32,15 +31,14 @@ function renderTH168(body){
   function calcCore168(surf){
     const zone=document.getElementById('f-zone').value;
     const usage=document.getElementById('f-usage').value;
-    const profil=document.getElementById('f-profil').value;
     const pc=parseFloat(document.getElementById('f-pc').value)||0;
     const pp=parseFloat(document.getElementById('f-pp').value)||0;
+    const hh = hhCtx('BAR-TH-168', pc, pp, 'f-profil');
     const kwhc = forf168[zone][usage]*surf;
-    const coef = profil==='autre'?4:5;
-    const prix = profil==='tresmodeste'?pp:pc;
+    const coef = hh.coef;
     const kwhcBonifie = kwhc*coef;
-    const prime = kwhcBonifie/1000*prix;
-    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime, coef};
+    const prime = kwhcBonifie/1000*hh.price;
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime, coef, hh};
   }
 
   let adjWrap;
@@ -56,11 +54,11 @@ function renderTH168(body){
     } else {
       warnEl.classList.remove('show');
     }
-    const {kwh:kwhc, kwhBrut, prime, coef} = calcCore168(surf);
-    const profil=document.getElementById('f-profil').value;
+    const {kwh:kwhc, kwhBrut, prime, coef, hh} = calcCore168(surf);
+    hhUpdateNote('BAR-TH-168');
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">kWh cumac (bonifié ×${coef}, brut ${kwh(kwhBrut)})</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${profil==='tresmodeste'?'prec':'cdp'}"><span class="result-label">Prime bonifiée</span><span class="result-val">${eur(prime)}</span></div>
+      <div class="result-row ${hhRowClass(hh, coef>1)}"><span class="result-label">${hhPrimeLabel(hh, 'Prime bonifiée')}</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
     if(!adjWrap){
@@ -87,6 +85,7 @@ function renderTH168(body){
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
 function buildBareme168(wrap, forf){
@@ -97,9 +96,7 @@ function buildBareme168(wrap, forf){
   const curUsage=document.getElementById('f-usage').value;
   let html = `<table class="bareme"><thead><tr>
     <th>Zone</th><th>Usage</th><th>kWhc/m²</th>
-    <th class="sub">Autre ménage<br>×4 Classique</th>
-    <th class="sub">Modeste<br>×5 Classique</th>
-    <th class="sub">Très modeste<br>×5 Précarité</th>
+    ${['autre','modeste','tresmodeste'].map(p=>{const h=hhCtxFor('BAR-TH-168',p,pc,pp);return `<th class="sub">${HH_LABELS[p].replace('Ménage ','').replace(/^./,c=>c.toUpperCase())}<br>×${h.coef} ${h.kind==='prec'?'Précarité':'Classique'}</th>`;}).join('')}
   </tr></thead><tbody>`;
   ['H1','H2','H3'].forEach(zone=>{
     [['ECS seule','ecs'],['ECS + Chauffage','ch']].forEach(([label,key],i)=>{
@@ -109,9 +106,7 @@ function buildBareme168(wrap, forf){
       html += `<tr class="${isCur?'hl':''} ${i===1?'grp-end':''}">`;
       if(i===0) html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="2">${zone}</td>`;
       html += `<td style="text-align:left">${label}</td><td>${num(v)}</td>`;
-      html += `<td class="num-cdp">${eur(kwhcTotal/1000*pc*4)}</td>`;
-      html += `<td class="num-cdp">${eur(kwhcTotal/1000*pc*5)}</td>`;
-      html += `<td class="num-p">${eur(kwhcTotal/1000*pp*5)}</td>`;
+      ['autre','modeste','tresmodeste'].forEach(p=>{ const h=hhCtxFor('BAR-TH-168',p,pc,pp); html += `<td class="${h.kind==='prec'?'num-p':'num-cdp'}">${eur(kwhcTotal*h.coef/1000*h.price)}</td>`; });
       html += `</tr>`;
     });
   });
