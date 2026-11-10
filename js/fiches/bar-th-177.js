@@ -9,7 +9,10 @@ function renderTH177(body){
       <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Ménages précaires <span class="hint">nombre</span></label><input type="number" id="f-np" value="0"></div>
+      <div class="field"><label>Ménages très modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-np" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+    </div>
+    <div class="field-row">
       <div class="field"><label>Coup de Pouce Rénovation performante</label>
         <select id="f-cdp">
           <option value="non">Aucun (hors charte CdP)</option>
@@ -22,6 +25,7 @@ function renderTH177(body){
       <div class="field"><label>Cep initial <span class="hint">kWh/m².an</span></label><input type="number" id="f-ci" value="250"></div>
       <div class="field"><label>Cep projet <span class="hint">kWh/m².an</span></label><input type="number" id="f-cp" value="150"></div>
     </div>
+    <div class="hh-note" id="hhNote"></div>
     <div class="field-row">
       <div class="field"><label>Prix Classique <span class="hint">€/MWhc</span></label><input type="number" id="f-pc" value="" step="0.1" placeholder="ex : 7,8"></div>
       <div class="field"><label>Prix Précarité <span class="hint">€/MWhc</span></label><input type="number" id="f-pp" value="" step="0.1" placeholder="ex : 11"></div>
@@ -34,13 +38,14 @@ function renderTH177(body){
   function calcCore177(shab){
     const n=parseFloat(document.getElementById('f-n').value)||1;
     const np=parseFloat(document.getElementById('f-np').value)||0;
+    const nm=parseFloat(document.getElementById('f-nm').value)||0;
     const pc=parseFloat(document.getElementById('f-pc').value)||0;
     const pp=parseFloat(document.getElementById('f-pp').value)||0;
     const cdp=document.getElementById('f-cdp').value;
     const mult = cdp==='chauffage'?3:(cdp==='travaux'?2:1);
     const kwhcBrut = 2100*shab;
     const kwhc = kwhcBrut*mult;
-    const primeMix = (kwhc/1000*pp*np/n) + (kwhc/1000*pc*(n-np)/n);
+    const primeMix = kwhc/1000*hhMixPrice(np, nm, n, pc, pp);
     return {kwh: kwhc, kwhBrut: kwhcBrut, prime: primeMix, mult, cdp};
   }
   let adjWrap;
@@ -48,6 +53,7 @@ function renderTH177(body){
   function calc(){
     const shab=parseFloat(document.getElementById('f-shab').value)||0;
     const n=parseFloat(document.getElementById('f-n').value)||1;
+    document.getElementById('hhNote').innerHTML = hhMixNoteText(parseFloat(document.getElementById('f-np').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
     const ci=parseFloat(document.getElementById('f-ci').value)||0;
     const cp=parseFloat(document.getElementById('f-cp').value)||0;
     const gain = ci>0 ? (ci-cp)/ci : 0;
@@ -94,5 +100,6 @@ function renderTH177(body){
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
