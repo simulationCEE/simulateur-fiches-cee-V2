@@ -2,6 +2,7 @@
 // RENDER: BAR-TH-168 (Solaire thermique)
 // ═══════════════════════════════════════════════════════════════════════
 function renderTH168(body){
+  body.insertAdjacentHTML('beforeend', `<div class="warn-box show" style="margin-bottom:10px"><b>⚠ FICHE SUPPRIMÉE.</b> Supprimée par l'arrêté du 28 octobre 2026 (JO du 3 novembre 2026), en vigueur le <b>4 novembre 2026</b>. Selon la presse spécialisée (à confirmer sur le texte de l'arrêté), seules restent valorisables les opérations engagées au plus tard le 3 novembre 2026 et déclarées dans la liste à transmettre au ministre avant le 13 novembre 2026.</div>`);
   body.insertAdjacentHTML('beforeend', `<div class="cond-box"><b>Conditions :</b> Pas d'appoint fossile après travaux · Capteurs vitrés (hybrides exclus) · Engagement avant 01/01/2027 pour bonification</div>`);
   body.insertAdjacentHTML('beforeend', `
     <div class="field-row">
