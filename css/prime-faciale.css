@@ -1,0 +1,64 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   PRIME FACIALE — bloc sous les résultats de chaque simulateur
+   Utilise les variables de css/style.css (--navy, --green, --border…)
+   ═══════════════════════════════════════════════════════════════════════ */
+.pf-box{
+  margin-top:14px; padding:16px 16px 14px; border-radius:12px;
+  background:var(--panel); border:1.5px solid var(--navy-lt);
+  box-shadow:0 1px 0 rgba(27,58,92,.06);
+}
+.pf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.pf-title{margin:0;font-size:14px;font-weight:700;color:var(--navy-dk)}
+.pf-sub{margin:2px 0 0;font-size:11.5px;color:var(--text-3);max-width:46ch}
+.pf-pct{
+  flex-shrink:0; min-width:74px; text-align:center; padding:6px 10px; border-radius:8px;
+  background:var(--navy); color:#fff; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums;
+}
+.pf-field{margin-bottom:10px}
+
+/* Curseur */
+.pf-field input[type=range]{
+  -webkit-appearance:none; appearance:none; width:100%; height:28px; background:transparent; cursor:pointer;
+  border:none; padding:0; margin:0; --pf-fill:60%;
+}
+.pf-field input[type=range]:focus{outline:none}
+.pf-field input[type=range]::-webkit-slider-runnable-track{
+  height:8px; border-radius:6px;
+  background:linear-gradient(to right, var(--navy-lt) 0, var(--navy-lt) var(--pf-fill), var(--border) var(--pf-fill));
+}
+.pf-field input[type=range]::-moz-range-track{height:8px;border-radius:6px;background:var(--border)}
+.pf-field input[type=range]::-moz-range-progress{height:8px;border-radius:6px;background:var(--navy-lt)}
+.pf-field input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; margin-top:-7px; border-radius:50%;
+  background:#fff; border:3px solid var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.pf-field input[type=range]::-moz-range-thumb{
+  width:16px; height:16px; border-radius:50%; background:#fff; border:3px solid var(--navy);
+}
+.pf-field input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(46,96,150,.3)}
+.pf-field input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(46,96,150,.3)}
+
+/* Taux rapides */
+.pf-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pf-preset{
+  font:inherit; font-size:12px; font-weight:600; padding:5px 11px; border-radius:16px; cursor:pointer;
+  background:var(--bg); color:var(--text-2); border:1px solid var(--border);
+}
+.pf-preset:hover{border-color:var(--navy-lt);color:var(--navy)}
+.pf-preset.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.pf-preset:focus-visible{outline:2px solid var(--navy-lt);outline-offset:2px}
+
+/* Lignes de résultat */
+.pf-results{gap:4px}
+.result-row.pf-row{background:var(--blue-bg);border-color:#B9CDE5;margin-top:4px}
+.result-row.pf-row .result-val{color:var(--navy);font-size:19px}
+.pf-detail{font-size:11.5px;color:var(--text-3);padding:0 15px 4px;text-align:right;font-variant-numeric:tabular-nums}
+.pf-empty{margin:0;font-size:12px;color:var(--text-3)}
+
+@media (max-width:520px){
+  .pf-head{flex-direction:column}
+  .pf-pct{align-self:flex-start}
+}
+@media (prefers-reduced-motion:no-preference){
+  .pf-preset{transition:background .12s,border-color .12s,color .12s}
+}
