@@ -119,6 +119,73 @@ function hhUpdateNote(code, id){
   hhRefreshOptions();
 }
 
+// ── Barème Anah 2026 : plafonds de ressources (revenu fiscal de référence du ménage) ──
+// Source : tableau « Plafonds de ressources des ménages en 2026 » (hello watt) fourni par EBS Énergie — à confirmer sur anah.gouv.fr
+const HH_ANAH_2026 = {
+  idf:  { nom: 'Île-de-France',
+          base: { tm: [24031, 35270, 42357, 49455, 56580], m: [29253, 42933, 51564, 60208, 68877], i: [40851, 60051, 71846, 84562, 96817] },
+          extra: { tm: 7116, m: 8663, i: 12257 } },
+  hidf: { nom: 'Hors Île-de-France et Outre-mer',
+          base: { tm: [17363, 25393, 30540, 35676, 40835], m: [22259, 32553, 39148, 45735, 52348], i: [31185, 45842, 55196, 64550, 73907] },
+          extra: { tm: 5151, m: 6598, i: 9357 } },
+};
+const HH_ANAH_LABELS = {
+  tm: { nom: 'Ménage très modeste (bleu)',      champ: 'Ménages très modestes', prix: 'précarité énergétique → prix précarité' },
+  m:  { nom: 'Ménage modeste (jaune)',          champ: 'Ménages modestes',      prix: 'précarité énergétique → prix précarité (engagement à partir du 16/11/2026)' },
+  i:  { nom: 'Ménage intermédiaire (violet)',   champ: 'Autres ménages',        prix: 'hors précarité énergétique → prix classique' },
+  s:  { nom: 'Ménage supérieur (rose)',         champ: 'Autres ménages',        prix: 'hors précarité énergétique → prix classique' },
+};
+// Plafond d'une catégorie (tm, m, i) pour un nombre de personnes ; au-delà de 5 : + montant par personne supplémentaire
+function hhAnahCeiling(zone, cat, persons){
+  const z = HH_ANAH_2026[zone], arr = z.base[cat], p = Math.max(1, Math.floor(persons || 1));
+  return p <= 5 ? arr[p - 1] : arr[4] + (p - 5) * z.extra[cat];
+}
+// Catégorie Anah : première dont le plafond couvre le revenu ; sinon « supérieur »
+function hhAnahCategory(zone, persons, rfr){
+  for(const cat of ['tm', 'm', 'i']) if(rfr <= hhAnahCeiling(zone, cat, persons)) return cat;
+  return 's';
+}
+function hhAnahHtml(){
+  const f = n => n.toLocaleString('fr-FR');
+  const table = zone => {
+    const z = HH_ANAH_2026[zone];
+    const rows = [0, 1, 2, 3, 4].map(k => `<tr><td>${k + 1}</td><td>${f(z.base.tm[k])} €</td><td>${f(z.base.m[k])} €</td><td>${f(z.base.i[k])} €</td><td>&gt; ${f(z.base.i[k])} €</td></tr>`).join('');
+    return `<table class="hh-anah-table"><caption>${z.nom}</caption>
+      <thead><tr><th>Personnes</th><th class="tm">Très modestes</th><th class="m">Modestes</th><th class="i">Intermédiaires</th><th class="s">Supérieurs</th></tr></thead>
+      <tbody>${rows}<tr><td>Par personne en +</td><td>+ ${f(z.extra.tm)} €</td><td>+ ${f(z.extra.m)} €</td><td>+ ${f(z.extra.i)} €</td><td>+ ${f(z.extra.i)} €</td></tr></tbody></table>`;
+  };
+  return `<details class="hh-anah"><summary>Barème Anah 2026 : retrouver la catégorie d'un ménage</summary>
+    <div class="hh-anah-body">
+      <div class="hh-anah-row">
+        <label>Zone <select id="hhAnahZone"><option value="hidf">Hors Île-de-France et Outre-mer</option><option value="idf">Île-de-France</option></select></label>
+        <label>Nombre de personnes du ménage <input type="number" id="hhAnahPers" min="1" value="2"></label>
+        <label>Revenu fiscal de référence du ménage (€) <input type="number" id="hhAnahRfr" min="0" step="100" placeholder="ex : 28 000"></label>
+      </div>
+      <div class="hh-anah-res" id="hhAnahRes"></div>
+      ${table('hidf')}${table('idf')}
+      <p class="hh-anah-src">Plafonds de ressources 2026 (revenu fiscal de référence du ménage). Source : tableau hello watt fourni par EBS Énergie, à confirmer sur anah.gouv.fr. Repère indicatif : à partir du 16/11/2026, l'arrêté du 5 novembre 2026 définit la précarité énergétique par le revenu fiscal de référence par part (≤ ${HH_D5.toLocaleString('fr-FR')} €).</p>
+    </div></details>`;
+}
+function hhInjectAnah(body){
+  if(body.querySelector('.hh-anah')) return;
+  if(typeof currentFiche !== 'undefined' && currentFiche && currentFiche.code === 'BAR-TH-168') return;
+  const note = body.querySelector('#hhNote');
+  if(!note) return;
+  note.insertAdjacentHTML('afterend', hhAnahHtml());
+  const box = body.querySelector('.hh-anah');
+  const res = box.querySelector('#hhAnahRes');
+  function update(){
+    const rfrRaw = box.querySelector('#hhAnahRfr').value;
+    if(rfrRaw === ''){ res.className = 'hh-anah-res'; res.textContent = 'Renseignez le revenu fiscal de référence du ménage pour connaître sa catégorie.'; return; }
+    const cat = hhAnahCategory(box.querySelector('#hhAnahZone').value, parseFloat(box.querySelector('#hhAnahPers').value) || 1, parseFloat(rfrRaw) || 0);
+    const l = HH_ANAH_LABELS[cat];
+    res.className = 'hh-anah-res ' + cat;
+    res.innerHTML = `${l.nom} → à compter dans « ${l.champ} » (${l.prix})`;
+  }
+  box.querySelectorAll('select,input').forEach(el => el.addEventListener('input', update));
+  update();
+}
+
 // Alerte en tête de chaque fiche concernée par le changement du 16/11/2026
 function hhInjectAlert(body){
   if(body.querySelector('.hh-alert')) return;
@@ -136,22 +203,28 @@ function hhResPrincField(id){
 // Recalcul quand la date d'engagement change (le champ est ajouté après le rendu de la fiche)
 function hhWatch(body, calc){
   hhInjectAlert(body);
+  hhInjectAnah(body);
   body.addEventListener('input', e => { if(e.target && e.target.id === 'regDate') calc(); });
   setTimeout(calc, 0);
 }
 
 // ── Fiches collectives (BAR-TH-177, BAR-TH-179) : plusieurs ménages dans l'opération ──
-// Troisième catégorie des fiches collectives : « autres ménages » (prix classique), calculée automatiquement
-function hhOthersFieldHtml(){
-  return `<div class="field"><label>Autres ménages (hors précarité énergétique) <span class="hint">calculé automatiquement · repère Anah : violet, rose</span></label>
-      <input type="number" id="f-na" value="0" readonly tabindex="-1" style="background:var(--bg);color:var(--text-2);cursor:default"></div>`;
+// Fiches collectives : le nombre de logements de chaque catégorie est SAISI ; le total de logements en est la SOMME.
+const HH_READONLY_STYLE = 'background:var(--bg);color:var(--text-2);cursor:default';
+function hhOthersFieldHtml(defaut){
+  return `<div class="field"><label>Autres ménages (hors précarité énergétique) <span class="hint">nombre de logements · repère Anah : violet, rose</span></label>
+      <input type="number" id="f-na" value="${defaut || 0}" min="0"></div>`;
 }
-// Met à jour le bandeau de répartition et le nombre d'autres ménages (logements − très modestes − modestes)
-function hhMixRefresh(nTM, nM, n){
+// Total de logements = très modestes + modestes + autres (champ total en lecture seule)
+function hhSyncTotal(totalId, tmId, mId, aId){
+  const v = id => parseFloat((document.getElementById(id) || {}).value) || 0;
+  const total = document.getElementById(totalId);
+  if(total) total.value = v(tmId) + v(mId) + v(aId);
+}
+// Bandeau des règles de prix selon la date d'engagement
+function hhMixRefresh(){
   const note = document.getElementById('hhNote');
-  if(note) note.innerHTML = hhMixNoteText(nTM, nM, n);
-  const na = document.getElementById('f-na');
-  if(na) na.value = Math.max(0, (n || 0) - (nTM || 0) - (nM || 0));
+  if(note) note.innerHTML = hhMixNoteText();
 }
 
 // Part des logements facturée au Prix Précarité : très modestes + (modestes à partir du 16/11/2026)
@@ -164,14 +237,9 @@ function hhMixPrice(nTM, nM, n, pc, pp){
   const s = hhShare(nTM, nM, n);
   return pp * s + pc * (1 - s);
 }
-function hhMixNoteText(nTM, nM, n){
-  nTM = nTM || 0; nM = nM || 0; n = n || 0;
-  const lg = x => `${x.toLocaleString('fr-FR', {maximumFractionDigits:1})} logement${x > 1 ? 's' : ''}`;
-  const warn = (nTM + nM > n) ? ' <b>⚠ Le total des ménages très modestes et modestes dépasse le nombre de logements.</b>' : '';
+function hhMixNoteText(){
   if(hhIsNew()){
-    const prec = nTM + nM, autres = Math.max(0, n - prec);
-    return `<b>Engagement à partir du 16/11/2026 :</b> <b>précarité énergétique = ménages très modestes + modestes</b> → prix précarité · <b>autres ménages</b> → prix classique.<br><b>Cette opération :</b> <b>${lg(prec)} au prix précarité</b> (${nTM} très modeste${nTM > 1 ? 's' : ''} + ${nM} modeste${nM > 1 ? 's' : ''}) · <b>${lg(autres)} au prix classique</b> (autres ménages).${warn}`;
+    return `<b>Engagement à partir du 16/11/2026 :</b> précarité énergétique = <b>ménages très modestes + ménages modestes</b> → <b>prix précarité</b> · <b>autres ménages</b> → <b>prix classique</b>. Le nombre de logements est la somme des trois catégories.`;
   }
-  const autres = Math.max(0, n - nTM);
-  return `<b>Engagement jusqu'au 15/11/2026 :</b> <b>précarité = ménages très modestes seuls</b> → prix précarité · ménages modestes et autres → prix classique.<br><b>Cette opération :</b> <b>${lg(nTM)} au prix précarité</b> (très modestes) · <b>${lg(autres)} au prix classique</b> (dont ${nM} modeste${nM > 1 ? 's' : ''}).${warn}`;
+  return `<b>Engagement jusqu'au 15/11/2026 :</b> précarité = <b>ménages très modestes seuls</b> → prix précarité · ménages modestes et autres → <b>prix classique</b>. Le nombre de logements est la somme des trois catégories.`;
 }
