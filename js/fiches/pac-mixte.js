@@ -51,8 +51,12 @@ function renderPACMixte(body){
       <div class="field"><label>Nombre de logements réels (N)</label><input type="number" id="f-nreel" value="10"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements réels</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
-      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements réels</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements réels · repère Anah : bleu</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements réels · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+    </div>
+    <div class="field-row">
+      ${hhOthersFieldHtml()}
+      <div class="field"></div>
     </div>
     <div class="hh-note" id="hhNote"></div>
     <div class="field-row">
@@ -149,7 +153,7 @@ function renderPACMixte(body){
 
   function calc(){
     const r = calcMixte();
-    document.getElementById('hhNote').innerHTML = hhMixNoteText(r.nTM, r.nM, r.nReel);
+    hhMixRefresh(r.nTM, r.nM, r.nReel);
     const warnCasC = document.getElementById('warnCasC');
     const warnPrec3 = document.getElementById('warnPrecCas3');
 
