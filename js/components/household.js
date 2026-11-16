@@ -71,13 +71,32 @@ function hhPrimeLabel(hh, texte){ return `${texte || 'Prime'} — ${HH_LABELS[hh
 // « hi » (sélectionnable dans le comparatif) ; « cdp » si bonifiée ; « prec » ajoute la teinte précarité
 function hhRowClass(hh, bonifie){ return bonifie ? 'cdp' : (hh.kind === 'prec' ? 'hi prec' : 'hi'); }
 
+// Libellés du champ « Profil du ménage » : ils disent à quelle catégorie de prix correspond chaque choix
+const HH_OPTION_LABELS = {
+  new: { tresmodeste: 'Très modeste — précarité énergétique (prix précarité)',
+         modeste:     'Modeste — précarité énergétique (prix précarité)',
+         autre:       'Autre ménage — hors précarité (prix classique)' },
+  old: { tresmodeste: 'Très modeste — précarité (prix précarité)',
+         modeste:     'Modeste — hors précarité avant le 16/11/2026 (prix classique)',
+         autre:       'Autre ménage (prix classique)' },
+};
+// Met à jour les libellés selon la date d'engagement (la valeur choisie est conservée)
+function hhRefreshOptions(){
+  const labels = HH_OPTION_LABELS[hhIsNew() ? 'new' : 'old'];
+  ['f-menage', 'f-profil'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) [...el.options].forEach(o => { if(labels[o.value]) o.textContent = labels[o.value]; });
+  });
+}
+
 // Champ « Profil du ménage »
 function hhFieldHtml(id){
+  const l = HH_OPTION_LABELS.new;
   return `<div class="field"><label>Profil du ménage</label>
       <select id="${id || 'f-menage'}">
-        <option value="autre">Autre ménage</option>
-        <option value="modeste">Ménage modeste</option>
-        <option value="tresmodeste">Ménage très modeste</option>
+        <option value="autre">${l.autre}</option>
+        <option value="modeste">${l.modeste}</option>
+        <option value="tresmodeste">${l.tresmodeste}</option>
       </select>
     </div>`;
 }
@@ -87,23 +106,24 @@ function hhNoteHtml(id){ return `<div class="hh-note" id="${id || 'hhNote'}"></d
 function hhNoteText(code){
   const isNew = hhIsNew();
   const coefs = HH_COEF[code];
-  const prix = isNew
-    ? `prix précarité pour les ménages <b>très modestes et modestes</b> (précarité énergétique : revenu fiscal de référence par part ≤ ${HH_D5.toLocaleString('fr-FR')} €, déciles 1 à 5), prix classique pour les autres`
-    : 'prix précarité pour les ménages <b>très modestes</b> ; ménages modestes et autres au prix classique';
-  const cdp = coefs ? ` · Coup de Pouce : très modeste ×${coefs[isNew?'new':'old'].tresmodeste}, modeste ×${coefs[isNew?'new':'old'].modeste}, autre ×${coefs[isNew?'new':'old'].autre}` : '';
-  const ref = isNew ? 'Arrêté du 5 novembre 2026, opérations engagées à partir du 16/11/2026' : 'Règles applicables aux opérations engagées jusqu\'au 15/11/2026';
-  return `<b>${ref} :</b> ${prix}${cdp}.`;
+  const c = coefs ? coefs[isNew ? 'new' : 'old'] : null;
+  const cdp = c ? ` · Coup de Pouce : très modeste ×${c.tresmodeste}, modeste ×${c.modeste}, autre ×${c.autre}` : '';
+  if(isNew){
+    return `<b>Engagement à partir du 16/11/2026 (arrêté du 5 novembre 2026) :</b> <b>précarité énergétique = ménages très modestes + ménages modestes</b> (revenu fiscal de référence par part ≤ ${HH_D5.toLocaleString('fr-FR')} €) → <b>prix précarité</b> · <b>autres ménages</b> → <b>prix classique</b>${cdp}.`;
+  }
+  return `<b>Engagement jusqu'au 15/11/2026 :</b> <b>précarité = ménages très modestes seuls</b> → prix précarité · ménages modestes et autres → <b>prix classique</b>${cdp}.`;
 }
 function hhUpdateNote(code, id){
   const el = document.getElementById(id || 'hhNote');
   if(el) el.innerHTML = hhNoteText(code);
+  hhRefreshOptions();
 }
 
 // Alerte en tête de chaque fiche concernée par le changement du 16/11/2026
 function hhInjectAlert(body){
   if(body.querySelector('.hh-alert')) return;
   if(typeof currentFiche !== 'undefined' && currentFiche && currentFiche.code === 'BAR-TH-168') return; // fiche supprimée au 04/11/2026
-  body.insertAdjacentHTML('afterbegin', `<div class="warn-box show hh-alert"><b>⚠ Attention : la date d'engagement peut faire varier votre prime.</b> Pour les opérations engagées à partir du <b>16/11/2026</b>, la définition de la précarité énergétique change (arrêté du 5 novembre 2026) : les ménages très modestes <b>et</b> modestes sont valorisés au prix précarité, et les coefficients Coup de Pouce évoluent. Pour un engagement avant cette date, seuls les ménages très modestes sont au prix précarité.</div>`);
+  body.insertAdjacentHTML('afterbegin', `<div class="warn-box show hh-alert"><b>⚠ Attention : la date d'engagement peut faire varier votre prime.</b> Pour les opérations engagées à partir du <b>16/11/2026</b>, la définition de la précarité énergétique change (arrêté du 5 novembre 2026) : les ménages en précarité énergétique (très modestes <b>et</b> modestes) sont valorisés au prix précarité, les autres ménages au prix classique, et les coefficients Coup de Pouce évoluent. Pour un engagement avant cette date, seuls les ménages très modestes sont au prix précarité.</div>`);
 }
 
 // Champ « résidence principale » : condition du Coup de Pouce BAR-TH-171/172 à partir du 16/11/2026
@@ -132,9 +152,13 @@ function hhMixPrice(nTM, nM, n, pc, pp){
   return pp * s + pc * (1 - s);
 }
 function hhMixNoteText(nTM, nM, n){
-  const s = hhShare(nTM, nM, n);
-  const regle = hhIsNew()
-    ? 'très modestes et modestes au prix précarité'
-    : 'très modestes seuls au prix précarité (modestes au prix classique)';
-  return `<b>${hhIsNew() ? 'Arrêté du 5 novembre 2026 (engagement à partir du 16/11/2026)' : 'Règles jusqu\'au 15/11/2026'} :</b> ${regle}, autres ménages au prix classique. Part facturée au prix précarité : <b>${(s*100).toLocaleString('fr-FR',{maximumFractionDigits:1})} %</b> des logements.${(nTM||0)+(nM||0) > n ? ' <b>⚠ Le total des ménages très modestes et modestes dépasse le nombre de logements.</b>' : ''}`;
+  nTM = nTM || 0; nM = nM || 0; n = n || 0;
+  const lg = x => `${x.toLocaleString('fr-FR', {maximumFractionDigits:1})} logement${x > 1 ? 's' : ''}`;
+  const warn = (nTM + nM > n) ? ' <b>⚠ Le total des ménages très modestes et modestes dépasse le nombre de logements.</b>' : '';
+  if(hhIsNew()){
+    const prec = nTM + nM, autres = Math.max(0, n - prec);
+    return `<b>Engagement à partir du 16/11/2026 :</b> <b>précarité énergétique = ménages très modestes + modestes</b> → prix précarité · <b>autres ménages</b> → prix classique.<br><b>Cette opération :</b> <b>${lg(prec)} au prix précarité</b> (${nTM} très modeste${nTM > 1 ? 's' : ''} + ${nM} modeste${nM > 1 ? 's' : ''}) · <b>${lg(autres)} au prix classique</b> (autres ménages).${warn}`;
+  }
+  const autres = Math.max(0, n - nTM);
+  return `<b>Engagement jusqu'au 15/11/2026 :</b> <b>précarité = ménages très modestes seuls</b> → prix précarité · ménages modestes et autres → prix classique.<br><b>Cette opération :</b> <b>${lg(nTM)} au prix précarité</b> (très modestes) · <b>${lg(autres)} au prix classique</b> (dont ${nM} modeste${nM > 1 ? 's' : ''}).${warn}`;
 }
