@@ -27,8 +27,12 @@ function renderTH179(body){
       <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30" min="1"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
-      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements · repère Anah : bleu</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+    </div>
+    <div class="field-row">
+      ${hhOthersFieldHtml()}
+      <div class="field"></div>
     </div>
     <div class="hh-note" id="hhNote"></div>
     <div class="field-row">
@@ -73,7 +77,7 @@ function renderTH179(body){
   function calc(){
     const n=parseFloat(document.getElementById('f-n').value)||0;
     const {kwh:total, kwhBrut, prime, share, R, cdp, mult} = calcCore179(n);
-    document.getElementById('hhNote').innerHTML = hhMixNoteText(parseFloat(document.getElementById('f-ntm').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
+    hhMixRefresh(parseFloat(document.getElementById('f-ntm').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">Facteur R</span><span class="result-val" style="font-size:14px">${R.toFixed(2)}</span></div>
       <div class="result-row"><span class="result-label">kWh cumac total ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(total)}</span></div>
