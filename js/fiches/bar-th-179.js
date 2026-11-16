@@ -27,8 +27,8 @@ function renderTH179(body){
       <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30" min="1"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Ménages très modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
-      <div class="field"><label>Ménages modestes <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
     </div>
     <div class="hh-note" id="hhNote"></div>
     <div class="field-row">
