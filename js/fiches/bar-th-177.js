@@ -6,14 +6,14 @@ function renderTH177(body){
   body.insertAdjacentHTML('beforeend', `
     <div class="field-row">
       <div class="field"><label>Shab <span class="hint">m² après rénovation</span></label><input type="number" id="f-shab" value="1000"></div>
-      <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30"></div>
+      <div class="field"><label>Nombre de logements <span class="hint">somme des 3 catégories</span></label><input type="number" id="f-n" value="30" readonly tabindex="-1" style="${HH_READONLY_STYLE}"></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements · repère Anah : bleu</span></label><input type="number" id="f-np" value="0" min="0"></div>
       <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
     </div>
     <div class="field-row">
-      ${hhOthersFieldHtml()}
+      ${hhOthersFieldHtml(30)}
       <div class="field"><label>Coup de Pouce Rénovation performante</label>
         <select id="f-cdp">
           <option value="non">Aucun (hors charte CdP)</option>
@@ -52,9 +52,10 @@ function renderTH177(body){
   let adjWrap;
   let revWrap;
   function calc(){
+    hhSyncTotal('f-n','f-np','f-nm','f-na');
     const shab=parseFloat(document.getElementById('f-shab').value)||0;
     const n=parseFloat(document.getElementById('f-n').value)||1;
-    hhMixRefresh(parseFloat(document.getElementById('f-np').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
+    hhMixRefresh();
     const ci=parseFloat(document.getElementById('f-ci').value)||0;
     const cp=parseFloat(document.getElementById('f-cp').value)||0;
     const gain = ci>0 ? (ci-cp)/ci : 0;
