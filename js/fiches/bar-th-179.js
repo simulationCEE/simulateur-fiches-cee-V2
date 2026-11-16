@@ -24,14 +24,14 @@ function renderTH179(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Etas de la PAC (%)</label><input type="number" id="f-etas" value="140"></div>
-      <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30" min="1"></div>
+      <div class="field"><label>Nombre de logements <span class="hint">somme des 3 catégories</span></label><input type="number" id="f-n" value="30" readonly tabindex="-1" style="${HH_READONLY_STYLE}"></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements · repère Anah : bleu</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
       <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
     </div>
     <div class="field-row">
-      ${hhOthersFieldHtml()}
+      ${hhOthersFieldHtml(30)}
       <div class="field"></div>
     </div>
     <div class="hh-note" id="hhNote"></div>
@@ -75,9 +75,10 @@ function renderTH179(body){
   let adjWrap;
   let revWrap;
   function calc(){
+    hhSyncTotal('f-n','f-ntm','f-nm','f-na');
     const n=parseFloat(document.getElementById('f-n').value)||0;
     const {kwh:total, kwhBrut, prime, share, R, cdp, mult} = calcCore179(n);
-    hhMixRefresh(parseFloat(document.getElementById('f-ntm').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
+    hhMixRefresh();
     document.getElementById('results').innerHTML = `
       <div class="result-row"><span class="result-label">Facteur R</span><span class="result-val" style="font-size:14px">${R.toFixed(2)}</span></div>
       <div class="result-row"><span class="result-label">kWh cumac total ${cdp?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(total)}</span></div>
