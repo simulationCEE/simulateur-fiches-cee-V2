@@ -51,6 +51,11 @@ function renderPACMixte(body){
       <div class="field"><label>Nombre de logements réels (N)</label><input type="number" id="f-nreel" value="10"></div>
     </div>
     <div class="field-row">
+      <div class="field"><label>Ménages très modestes <span class="hint">nombre de logements réels</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes <span class="hint">nombre de logements réels</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+    </div>
+    <div class="hh-note" id="hhNote"></div>
+    <div class="field-row">
       <div class="field"><label>Surface tertiaire <span class="hint">m²</span></label><input type="number" id="f-surfter" value="500"></div>
       <div class="field"><label>Secteur d'activité tertiaire</label>
         <select id="f-secteur">${SECTEURS_MIXTE.map(s=>`<option value="${s.value}">${s.label}</option>`).join('')}</select>
@@ -90,6 +95,8 @@ function renderPACMixte(body){
     const pc = parseFloat(document.getElementById('f-pc').value)||0;
     const pp = parseFloat(document.getElementById('f-pp').value)||0;
     const usagesDifferents = document.getElementById('f-usagesdiff').value==='oui';
+    const nTM = parseFloat(document.getElementById('f-ntm').value)||0;
+    const nM = parseFloat(document.getElementById('f-nm').value)||0;
 
     const surfaceTotale = surfRes + surfTer;
     const pctRes = surfaceTotale>0 ? surfRes/surfaceTotale : 0;
@@ -111,8 +118,12 @@ function renderPACMixte(body){
     const nTotal = nReel + logementsConvertis;
     const totalKwhcCas1Brut = kwhcLogement*nTotal*R;
     const totalKwhcCas1 = totalKwhcCas1Brut*mult;
-    const primeClassiqueCas1 = totalKwhcCas1/1000*pc;
-    const primePrecariteCas1 = totalKwhcCas1/1000*pp;
+    // Prix précarité uniquement sur le volume des logements RÉELS, au prorata des ménages très modestes / modestes ;
+    // le volume des logements convertis depuis le tertiaire reste au prix classique.
+    const shareCas1 = hhShare(nTM, nM, nReel);
+    const volResCas1 = kwhcLogement*nReel*R*mult;
+    const volConvCas1 = kwhcLogement*logementsConvertis*R*mult;
+    const primeMixCas1 = volResCas1/1000*(pp*shareCas1 + pc*(1-shareCas1)) + volConvCas1/1000*pc;
 
     // CAS 2
     const totalKwhcCas2Brut = kwhcM2*facteurSecteur*surfaceTotale*R;
@@ -130,7 +141,7 @@ function renderPACMixte(body){
 
     return {
       zone, usageIdx, surfRes, nReel, surfTer, surfaceTotale, pctRes, R, mult, cas,
-      logementsConvertis, nTotal, kwhcLogement, totalKwhcCas1, totalKwhcCas1Brut, primeClassiqueCas1, primePrecariteCas1,
+      logementsConvertis, nTotal, kwhcLogement, totalKwhcCas1, totalKwhcCas1Brut, primeMixCas1, shareCas1, nTM, nM,
       kwhcM2, totalKwhcCas2, totalKwhcCas2Brut, primeClassiqueCas2,
       kwhc179Pur, kwhc163Pur, kwhc179PurBrut, kwhc163PurBrut, kwhcRetenuCas3, ficheRetenue, primeClassiqueCas3,
     };
@@ -138,6 +149,7 @@ function renderPACMixte(body){
 
   function calc(){
     const r = calcMixte();
+    document.getElementById('hhNote').innerHTML = hhMixNoteText(r.nTM, r.nM, r.nReel);
     const warnCasC = document.getElementById('warnCasC');
     const warnPrec3 = document.getElementById('warnPrecCas3');
 
@@ -170,8 +182,7 @@ function renderPACMixte(body){
         <div class="result-row"><span class="result-label">Logements convertis depuis tertiaire</span><span class="result-val" style="font-size:14px">${num(r.logementsConvertis)}</span></div>
         <div class="result-row"><span class="result-label">N total (réels + convertis)</span><span class="result-val" style="font-size:14px">${num(r.nTotal)}</span></div>
         <div class="result-row"><span class="result-label">kWh cumac total ${r.mult>1?`(bonifié ×${r.mult}, brut ${kwh(r.totalKwhcCas1Brut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(r.totalKwhcCas1)}</span></div>
-        <div class="result-row cdp"><span class="result-label">Prime Classique</span><span class="result-val">${eur(r.primeClassiqueCas1)}</span></div>
-        <div class="result-row prec"><span class="result-label">Prime Précarité</span><span class="result-val">${eur(r.primePrecariteCas1)}</span></div>
+        <div class="result-row ${r.mult>1?'cdp':(r.shareCas1>0?'hi prec':'hi')}"><span class="result-label">Prime — ${(r.shareCas1*100).toLocaleString('fr-FR',{maximumFractionDigits:1})} % des logements réels au prix précarité</span><span class="result-val">${eur(r.primeMixCas1)}</span></div>
       `;
     } else if(r.cas===2){
       resultsHtml += `
@@ -193,6 +204,7 @@ function renderPACMixte(body){
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
+  hhWatch(body, calc);
 }
 
 function buildBaremeMixte(wrap){
