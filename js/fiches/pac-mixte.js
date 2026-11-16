@@ -48,14 +48,14 @@ function renderPACMixte(body){
     </div>
     <div class="field-row">
       <div class="field"><label>Surface résidentielle <span class="hint">m²</span></label><input type="number" id="f-surfres" value="600"></div>
-      <div class="field"><label>Nombre de logements réels (N)</label><input type="number" id="f-nreel" value="10"></div>
+      <div class="field"><label>Nombre de logements réels (N) <span class="hint">somme des 3 catégories</span></label><input type="number" id="f-nreel" value="10" readonly tabindex="-1" style="${HH_READONLY_STYLE}"></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements réels · repère Anah : bleu</span></label><input type="number" id="f-ntm" value="0" min="0"></div>
       <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements réels · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
     </div>
     <div class="field-row">
-      ${hhOthersFieldHtml()}
+      ${hhOthersFieldHtml(10)}
       <div class="field"></div>
     </div>
     <div class="hh-note" id="hhNote"></div>
@@ -152,8 +152,9 @@ function renderPACMixte(body){
   }
 
   function calc(){
+    hhSyncTotal('f-nreel','f-ntm','f-nm','f-na');
     const r = calcMixte();
-    hhMixRefresh(r.nTM, r.nM, r.nReel);
+    hhMixRefresh();
     const warnCasC = document.getElementById('warnCasC');
     const warnPrec3 = document.getElementById('warnPrecCas3');
 
