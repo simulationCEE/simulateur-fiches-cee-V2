@@ -956,3 +956,23 @@ html.installer-mode .default-prices-card{display:none!important}
   .hh-note{margin:2px 0 14px;padding:9px 12px;border-radius:9px;background:var(--blue-bg);border:1px solid #B9CDE5;
     font-size:11.5px;line-height:1.55;color:var(--text-2)}
   .hh-note b{color:var(--navy-dk)}
+
+
+  /* ── Barème Anah 2026 : retrouver la catégorie d'un ménage ── */
+  .hh-anah{margin:0 0 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+  .hh-anah>summary{cursor:pointer;padding:9px 12px;font-size:12px;font-weight:700;color:var(--navy)}
+  .hh-anah-body{padding:2px 12px 12px}
+  .hh-anah-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+  .hh-anah-row label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:600;color:var(--text-2);flex:1 1 170px}
+  .hh-anah-row select,.hh-anah-row input{font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text)}
+  .hh-anah-res{padding:9px 12px;border-radius:9px;font-size:12.5px;font-weight:600;margin-bottom:10px;background:var(--bg);color:var(--text-2)}
+  .hh-anah-res.tm{background:#DFF3FD;color:#0C4A6E}
+  .hh-anah-res.m{background:#FEF6D8;color:#78560A}
+  .hh-anah-res.i{background:#EDE9FE;color:#4C1D95}
+  .hh-anah-res.s{background:#F8E5F2;color:#7A1F5C}
+  .hh-anah-table{width:100%;border-collapse:collapse;font-size:11.5px;margin:8px 0}
+  .hh-anah-table caption{text-align:left;font-weight:700;color:var(--navy-dk);padding:4px 0 3px}
+  .hh-anah-table th,.hh-anah-table td{padding:5px 7px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums}
+  .hh-anah-table th:first-child,.hh-anah-table td:first-child{text-align:left}
+  .hh-anah-table th.tm{background:#DFF3FD} .hh-anah-table th.m{background:#FEF6D8} .hh-anah-table th.i{background:#EDE9FE} .hh-anah-table th.s{background:#F8E5F2}
+  .hh-anah-src{margin:6px 0 0;font-size:10.5px;line-height:1.5;color:var(--text-3)}
