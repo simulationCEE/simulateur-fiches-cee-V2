@@ -83,7 +83,7 @@ const GLOSSARY = [
   ["ménages très modestes", "Nombre de logements occupés par des ménages très modestes, qui relèvent de la précarité énergétique : prix précarité. Justificatifs : avis d'imposition de chaque foyer fiscal, ou attestation de complémentaire santé solidaire, ou attestation de chèque énergie."],
   ["ménages modestes", "Nombre de logements occupés par des ménages en situation de précarité énergétique qui ne sont pas très modestes : revenu fiscal de référence par part inférieur ou égal à 16 880 € (déciles 1 à 5), calculé sur les avis d'imposition de tous les foyers fiscaux du ménage. La couleur Anah ne fait pas foi. Prix précarité pour un engagement à partir du 16/11/2026, prix classique avant. Les autres ménages sont au prix classique."],
   ["résidence principale", "Pour un engagement à partir du 16/11/2026, la bonification Coup de Pouce de BAR-TH-171 et BAR-TH-172 ne s'applique qu'aux logements occupés à titre de résidence principale (arrêté du 5 novembre 2026)."],
-  ["autres ménages", "Ménages qui ne sont ni très modestes ni modestes (au-delà du décile 5, repère Anah : violet et rose) : ils restent au prix CEE classique. Nombre calculé automatiquement : nombre de logements moins ménages très modestes moins ménages modestes."],
+  ["autres ménages", "Nombre de logements occupés par des ménages qui ne sont ni très modestes ni modestes (au-delà du décile 5 ; repère Anah : violet et rose) : ils restent au prix CEE classique. Le nombre total de logements est la somme des trois catégories."],
   ["usage", "Indique si l'équipement couvre uniquement le chauffage, ou le chauffage et l'eau chaude sanitaire (ECS) — les forfaits diffèrent selon l'usage."],
 ];
 function addTooltips(container){
