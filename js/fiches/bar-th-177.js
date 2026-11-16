@@ -9,10 +9,11 @@ function renderTH177(body){
       <div class="field"><label>Nombre de logements</label><input type="number" id="f-n" value="30"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements</span></label><input type="number" id="f-np" value="0" min="0"></div>
-      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements</span></label><input type="number" id="f-nm" value="0" min="0"></div>
+      <div class="field"><label>Ménages très modestes (précarité énergétique) <span class="hint">nombre de logements · repère Anah : bleu</span></label><input type="number" id="f-np" value="0" min="0"></div>
+      <div class="field"><label>Ménages modestes (précarité énergétique, hors très modestes) <span class="hint">nombre de logements · repère Anah : jaune</span></label><input type="number" id="f-nm" value="0" min="0"></div>
     </div>
     <div class="field-row">
+      ${hhOthersFieldHtml()}
       <div class="field"><label>Coup de Pouce Rénovation performante</label>
         <select id="f-cdp">
           <option value="non">Aucun (hors charte CdP)</option>
@@ -53,7 +54,7 @@ function renderTH177(body){
   function calc(){
     const shab=parseFloat(document.getElementById('f-shab').value)||0;
     const n=parseFloat(document.getElementById('f-n').value)||1;
-    document.getElementById('hhNote').innerHTML = hhMixNoteText(parseFloat(document.getElementById('f-np').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
+    hhMixRefresh(parseFloat(document.getElementById('f-np').value)||0, parseFloat(document.getElementById('f-nm').value)||0, n);
     const ci=parseFloat(document.getElementById('f-ci').value)||0;
     const cp=parseFloat(document.getElementById('f-cp').value)||0;
     const gain = ci>0 ? (ci-cp)/ci : 0;
