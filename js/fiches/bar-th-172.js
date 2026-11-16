@@ -32,7 +32,7 @@ function renderTH172(body){
     </div>
     <div class="field-row">
       ${hhFieldHtml()}
-      <div class="field"></div>
+      ${hhResPrincField()}
     </div>
     ${hhNoteHtml()}
     <div class="field-row">
@@ -66,19 +66,24 @@ function renderTH172(body){
     const forfait = etas>=170 ? REF172['170+'] : REF172['111-170'];
     const kwhc = forfait * surfFacteur172(surf) * ZONE172[zone];
     const hh = hhCtx('BAR-TH-172', pc, pp);
-    const mult = (cdp && agree) ? hh.coef : 1;
+    const respr = document.getElementById('f-respr').value==='oui';
+    const rpOk = hh.regime==='old' || respr;   // résidence principale exigée pour un engagement à partir du 16/11/2026 (art. 3-6 III 1°)
+    const mult = (cdp && agree && rpOk) ? hh.coef : 1;
     const kwhcBonifie = kwhc*mult;
-    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime: kwhcBonifie/1000*hh.price, hh, cdp, agree, mult, forfait};
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime: kwhcBonifie/1000*hh.price, hh, cdp, agree, rpOk, mult, forfait};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const surf=parseFloat(document.getElementById('f-surf').value)||0;
-    const {kwh:kwhc, kwhBrut, prime, hh, cdp, agree, mult} = calcCore172(surf);
+    const {kwh:kwhc, kwhBrut, prime, hh, cdp, agree, rpOk, mult} = calcCore172(surf);
     hhUpdateNote('BAR-TH-172');
 
     const warn = document.getElementById('warnAgree172');
-    if(cdp && !agree){
+    if(cdp && agree && !rpOk){
+      warn.innerHTML = `⚠ <b>Coup de Pouce non applicable :</b> pour un engagement à partir du 16/11/2026, la bonification ne vaut que pour les logements occupés à titre de résidence principale (arrêté du 5 novembre 2026).`;
+      warn.classList.add('show');
+    } else if(cdp && !agree){
       warn.innerHTML = `⚠ <b>Coup de Pouce non applicable :</b> depuis le 01/09/2026, la bonification Coup de Pouce sur BAR-TH-172 exige que le modèle de PAC figure sur la liste des PAC agréées "qualité et résilience industrielle" (bonus-pac.ademe.fr). Sans agrément, seul le forfait de base s'applique.`;
       warn.classList.add('show');
     } else {
