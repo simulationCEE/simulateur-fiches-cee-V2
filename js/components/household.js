@@ -19,17 +19,19 @@
 // à défaut, la date du jour.
 // ═══════════════════════════════════════════════════════════════════════
 const HH_DATE_NEW = '2026-11-16';
+const HH_D5 = 16880;   // plafond du décile 5 : revenu fiscal de référence par part (€) — précarité énergétique = déciles 1 à 5
 const HH_LABELS = { tresmodeste: 'Ménage très modeste', modeste: 'Ménage modeste', autre: 'Autre ménage' };
 
 // Coefficients Coup de Pouce par fiche : { avant le 16/11/2026, à partir du 16/11/2026 }
 // BAR-TH-171/172/113/112 : article 3-6 de l'arrêté du 29/12/2014 modifié (III 1° et IV).
-// BAR-TH-168 : ⚠ rattachement à l'article 3-9 supposé (mêmes coefficients 5 / 3 / 4) — à confirmer.
+// BAR-TH-168 : fiche SUPPRIMÉE au 04/11/2026, donc avant le 16/11/2026 : seuls les coefficients d'avant s'appliquent
+//   (l'arrêté du 05/11/2026 ne la cite pas ; il cite BAR-TH-143 « solaire combiné », absente du simulateur).
 const HH_COEF = {
   'BAR-TH-171': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-172': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-113': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-112': { old: { tresmodeste: 5, modeste: 5, autre: 4 }, new: { tresmodeste: 5, modeste: 3, autre: 4 } },
-  'BAR-TH-168': { old: { tresmodeste: 5, modeste: 5, autre: 4 }, new: { tresmodeste: 5, modeste: 3, autre: 4 } },
+  'BAR-TH-168': { old: { tresmodeste: 5, modeste: 5, autre: 4 }, new: { tresmodeste: 5, modeste: 5, autre: 4 } },
 };
 
 function hhDate(){
@@ -86,7 +88,7 @@ function hhNoteText(code){
   const isNew = hhIsNew();
   const coefs = HH_COEF[code];
   const prix = isNew
-    ? 'prix précarité pour les ménages <b>très modestes et modestes</b> (déciles 1 à 5), prix classique pour les autres'
+    ? `prix précarité pour les ménages <b>très modestes et modestes</b> (précarité énergétique : revenu fiscal de référence par part ≤ ${HH_D5.toLocaleString('fr-FR')} €, déciles 1 à 5), prix classique pour les autres`
     : 'prix précarité pour les ménages <b>très modestes</b> ; ménages modestes et autres au prix classique';
   const cdp = coefs ? ` · Coup de Pouce : très modeste ×${coefs[isNew?'new':'old'].tresmodeste}, modeste ×${coefs[isNew?'new':'old'].modeste}, autre ×${coefs[isNew?'new':'old'].autre}` : '';
   const ref = isNew ? 'Arrêté du 5 novembre 2026, opérations engagées à partir du 16/11/2026' : 'Règles applicables aux opérations engagées jusqu\'au 15/11/2026';
@@ -97,8 +99,23 @@ function hhUpdateNote(code, id){
   if(el) el.innerHTML = hhNoteText(code);
 }
 
+// Alerte en tête de chaque fiche concernée par le changement du 16/11/2026
+function hhInjectAlert(body){
+  if(body.querySelector('.hh-alert')) return;
+  if(typeof currentFiche !== 'undefined' && currentFiche && currentFiche.code === 'BAR-TH-168') return; // fiche supprimée au 04/11/2026
+  body.insertAdjacentHTML('afterbegin', `<div class="warn-box show hh-alert"><b>⚠ Attention : la date d'engagement peut faire varier votre prime.</b> Pour les opérations engagées à partir du <b>16/11/2026</b>, la définition de la précarité énergétique change (arrêté du 5 novembre 2026) : les ménages très modestes <b>et</b> modestes sont valorisés au prix précarité, et les coefficients Coup de Pouce évoluent. Pour un engagement avant cette date, seuls les ménages très modestes sont au prix précarité.</div>`);
+}
+
+// Champ « résidence principale » : condition du Coup de Pouce BAR-TH-171/172 à partir du 16/11/2026
+function hhResPrincField(id){
+  return `<div class="field"><label>Logement occupé à titre de résidence principale</label>
+      <select id="${id || 'f-respr'}"><option value="oui">Oui</option><option value="non">Non</option></select>
+    </div>`;
+}
+
 // Recalcul quand la date d'engagement change (le champ est ajouté après le rendu de la fiche)
 function hhWatch(body, calc){
+  hhInjectAlert(body);
   body.addEventListener('input', e => { if(e.target && e.target.id === 'regDate') calc(); });
   setTimeout(calc, 0);
 }
