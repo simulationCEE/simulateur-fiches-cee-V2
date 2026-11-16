@@ -92,7 +92,7 @@ function hhRefreshOptions(){
 // Champ « Profil du ménage »
 function hhFieldHtml(id){
   const l = HH_OPTION_LABELS.new;
-  return `<div class="field"><label>Profil du ménage</label>
+  return `<div class="field"><label>Profil du ménage <span class="hint">repère Anah : bleu = très modeste · jaune = modeste · violet, rose = autre</span></label>
       <select id="${id || 'f-menage'}">
         <option value="autre">${l.autre}</option>
         <option value="modeste">${l.modeste}</option>
@@ -141,6 +141,19 @@ function hhWatch(body, calc){
 }
 
 // ── Fiches collectives (BAR-TH-177, BAR-TH-179) : plusieurs ménages dans l'opération ──
+// Troisième catégorie des fiches collectives : « autres ménages » (prix classique), calculée automatiquement
+function hhOthersFieldHtml(){
+  return `<div class="field"><label>Autres ménages (hors précarité énergétique) <span class="hint">calculé automatiquement · repère Anah : violet, rose</span></label>
+      <input type="number" id="f-na" value="0" readonly tabindex="-1" style="background:var(--bg);color:var(--text-2);cursor:default"></div>`;
+}
+// Met à jour le bandeau de répartition et le nombre d'autres ménages (logements − très modestes − modestes)
+function hhMixRefresh(nTM, nM, n){
+  const note = document.getElementById('hhNote');
+  if(note) note.innerHTML = hhMixNoteText(nTM, nM, n);
+  const na = document.getElementById('f-na');
+  if(na) na.value = Math.max(0, (n || 0) - (nTM || 0) - (nM || 0));
+}
+
 // Part des logements facturée au Prix Précarité : très modestes + (modestes à partir du 16/11/2026)
 function hhShare(nTM, nM, n){
   const prec = (nTM || 0) + (hhIsNew() ? (nM || 0) : 0);
