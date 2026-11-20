@@ -20,21 +20,21 @@
 // ═══════════════════════════════════════════════════════════════════════
 const HH_DATE_NEW = '2026-11-16';
 const HH_D5 = 16880;   // plafond du décile 5 : revenu fiscal de référence par part (€) — précarité énergétique = déciles 1 à 5
-const HH_LABELS = { tresmodeste: 'Ménage très modeste', modeste: 'Ménage modeste', intermediaire: 'Ménage aux revenus intermédiaires', autre: 'Autre ménage' };
+const HH_LABELS = { tresmodeste: 'Ménage très modeste', modeste: 'Ménage modeste', autre: 'Autre ménage' };
 
 // ── ENGAGEMENT À PARTIR DU 01/01/2027 : projet d'arrêté « bonifications BAR-TH-171 et BAR-TH-172 » ──
 // (texte en consultation, NOR et date de signature non renseignés : À CONFIRMER à la publication au JO)
 // Article 3-6 III 1° de l'arrêté du 29/12/2014, réécrit : coefficient + montant forfaitaire (kWhc) ajouté, par catégorie de ménage.
 //   BAR-TH-171 : très modeste ×5 + 417 000 · modeste (précarité, hors très modeste) ×3 + 417 000
-//                · revenus intermédiaires ×5 + 400 000 · autres ménages ×5
-// Revenus intermédiaires (II quater de l'article 3-1) : revenu fiscal de référence ≤ tableau C (= plafonds « violet » ci-dessous).
-// Hors précarité énergétique : le ménage aux revenus intermédiaires reste au prix classique.
+//                · autres ménages ×5 (prix classique)
+// Choix EBS (20/11/2026) : revenus intermédiaires et autres ménages regroupés en « autres ménages » ×5, prix classique.
+// Le forfait de 400 000 kWhc prévu par le projet pour les ménages aux revenus intermédiaires n'est donc pas appliqué.
 // Ne s'applique pas si un dossier MaPrimeRénov' (PTE) a été déposé à l'Anah avant le 01/01/2027 (hors refus) — article 3 du projet.
 const HH_DATE_2027 = '2027-01-01';
 const HH_2027 = {
   'BAR-TH-171': {
-    coef:    { tresmodeste: 5, modeste: 3, intermediaire: 5, autre: 5 },
-    forfait: { tresmodeste: 417000, modeste: 417000, intermediaire: 400000, autre: 0 },
+    coef:    { tresmodeste: 5, modeste: 3, autre: 5 },
+    forfait: { tresmodeste: 417000, modeste: 417000, autre: 0 },
   },
 };
 function hhIs2027(date){ return (date || hhDate()) >= HH_DATE_2027; }
@@ -50,7 +50,7 @@ function hhRegime2027(code, date){
 // BAR-TH-168 : fiche SUPPRIMÉE au 04/11/2026, donc avant le 16/11/2026 : seuls les coefficients d'avant s'appliquent
 //   (l'arrêté du 05/11/2026 ne la cite pas ; il cite BAR-TH-143 « solaire combiné », absente du simulateur).
 const HH_COEF = {
-  'BAR-TH-171': { old: { tresmodeste: 5, modeste: 5, intermediaire: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, intermediaire: 5, autre: 5 } },
+  'BAR-TH-171': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-172': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-113': { old: { tresmodeste: 5, modeste: 5, autre: 5 }, new: { tresmodeste: 5, modeste: 3, autre: 5 } },
   'BAR-TH-112': { old: { tresmodeste: 5, modeste: 5, autre: 4 }, new: { tresmodeste: 5, modeste: 3, autre: 4 } },
@@ -101,11 +101,9 @@ function hhRowClass(hh, bonifie){ return bonifie ? 'cdp' : (hh.kind === 'prec' ?
 const HH_OPTION_LABELS = {
   new: { tresmodeste: 'Très modeste — précarité énergétique (prix précarité)',
          modeste:     'Modeste — précarité énergétique (prix précarité)',
-         intermediaire: 'Revenus intermédiaires — hors précarité (prix classique)',
          autre:       'Autre ménage — hors précarité (prix classique)' },
   old: { tresmodeste: 'Très modeste — précarité (prix précarité)',
          modeste:     'Modeste — hors précarité avant le 16/11/2026 (prix classique)',
-         intermediaire: 'Revenus intermédiaires (prix classique)',
          autre:       'Autre ménage (prix classique)' },
 };
 // Met à jour les libellés selon la date d'engagement (la valeur choisie est conservée)
@@ -118,13 +116,11 @@ function hhRefreshOptions(){
 }
 
 // Champ « Profil du ménage »
-function hhFieldHtml(id, opts){
+function hhFieldHtml(id){
   const l = HH_OPTION_LABELS.new;
-  const inter = opts && opts.intermediaire;   // BAR-TH-171 : catégorie « revenus intermédiaires » (forfait dès le 01/01/2027)
-  return `<div class="field"><label>Profil du ménage <span class="hint">${inter ? 'repère Anah : bleu = très modeste · jaune = modeste · violet = revenus intermédiaires · rose = autre' : 'repère Anah : bleu = très modeste · jaune = modeste · violet, rose = autre'}</span></label>
+  return `<div class="field"><label>Profil du ménage <span class="hint">repère Anah : bleu = très modeste · jaune = modeste · violet, rose = autre</span></label>
       <select id="${id || 'f-menage'}">
         <option value="autre">${l.autre}</option>
-        ${inter ? `<option value="intermediaire">${l.intermediaire}</option>` : ''}
         <option value="modeste">${l.modeste}</option>
         <option value="tresmodeste">${l.tresmodeste}</option>
       </select>
@@ -136,7 +132,7 @@ function hhNoteHtml(id){ return `<div class="hh-note" id="${id || 'hhNote'}"></d
 function hhNoteText(code){
   if(hhRegime2027(code)){
     const f = HH_2027[code], n = x => x.toLocaleString('fr-FR');
-    return `<b>Engagement à partir du 01/01/2027 (projet d'arrêté, non publié à ce jour : à confirmer) :</b> Coup de Pouce = coefficient <b>+ forfait</b> · très modeste ×${f.coef.tresmodeste} + ${n(f.forfait.tresmodeste)} kWhc · modeste ×${f.coef.modeste} + ${n(f.forfait.modeste)} kWhc · revenus intermédiaires ×${f.coef.intermediaire} + ${n(f.forfait.intermediaire)} kWhc · autres ménages ×${f.coef.autre}. <b>Prix précarité</b> : très modestes et modestes · <b>prix classique</b> : revenus intermédiaires et autres.`;
+    return `<b>Engagement à partir du 01/01/2027 (projet d'arrêté, non publié à ce jour : à confirmer) :</b> Coup de Pouce = coefficient <b>+ forfait</b> · très modeste ×${f.coef.tresmodeste} + ${n(f.forfait.tresmodeste)} kWhc · modeste ×${f.coef.modeste} + ${n(f.forfait.modeste)} kWhc · autres ménages ×${f.coef.autre}. <b>Prix précarité</b> : très modestes et modestes · <b>prix classique</b> : autres ménages.`;
   }
   const isNew = hhIsNew();
   const coefs = HH_COEF[code];
@@ -166,7 +162,7 @@ const HH_ANAH_2026 = {
 const HH_ANAH_LABELS = {
   tm: { nom: 'Ménage très modeste (bleu)',      champ: 'Ménages très modestes', prix: 'précarité énergétique → prix précarité' },
   m:  { nom: 'Ménage modeste (jaune)',          champ: 'Ménages modestes',      prix: 'précarité énergétique → prix précarité (engagement à partir du 16/11/2026)' },
-  i:  { nom: 'Ménage intermédiaire (violet)',   champ: 'Autres ménages',        prix: 'hors précarité énergétique → prix classique (BAR-TH-171 dès le 01/01/2027 : catégorie « revenus intermédiaires »)' },
+  i:  { nom: 'Ménage intermédiaire (violet)',   champ: 'Autres ménages',        prix: 'hors précarité énergétique → prix classique' },
   s:  { nom: 'Ménage supérieur (rose)',         champ: 'Autres ménages',        prix: 'hors précarité énergétique → prix classique' },
 };
 // Plafond d'une catégorie (tm, m, i) pour un nombre de personnes ; au-delà de 5 : + montant par personne supplémentaire
