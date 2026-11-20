@@ -234,9 +234,143 @@ function hhResPrincField(id){
     </div>`;
 }
 
+// ── BAILLEURS SOCIAUX / COPROPRIÉTÉS EN QPV : valorisation différente ──
+// Arrêté du 29/12/2014, article 3-1 IV et VI, annexes I et I bis remplacées par l'arrêté du 5 novembre 2026
+// (JO du 10/11/2026, texte 10 sur 61), opérations engagées à partir du 16/11/2026.
+//  • Logements sociaux (IV) : à défaut de justificatifs de revenus, part précarité = logements sociaux / total × % annexe I bis
+//    du département ; part très modestes = logements sociaux / total × % annexe I.
+//  • Copropriété en QPV (VI, dérogation) : part précarité = % annexe I bis du département ; part très modestes = % annexe I.
+// [code département, nom, % ménages très modestes (annexe I), % ménages en précarité énergétique (annexe I bis)]
+const HH_DEPT_PCT = [
+  ['01', "Ain", 55, 88],
+  ['02', "Aisne", 63, 91],
+  ['03', "Allier", 67, 93],
+  ['04', "Alpes-de-Haute-Provence", 67, 92],
+  ['05', "Hautes-Alpes", 53, 88],
+  ['06', "Alpes-Maritimes", 43, 80],
+  ['07', "Ardèche", 67, 94],
+  ['08', "Ardennes", 64, 93],
+  ['09', "Ariège", 74, 95],
+  ['10', "Aube", 63, 92],
+  ['11', "Aude", 74, 95],
+  ['12', "Aveyron", 67, 94],
+  ['13', "Bouches-du-Rhône", 61, 89],
+  ['14', "Calvados", 60, 91],
+  ['15', "Cantal", 65, 93],
+  ['16', "Charente", 70, 93],
+  ['17', "Charente-Maritime", 67, 93],
+  ['18', "Cher", 61, 91],
+  ['19', "Corrèze", 68, 93],
+  ['2A', "Corse-du-Sud", 59, 87],
+  ['2B', "Haute-Corse", 63, 89],
+  ['21', "Côte-d’Or", 58, 90],
+  ['22', "Côtes-d’Armor", 71, 95],
+  ['23', "Creuse", 65, 92],
+  ['24', "Dordogne", 67, 93],
+  ['25', "Doubs", 64, 91],
+  ['26', "Drôme", 70, 94],
+  ['27', "Eure", 59, 90],
+  ['28', "Eure-et-Loir", 57, 87],
+  ['29', "Finistère", 69, 95],
+  ['30', "Gard", 77, 95],
+  ['31', "Haute-Garonne", 63, 90],
+  ['32', "Gers", 64, 91],
+  ['33', "Gironde", 55, 88],
+  ['34', "Hérault", 68, 93],
+  ['35', "Ille-et-Vilaine", 61, 92],
+  ['36', "Indre", 61, 92],
+  ['37', "Indre-et-Loire", 67, 93],
+  ['38', "Isère", 60, 90],
+  ['39', "Jura", 64, 91],
+  ['40', "Landes", 64, 92],
+  ['41', "Loir-et-Cher", 61, 92],
+  ['42', "Loire", 63, 92],
+  ['43', "Haute-Loire", 68, 93],
+  ['44', "Loire-Atlantique", 62, 91],
+  ['45', "Loiret", 61, 91],
+  ['46', "Lot", 70, 94],
+  ['47', "Lot-et-Garonne", 72, 94],
+  ['48', "Lozère", 59, 89],
+  ['49', "Maine-et-Loire", 56, 87],
+  ['50', "Manche", 59, 90],
+  ['51', "Marne", 51, 85],
+  ['52', "Haute-Marne", 60, 90],
+  ['53', "Mayenne", 60, 92],
+  ['54', "Meurthe-et-Moselle", 60, 89],
+  ['55', "Meuse", 67, 92],
+  ['56', "Morbihan", 66, 94],
+  ['57', "Moselle", 61, 89],
+  ['58', "Nièvre", 63, 92],
+  ['59', "Nord", 63, 92],
+  ['60', "Oise", 55, 87],
+  ['61', "Orne", 63, 92],
+  ['62', "Pas-de-Calais", 66, 93],
+  ['63', "Puy-de-Dôme", 59, 90],
+  ['64', "Pyrénées-Atlantiques", 60, 90],
+  ['65', "Hautes-Pyrénées", 66, 93],
+  ['66', "Pyrénées-Orientales", 72, 94],
+  ['67', "Bas-Rhin", 61, 89],
+  ['68', "Haut-Rhin", 61, 90],
+  ['69', "Rhône", 58, 89],
+  ['70', "Haute-Saône", 66, 93],
+  ['71', "Saône-et-Loire", 61, 91],
+  ['72', "Sarthe", 61, 92],
+  ['73', "Savoie", 53, 87],
+  ['74', "Haute-Savoie", 52, 85],
+  ['75', "Paris", 51, 80],
+  ['76', "Seine-Maritime", 54, 87],
+  ['77', "Seine-et-Marne", 62, 92],
+  ['78', "Yvelines", 53, 87],
+  ['79', "Deux-Sèvres", 62, 93],
+  ['80', "Somme", 64, 91],
+  ['81', "Tarn", 74, 96],
+  ['82', "Tarn-et-Garonne", 77, 96],
+  ['83', "Var", 62, 90],
+  ['84', "Vaucluse", 70, 94],
+  ['85', "Vendée", 63, 94],
+  ['86', "Vienne", 65, 92],
+  ['87', "Haute-Vienne", 63, 92],
+  ['88', "Vosges", 62, 91],
+  ['89', "Yonne", 68, 93],
+  ['90', "Territoire de Belfort", 64, 90],
+  ['91', "Essonne", 55, 89],
+  ['92', "Hauts-de-Seine", 46, 82],
+  ['93', "Seine-Saint-Denis", 62, 90],
+  ['94', "Val-de-Marne", 53, 86],
+  ['95', "Val-d’Oise", 58, 89],
+  ['', "Collectivités d’outre-mer", 80, 94],
+];
+const HH_BAILLEUR_FICHES = ['BAR-TH-179', 'BAR-TH-177', 'PAC MIXTE', 'BAR-SE-104', 'BAR-TH-161'];
+function hhInjectBailleur(body){
+  if(body.querySelector('.hh-bailleur')) return;
+  if(typeof currentFiche === 'undefined' || !currentFiche || !HH_BAILLEUR_FICHES.includes(currentFiche.code)) return;
+  const lbl = r => (r[0] ? r[0] + ' - ' : '') + r[1];
+  const opts = HH_DEPT_PCT.map((r, i) => `<option value="${i}">${lbl(r)}</option>`).join('');
+  const rows = HH_DEPT_PCT.map(r => `<tr><td>${lbl(r)}</td><td>${r[2]} %</td><td>${r[3]} %</td></tr>`).join('');
+  const html = `<div class="warn-box show hh-bailleur"><b>⚠ ATTENTION VALORISATION DIFFERENTE POUR BAILLEURS SOCIAUX</b><br>
+      Logements sociaux sans justificatifs de revenus, ou copropriété située en QPV : la part au prix précarité n'est pas le décompte des ménages
+      mais le <b>pourcentage du département</b> (annexe I bis ; annexe I pour les ménages très modestes). Le calcul ci-dessous ne l'applique pas.
+      <details class="hh-anah" style="margin:10px 0 0">
+        <summary>Pourcentages par département (arrêté du 5 novembre 2026, engagement à partir du 16/11/2026)</summary>
+        <div class="hh-anah-body">
+          <div class="hh-anah-row"><label>Département <select id="hhDeptSel">${opts}</select></label></div>
+          <div class="hh-anah-res" id="hhDeptRes"></div>
+          <table class="hh-anah-table"><thead><tr><th>Département</th><th class="tm">Ménages très modestes (annexe I)</th><th class="m">Précarité énergétique (annexe I bis)</th></tr></thead><tbody>${rows}</tbody></table>
+          <p class="hh-anah-src">Logements sociaux (art. 3-1 IV) : à défaut de justificatifs, part précarité = nombre de logements sociaux ÷ total × % annexe I bis. Copropriété en QPV (art. 3-1 VI, dérogation) : part précarité = % annexe I bis. Source : arrêté du 5 novembre 2026, JO du 10/11/2026 (NOR ECOR2625692A).</p>
+        </div>
+      </details></div>`;
+  const anchor = body.querySelector('.hh-alert');
+  if(anchor) anchor.insertAdjacentHTML('afterend', html); else body.insertAdjacentHTML('afterbegin', html);
+  const sel = body.querySelector('#hhDeptSel'), res = body.querySelector('#hhDeptRes');
+  const upd = () => { const r = HH_DEPT_PCT[+sel.value]; res.innerHTML = `${lbl(r)} : <b>${r[3]} %</b> de ménages en précarité énergétique (prix précarité) · dont <b>${r[2]} %</b> de ménages très modestes`; };
+  sel.addEventListener('input', e => { e.stopPropagation(); upd(); });
+  upd();
+}
+
 // Recalcul quand la date d'engagement change (le champ est ajouté après le rendu de la fiche)
 function hhWatch(body, calc){
   hhInjectAlert(body);
+  hhInjectBailleur(body);
   hhInjectAnah(body);
   body.addEventListener('input', e => { if(e.target && e.target.id === 'regDate') calc(); });
   setTimeout(calc, 0);
