@@ -13,7 +13,7 @@ const SECTOR_META = {
   agri:{label:'Agriculture',cls:'agri'}, reseaux:{label:'Réseaux',cls:'reseaux'}, transport:{label:'Transport',cls:'transport'}, mixte:{label:'Mixte',cls:'mixte'}
 };
 
-function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle',froid:'Froid',destratification:'Déstratification','pac-agriculture':'PAC agriculture','pac-rehausse':'PAC de rehausse industrielle',geothermie:'Système géothermique','ecran thermique simple':'Simple écran thermique','double ecran thermique':'Double écran thermique','ecran thermique lateral':'Écran thermique latéral','isolation parois serre':'Isolation des parois de serre','couverture serre':'Couverture performante de serre','double paroi gonflable':'Double paroi gonflable','double tube de chauffage':'Double tube de chauffage'}[t] || t; }
+function tagLabel(t){ return {pac:'PAC',isol:'Isolation',solaire:'Solaire',renov:'Rénovation',biomasse:'Biomasse','chauffage-bois':'Chauffage au bois','recuperation-chaleur':'Récupération de chaleur','chaudiere-industrielle':'Chaudière industrielle',froid:'Froid',destratification:'Déstratification','pac-agriculture':'PAC agriculture','pac-rehausse':'PAC de rehausse industrielle',geothermie:'Système géothermique','ecran thermique simple':'Simple écran thermique','double ecran thermique':'Double écran thermique','ecran thermique lateral':'Écran thermique latéral','isolation parois serre':'Isolation des parois de serre','couverture serre':'Couverture performante de serre','double paroi gonflable':'Double paroi gonflable','double tube de chauffage':'Double tube de chauffage','point singulier':'Isolation de points singuliers','equilibrage':'Équilibrage'}[t] || t; }
 function ficheCategory(f){ return Array.isArray(f.sector) ? 'mixte' : (SECTOR_META[f.sector] ? f.sector : 'res'); }
 function ficheCategoryMeta(f){ return SECTOR_META[ficheCategory(f)] || SECTOR_META.res; }
 
@@ -31,11 +31,19 @@ const AGRI_EQ_IMAGE_ALIASES = {
   'double tube de chauffage': ['double tube chauffage', 'double tube'],
 };
 function illustrationAlternatives(f){
+  const nt = namedImageTag(f);
+  if(nt) return NAMED_IMAGES[nt][1].map(n => 'assets/illustrations/' + n + '.png');
   const t = (f.tags || []).find(x => AGRI_EQ_TAGS.includes(x));
   if(!t) return [];
   const names = [...(AGRI_EQ_IMAGE_ALIASES[t] || []), t.replace(/ /g, '-'), t.replace(/ /g, '')];
   return [...new Set(names)].filter(n => n !== t).map(n => 'assets/illustrations/' + n + '.png');
 }
+// Fiches résidentielles avec une illustration propre : tag → [nom du fichier, autres orthographes essayées]
+const NAMED_IMAGES = {
+  'point singulier': ['Isolation point singulier', ['isolation point singulier', 'Isolation points singuliers', 'isolation points singuliers']],
+  'equilibrage': ['Vanne d’équilibrage', ["Vanne d'équilibrage", 'vanne d’équilibrage', "vanne d'équilibrage", 'Vanne d’equilibrage', "Vanne d'equilibrage", 'Vanne dequilibrage']],
+};
+function namedImageTag(f){ return (f.tags || []).find(t => NAMED_IMAGES[t]); }
 // Image de repli si aucun fichier n'est trouvé
 function illustrationFallback(f){
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
@@ -65,6 +73,8 @@ function ebsImgNext(img){
   if(f.tags?.includes('pac-agriculture')) return 'assets/illustrations/PAC pour agriculture.png';
   if(f.tags?.includes('pac-rehausse')) return 'assets/illustrations/PAC de rehausse industrielle.png';
   if(f.tags?.includes('geothermie')) return 'assets/illustrations/Système géothermique.png';
+  const nt = namedImageTag(f);
+  if(nt) return 'assets/illustrations/' + NAMED_IMAGES[nt][0] + '.png';
   const eqTag = (f.tags || []).find(t => AGRI_EQ_TAGS.includes(t));
   if(eqTag) return 'assets/illustrations/' + eqTag + '.png';   // le nom du fichier est le tag
   if(f.sector === 'agri') return 'assets/illustrations/agriculture.png';
