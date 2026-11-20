@@ -57,6 +57,7 @@ function renderTH171(body){
     <div class="source-note">Source : BAR-TH-171 vA82-5 à compter du 01-09-2026 (barème inchangé depuis vA78.4) · Bonification dès le 01/01/2027 : projet d'arrêté (coefficient + forfait par catégorie de ménage), non publié à ce jour · Cumul CEE + MaPrimeRénov' plafonné à 12 000 € · CdP conditionné à l'agrément PAC (décret n°2026-413, arrêté du 02/07/2026) depuis le 01/09/2026</div>
   `);
   const baremeWrap = bareme(body, buildBareme171);
+  const compareWrap = compare171(body);
 
   function surfBand(type, surf){
     if(type==='maison') return surf<70?'<70':(surf<90?'70-90':'>=90');
@@ -125,6 +126,7 @@ function renderTH171(body){
     }
 
     baremeWrap.refresh();
+    compareWrap.refresh();
   }
   body.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calc));
   calc();
@@ -177,3 +179,85 @@ function buildBareme171(wrap){
   wrap.innerHTML = html;
 }
 
+
+// ═════════════════════════════════════════════════════════════════════
+// COMPARATIF ACTUEL / PROJET 1er JANVIER 2027 — à retirer une fois l'arrêté publié et appliqué
+// Actuel : engagement du 16/11/2026 au 31/12/2026 (arrêté du 5 novembre 2026) ; projet : HH_2027 (household.js)
+// Hypothèse : conditions du Coup de Pouce remplies (remplacement chaudière fossile, PAC agréée, résidence principale)
+// ═════════════════════════════════════════════════════════════════════
+function compare171(container){
+  container.insertAdjacentHTML('beforeend', `
+    <button type="button" class="bareme-toggle" id="cmp171Btn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <span id="cmp171Label">Voir le comparatif actuel / projet 1er janvier 2027</span>
+    </button>
+    <div class="bareme-wrap" id="cmp171Wrap"></div>
+  `);
+  const btn = container.querySelector('#cmp171Btn');
+  const wrap = container.querySelector('#cmp171Wrap');
+  const label = container.querySelector('#cmp171Label');
+  btn.addEventListener('click', ()=>{
+    const isOpen = wrap.classList.toggle('open');
+    btn.classList.toggle('expanded', isOpen);
+    label.textContent = isOpen ? 'Masquer le comparatif actuel / projet 1er janvier 2027' : 'Voir le comparatif actuel / projet 1er janvier 2027';
+    if(isOpen) buildCompare171(wrap);
+  });
+  wrap.refresh = () => { if(wrap.classList.contains('open')) buildCompare171(wrap); };
+  return wrap;
+}
+
+const CMP171_PROFILS = [
+  { p:'tresmodeste',   label:'Très modeste',  kind:'prec' },
+  { p:'modeste',       label:'Modeste',       kind:'prec' },
+  { p:'intermediaire', label:'Intermédiaire', kind:'class' },
+  { p:'autre',         label:'Autre ménage',  kind:'class' },
+];
+function buildCompare171(wrap){
+  const pc=parseFloat(document.getElementById('f-pc').value)||0;
+  const pp=parseFloat(document.getElementById('f-pp').value)||0;
+  if(!pc || !pp){
+    wrap.innerHTML = `<div style="padding:12px;font-size:12px;color:var(--text-3)">Renseignez le prix classique et le prix précarité pour afficher le comparatif.</div>`;
+    return;
+  }
+  const actuel = HH_COEF['BAR-TH-171'].new;
+  const projet = HH_2027['BAR-TH-171'];
+  const versions = [
+    { titre:'ACTUEL — engagement du 16/11/2026 au 31/12/2026', coef:p=>actuel[p], forfait:()=>0 },
+    { titre:'PROJET 1er JANVIER 2027 — arrêté non publié à ce jour', coef:p=>projet.coef[p], forfait:p=>projet.forfait[p] },
+  ];
+  const rows = [
+    {type:'maison', label:'Maison', bands:[['< 70 m²','<70'],['70–90 m²','70-90'],['≥ 90 m²','>=90']]},
+    {type:'appt', label:'Appartement', bands:[['< 35 m²','<35'],['35–60 m²','35-60'],['≥ 60 m²','>=60']]},
+  ];
+  const f = n => n.toLocaleString('fr-FR');
+  const prime = (v, prof, ver) => {
+    const price = prof.kind==='prec' ? pp : pc;
+    return eur((v*ver.coef(prof.p) + ver.forfait(prof.p))/1000*price);
+  };
+  const coefTxt = (prof, ver) => `×${ver.coef(prof.p)}${ver.forfait(prof.p) ? ' + ' + f(ver.forfait(prof.p)) : ''}`;
+  let html = '';
+  versions.forEach(ver=>{
+    html += `<div style="font-weight:700;padding:12px 4px 6px;color:var(--navy-dk);font-size:12.5px">${ver.titre}</div><div style="overflow-x:auto"><table class="bareme" style="font-size:11px"><thead><tr>
+      <th>Zone</th><th>Type</th><th>Surface</th><th>kWh cumac<br>Etas1 / Etas2</th><th>Sans bonification<br>prix classique</th>
+      ${CMP171_PROFILS.map(pr=>`<th>${pr.label}<br>${coefTxt(pr, ver)} · ${pr.kind==='prec'?'prix précarité':'prix classique'}</th>`).join('')}
+    </tr></thead><tbody>`;
+    ['H1','H2','H3'].forEach(zone=>{
+      rows.forEach(grp=>{
+        grp.bands.forEach(([lab,band],i)=>{
+          const [e1,e2] = REF171[zone][grp.type][band];
+          html += `<tr class="${i===grp.bands.length-1?'grp-end':''}">`;
+          if(grp.type==='maison' && i===0) html += `<td class="zone-cell z-${zone.toLowerCase()}" rowspan="6">${zone}</td>`;
+          html += `<td style="text-align:left;font-weight:${i===0?'700':'400'}">${i===0?grp.label:''}</td><td>${lab}</td>`;
+          html += `<td>${num(e1)} / ${num(e2)}</td><td class="num-c">${eur(e1/1000*pc)} / ${eur(e2/1000*pc)}</td>`;
+          CMP171_PROFILS.forEach(pr=>{
+            html += `<td class="${pr.kind==='prec'?'num-p':'num-cdp'}">${prime(e1,pr,ver)} / ${prime(e2,pr,ver)}</td>`;
+          });
+          html += `</tr>`;
+        });
+      });
+    });
+    html += `</tbody></table></div>`;
+  });
+  html += `<div class="source-note" style="padding:10px 12px">Prix : classique ${f(pc)} €/MWhc · précarité ${f(pp)} €/MWhc. Etas1 : 111 % ≤ Etas &lt; 140 % · Etas2 : Etas ≥ 140 %. Conditions du Coup de Pouce supposées remplies (remplacement d'une chaudière charbon, fioul ou gaz ; PAC agréée ; résidence principale). Actuel : très modeste ×5, modeste ×3, autres ×5 (arrêté du 5 novembre 2026). Projet 2027 : coefficient + forfait selon la catégorie de revenus ; ne s'applique pas si un dossier MaPrimeRénov' a été déposé avant le 01/01/2027. Estimations indicatives : le projet d'arrêté peut encore évoluer.</div>`;
+  wrap.innerHTML = html;
+}
