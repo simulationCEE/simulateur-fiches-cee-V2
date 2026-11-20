@@ -234,12 +234,12 @@ function buildCompare171(wrap){
     const price = prof.kind==='prec' ? pp : pc;
     return eur((v*ver.coef(prof.p) + ver.forfait(prof.p))/1000*price);
   };
-  const coefTxt = (prof, ver) => `×${ver.coef(prof.p)}${ver.forfait(prof.p) ? ' + ' + f(ver.forfait(prof.p)) : ''}`;
-  let html = '';
+  // Tableau resserré pour tenir dans la largeur du simulateur, sans défilement horizontal
+  let html = `<style>table.cmp171{font-size:10.5px;min-width:0}table.cmp171 th,table.cmp171 td{padding:6px 4px;white-space:nowrap}table.cmp171 th{white-space:normal}</style>`;
   versions.forEach(ver=>{
-    html += `<div style="font-weight:700;padding:12px 4px 6px;color:var(--navy-dk);font-size:12.5px">${ver.titre}</div><div style="overflow-x:auto"><table class="bareme" style="font-size:11px"><thead><tr>
-      <th>Zone</th><th>Type</th><th>Surface</th><th>kWh cumac<br>Etas1 / Etas2</th><th>Sans bonification<br>prix classique</th>
-      ${CMP171_PROFILS.map(pr=>`<th>${pr.label}<br>${coefTxt(pr, ver)} · ${pr.kind==='prec'?'prix précarité':'prix classique'}</th>`).join('')}
+    html += `<div style="font-weight:700;padding:12px 4px 6px;color:var(--navy-dk);font-size:12.5px">${ver.titre}</div><table class="bareme cmp171"><thead><tr>
+      <th>Zone</th><th>Type</th><th>Surface</th><th>kWh cumac<br>Etas1 / Etas2</th><th>Sans bonif.</th>
+      ${CMP171_PROFILS.map(pr=>`<th>${pr.label}</th>`).join('')}
     </tr></thead><tbody>`;
     ['H1','H2','H3'].forEach(zone=>{
       rows.forEach(grp=>{
@@ -256,8 +256,8 @@ function buildCompare171(wrap){
         });
       });
     });
-    html += `</tbody></table></div>`;
+    html += `</tbody></table>`;
   });
-  html += `<div class="source-note" style="padding:10px 12px">Prix : classique ${f(pc)} €/MWhc · précarité ${f(pp)} €/MWhc. Etas1 : 111 % ≤ Etas &lt; 140 % · Etas2 : Etas ≥ 140 %. Conditions du Coup de Pouce supposées remplies (remplacement d'une chaudière charbon, fioul ou gaz ; PAC agréée ; résidence principale). Actuel : très modeste ×5, modeste ×3, autres ×5 (arrêté du 5 novembre 2026). Projet 2027 : coefficient + forfait selon la catégorie de revenus ; ne s'applique pas si un dossier MaPrimeRénov' a été déposé avant le 01/01/2027. Estimations indicatives : le projet d'arrêté peut encore évoluer.</div>`;
+  html += `<div class="source-note" style="padding:10px 12px">Prix : classique ${f(pc)} €/MWhc · précarité ${f(pp)} €/MWhc. Etas1 : 111 % ≤ Etas &lt; 140 % · Etas2 : Etas ≥ 140 %. Conditions du Coup de Pouce supposées remplies (remplacement d'une chaudière charbon, fioul ou gaz ; PAC agréée ; résidence principale). Prix précarité : très modestes et modestes · prix classique : intermédiaires et autres ménages. Actuel : très modeste ×5, modeste ×3, intermédiaire et autre ménage ×5 (arrêté du 5 novembre 2026). Projet 2027 : très modeste ×5 + 417 000 kWhc, modeste ×3 + 417 000 kWhc, intermédiaire ×5 + 400 000 kWhc, autre ménage ×5 ; ne s'applique pas si un dossier MaPrimeRénov' a été déposé avant le 01/01/2027. Estimations indicatives : le projet d'arrêté peut encore évoluer.</div>`;
   wrap.innerHTML = html;
 }
