@@ -19,6 +19,13 @@ const REGULATORY_WINDOWS = {
   'BAR-EN-101': HH_INFO_WINDOW,
   'BAR-EN-102': HH_INFO_WINDOW,
   'BAR-EN-103': HH_INFO_WINDOW,
+  'BAR-SE-104': HH_INFO_WINDOW,
+  'BAR-TH-161': {
+    type: 'validite',
+    label: "Version vA71-3 (opérations engagées avant le 01/08/2030)",
+    start: '2025-08-01', end: '2030-07-31',
+    source: 'BAR-TH-161 vA71-3 à compter du 01/08/2025'
+  },
   'BAR-TH-168': {
     type: 'bonification',
     label: 'Bonification ×4 / ×5',
