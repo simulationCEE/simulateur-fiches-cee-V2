@@ -28,7 +28,7 @@ function renderTH171(body){
       <div class="field"><label>Etas de la PAC (%)</label><input type="number" id="f-etas" value="140"></div>
     </div>
     <div class="field-row">
-      ${hhFieldHtml(undefined, {intermediaire:true})}
+      ${hhFieldHtml()}
       ${hhResPrincField()}
     </div>
     <div class="field-row" id="f-mpr-row" style="display:none">
@@ -209,8 +209,7 @@ function compare171(container){
 const CMP171_PROFILS = [
   { p:'tresmodeste',   label:'Très modeste',  kind:'prec' },
   { p:'modeste',       label:'Modeste',       kind:'prec' },
-  { p:'intermediaire', label:'Intermédiaire', kind:'class' },
-  { p:'autre',         label:'Autre ménage',  kind:'class' },
+  { p:'autre',         label:'Autres ménages', kind:'class' },
 ];
 function buildCompare171(wrap){
   const pc=parseFloat(document.getElementById('f-pc').value)||0;
@@ -258,6 +257,6 @@ function buildCompare171(wrap){
     });
     html += `</tbody></table>`;
   });
-  html += `<div class="source-note" style="padding:10px 12px">Prix : classique ${f(pc)} €/MWhc · précarité ${f(pp)} €/MWhc. Etas1 : 111 % ≤ Etas &lt; 140 % · Etas2 : Etas ≥ 140 %. Conditions du Coup de Pouce supposées remplies (remplacement d'une chaudière charbon, fioul ou gaz ; PAC agréée ; résidence principale). Prix précarité : très modestes et modestes · prix classique : intermédiaires et autres ménages. Actuel : très modeste ×5, modeste ×3, intermédiaire et autre ménage ×5 (arrêté du 5 novembre 2026). Projet 2027 : très modeste ×5 + 417 000 kWhc, modeste ×3 + 417 000 kWhc, intermédiaire ×5 + 400 000 kWhc, autre ménage ×5 ; ne s'applique pas si un dossier MaPrimeRénov' a été déposé avant le 01/01/2027. Estimations indicatives : le projet d'arrêté peut encore évoluer.</div>`;
+  html += `<div class="source-note" style="padding:10px 12px">Prix : classique ${f(pc)} €/MWhc · précarité ${f(pp)} €/MWhc. Etas1 : 111 % ≤ Etas &lt; 140 % · Etas2 : Etas ≥ 140 %. Conditions du Coup de Pouce supposées remplies (remplacement d'une chaudière charbon, fioul ou gaz ; PAC agréée ; résidence principale). Prix précarité : très modestes et modestes · prix classique : autres ménages (revenus intermédiaires compris). Actuel : très modeste ×5, modeste ×3, autres ménages ×5 (arrêté du 5 novembre 2026). Projet 2027 : très modeste ×5 + 417 000 kWhc, modeste ×3 + 417 000 kWhc, autres ménages ×5 ; ne s'applique pas si un dossier MaPrimeRénov' a été déposé avant le 01/01/2027. Estimations indicatives : le projet d'arrêté peut encore évoluer.</div>`;
   wrap.innerHTML = html;
 }
