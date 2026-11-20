@@ -12,7 +12,7 @@ const REF171 = {
 
 function renderTH171(body){
   body.insertAdjacentHTML('beforeend', `
-    <div class="cond-box"><b>Conditions :</b> Etas ≥ 111% (MT/HT) ou ≥ 126% (BT) · Régulateur classe IV-VIII obligatoire · Note de dimensionnement</div>
+    <div class="cond-box"><b>Conditions :</b> Etas ≥ 111% (MT/HT) ou ≥ 126% (BT) · Régulateur classe IV-VIII obligatoire · Note de dimensionnement par émetteur (engagement à partir du 01/01/2027)</div>
   `);
   body.insertAdjacentHTML('beforeend', `
     <div class="field-row">
@@ -28,8 +28,13 @@ function renderTH171(body){
       <div class="field"><label>Etas de la PAC (%)</label><input type="number" id="f-etas" value="140"></div>
     </div>
     <div class="field-row">
-      ${hhFieldHtml()}
+      ${hhFieldHtml(undefined, {intermediaire:true})}
       ${hhResPrincField()}
+    </div>
+    <div class="field-row" id="f-mpr-row" style="display:none">
+      <div class="field"><label>Dossier MaPrimeRénov' (PTE) déposé à l'Anah avant le 01/01/2027 <span class="hint">hors demandes refusées · si oui, les forfaits 2027 ne s'appliquent pas</span></label>
+        <select id="f-mpr"><option value="non">Non</option><option value="oui">Oui</option></select>
+      </div>
     </div>
     ${hhNoteHtml()}
     <div class="field-row">
@@ -49,7 +54,7 @@ function renderTH171(body){
     <div class="warn-box" id="warnAgree171"></div>
     <div class="divider"></div>
     <div class="results" id="results"></div>
-    <div class="source-note">Source : BAR-TH-171 vA82-5 à compter du 01-09-2026 (barème inchangé depuis vA78.4) · Cumul CEE + MaPrimeRénov' plafonné à 12 000 € · CdP conditionné à l'agrément PAC (décret n°2026-413, arrêté du 02/07/2026) depuis le 01/09/2026</div>
+    <div class="source-note">Source : BAR-TH-171 vA82-5 à compter du 01-09-2026 (barème inchangé depuis vA78.4) · Bonification dès le 01/01/2027 : projet d'arrêté (coefficient + forfait par catégorie de ménage), non publié à ce jour · Cumul CEE + MaPrimeRénov' plafonné à 12 000 € · CdP conditionné à l'agrément PAC (décret n°2026-413, arrêté du 02/07/2026) depuis le 01/09/2026</div>
   `);
   const baremeWrap = bareme(body, buildBareme171);
 
@@ -71,15 +76,18 @@ function renderTH171(body){
     const hh = hhCtx('BAR-TH-171', pc, pp);
     const respr = document.getElementById('f-respr').value==='oui';
     const rpOk = hh.regime==='old' || respr;   // résidence principale exigée pour un engagement à partir du 16/11/2026 (art. 3-6 III 1°)
-    const mult = (cdp && agree && rpOk) ? hh.coef : 1;
-    const kwhcBonifie = kwhc*mult;
-    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime: kwhcBonifie/1000*hh.price, hh, cdp, agree, rpOk, mult};
+    const bonif = cdp && agree && rpOk;
+    const mult = bonif ? hh.coef : 1;
+    const forfait = bonif ? hh.forfait : 0;      // forfait 2027 (kWhc), ajouté après le coefficient
+    const kwhcBonifie = kwhc*mult + forfait;
+    return {kwh: kwhcBonifie, kwhBrut: kwhc, prime: kwhcBonifie/1000*hh.price, hh, cdp, agree, rpOk, mult, forfait, bonif};
   }
   let adjWrap;
   let revWrap;
   function calc(){
     const surf=parseFloat(document.getElementById('f-surf').value)||0;
-    const {kwh:kwhc, kwhBrut, prime, hh, cdp, agree, rpOk, mult} = calcCore171(surf);
+    const {kwh:kwhc, kwhBrut, prime, hh, cdp, agree, rpOk, mult, forfait, bonif} = calcCore171(surf);
+    document.getElementById('f-mpr-row').style.display = hhIs2027() ? '' : 'none';
     hhUpdateNote('BAR-TH-171');
     const warn = document.getElementById('warnAgree171');
     if(cdp && agree && !rpOk){
@@ -92,8 +100,8 @@ function renderTH171(body){
       warn.classList.remove('show');
     }
     document.getElementById('results').innerHTML = `
-      <div class="result-row"><span class="result-label">kWh cumac ${mult>1?`(bonifié ×${mult}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
-      <div class="result-row ${hhRowClass(hh, mult>1)}"><span class="result-label">${hhPrimeLabel(hh)}</span><span class="result-val">${eur(prime)}</span></div>
+      <div class="result-row"><span class="result-label">kWh cumac ${bonif?`(bonifié ×${mult}${forfait?` + forfait ${kwh(forfait)}`:''}, brut ${kwh(kwhBrut)})`:''}</span><span class="result-val" style="font-size:14px">${kwh(kwhc)}</span></div>
+      <div class="result-row ${hhRowClass(hh, bonif)}"><span class="result-label">${hhPrimeLabel(hh)}</span><span class="result-val">${eur(prime)}</span></div>
     `;
 
     if(!adjWrap){
@@ -144,7 +152,7 @@ function buildBareme171(wrap){
     <th>Zone</th><th>Type</th><th>Surface</th>
     <th>kWh cumac<br>Etas1 / Etas2</th>
     <th>Prime sans bonification<br>Etas1 / Etas2</th>
-    <th>Prime avec Coup de Pouce ×${hh.coef}<br>Etas1 / Etas2</th>
+    <th>Prime avec Coup de Pouce ×${hh.coef}${hh.forfait?` + ${num(hh.forfait)} kWhc`:''}<br>Etas1 / Etas2</th>
   </tr></thead><tbody>`;
   ['H1','H2','H3'].forEach(zone=>{
     rows.forEach(grp=>{
@@ -160,7 +168,7 @@ function buildBareme171(wrap){
         html += `<td>${label}</td>`;
         html += `<td>${num(e1)} / ${num(e2)}</td>`;
         html += `<td class="${hh.kind==='prec'?'num-p':'num-c'}">${eur(e1/1000*hh.price)} / ${eur(e2/1000*hh.price)}</td>`;
-        html += `<td class="num-cdp">${eur(e1/1000*hh.price*hh.coef)} / ${eur(e2/1000*hh.price*hh.coef)}</td>`;
+        html += `<td class="num-cdp">${eur((e1*hh.coef+hh.forfait)/1000*hh.price)} / ${eur((e2*hh.coef+hh.forfait)/1000*hh.price)}</td>`;
         html += `</tr>`;
       });
     });
