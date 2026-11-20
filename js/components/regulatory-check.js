@@ -27,7 +27,7 @@ const REGULATORY_WINDOWS = {
   },
   'BAR-TH-171': {
     type: 'bonification',
-    label: 'Coup de Pouce (×5 / ×3 selon le ménage à partir du 16/11/2026)',
+    label: 'Coup de Pouce (×5 / ×3 selon le ménage dès le 16/11/2026 ; + forfait dès le 01/01/2027, projet d\'arrêté)',
     start: '2025-10-01', end: '2030-12-31',
     source: 'Charte Coup de Pouce Chauffage'
   },
