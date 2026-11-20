@@ -43,6 +43,16 @@ const FICHES = [
     render: renderTH177
   },
   {
+    code:"BAR-TH-161", title:"Isolation de points singuliers d'un réseau", sector:"res", tags:["point singulier"],
+    version:"vA71-3", dv:"10 ans (5 ans si T > 120 °C)",
+    render: renderTH161
+  },
+  {
+    code:"BAR-SE-104", title:"Réglage des organes d'équilibrage (chauffage collectif à eau chaude)", sector:"res", tags:["equilibrage"],
+    version:"vA19-1", dv:"10 ans",
+    render: renderSE104
+  },
+  {
     code:"BAR-TH-112", title:"Appareil indépendant de chauffage au bois", sector:"res", tags:["chauffage-bois"],
     version:"vA46-3", dv:"15 ans",
     render: renderTH112
