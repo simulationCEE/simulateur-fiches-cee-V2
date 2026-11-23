@@ -98,6 +98,11 @@ const FICHES = [
     render: r=>renderENBat(r,{H1:5200,H2:4200,H3:2800},"BAT-EN-103")
   },
   {
+    code:"BAT-EN-112", title:"Revêtement réflectif en toiture (commerce)", sector:"ter", tags:["reflectif"],
+    version:"vA38-1", dv:"20 ans",
+    render: renderBATEN112
+  },
+  {
     code:"IND-UT-103", title:"Récupération de chaleur sur compresseur d'air", sector:"indus", tags:["recuperation-chaleur"],
     version:"vA17.2", dv:"13 ans",
     render: renderINDUT103
