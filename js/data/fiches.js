@@ -207,4 +207,9 @@ const FICHES = [
     version:"vA58-2", dv:"20 ans",
     render: renderAGRIEQ109
   },
+  {
+    code:"RES-EC-104", title:"Rénovation d'éclairage extérieur (LED)", sector:"reseaux", tags:["eclairage"],
+    version:"vA77-3", dv:"30 ans",
+    render: renderRESEC104
+  },
 ];
