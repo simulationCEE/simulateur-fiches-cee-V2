@@ -75,6 +75,12 @@ const REGULATORY_WINDOWS = {
     start: '2025-08-01', end: '2030-07-31',
     source: 'IND-BA-110 vA71-4 à compter du 01/08/2025'
   },
+  'RES-EC-104': {
+    type: 'validite',
+    label: 'Version vA77-3 (opérations engagées avant le 01/01/2030)',
+    start: '2025-11-26', end: '2029-12-31',
+    source: 'RES-EC-104 vA77-3 à compter du 26/11/2025'
+  },
   'BAT-TH-116': {
     type: 'validite',
     label: 'Version vA62-6 (opérations engagées avant le 01/01/2030)',
