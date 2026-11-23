@@ -128,6 +128,11 @@ const FICHES = [
     render: r=>renderDestrat(r,"BAT-TH-142")
   },
   {
+    code:"BAT-TH-116", title:"Gestion technique du bâtiment (GTB) tertiaire", sector:"ter", tags:["gtb"],
+    version:"vA62-6", dv:"15 ans",
+    render: renderBAT116
+  },
+  {
     code:"AGRI-TH-108", title:"Pompe à chaleur air/eau pour serres", sector:"agri", tags:["pac-agriculture"],
     version:"arrêté du 26/10/2026", dv:"17 ans",
     render: renderAGRITH108
