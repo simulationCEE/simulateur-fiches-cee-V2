@@ -336,7 +336,7 @@ const HH_DEPT_PCT = [
   ['95', "Val-d’Oise", 58, 89],
   ['', "Collectivités d’outre-mer", 80, 94],
 ];
-const HH_BAILLEUR_FICHES = ['BAR-TH-179', 'BAR-TH-177', 'PAC MIXTE', 'BAR-SE-104', 'BAR-TH-161'];
+const HH_BAILLEUR_FICHES = ['BAR-TH-179', 'BAR-TH-177', 'PAC MIXTE', 'BAR-SE-104', 'BAR-TH-161', 'BAR-TH-125', 'BAR-TH-127', 'BAR-TH-155'];
 function hhInjectBailleur(body){
   if(body.querySelector('.hh-bailleur')) return;
   if(typeof currentFiche === 'undefined' || !currentFiche || !HH_BAILLEUR_FICHES.includes(currentFiche.code)) return;
