@@ -53,6 +53,21 @@ const FICHES = [
     render: renderSE104
   },
   {
+    code:"BAR-TH-125", title:"Ventilation double flux (VMC) résidentielle", sector:"res", tags:["ventilation"],
+    version:"vA54-5", dv:"17 ans",
+    render: renderTH125
+  },
+  {
+    code:"BAR-TH-127", title:"VMC simple flux hygroréglable résidentielle", sector:"res", tags:["ventilation"],
+    version:"vA58-6", dv:"17 ans",
+    render: renderTH127
+  },
+  {
+    code:"BAR-TH-155", title:"Ventilation hybride hygroréglable (appartements)", sector:"res", tags:["ventilation"],
+    version:"vA40-4", dv:"17 ans",
+    render: renderTH155
+  },
+  {
     code:"BAR-TH-112", title:"Appareil indépendant de chauffage au bois", sector:"res", tags:["chauffage-bois"],
     version:"vA46-3", dv:"15 ans",
     render: renderTH112
@@ -101,6 +116,16 @@ const FICHES = [
     code:"BAT-EN-112", title:"Revêtement réflectif en toiture (commerce)", sector:"ter", tags:["reflectif"],
     version:"vA38-1", dv:"20 ans",
     render: renderBATEN112
+  },
+  {
+    code:"BAT-TH-125", title:"Ventilation simple flux tertiaire", sector:"ter", tags:["ventilation"],
+    version:"vA32-2", dv:"17 ans",
+    render: renderBAT125
+  },
+  {
+    code:"BAT-TH-126", title:"Ventilation double flux avec échangeur tertiaire", sector:"ter", tags:["ventilation"],
+    version:"vA32-2", dv:"17 ans",
+    render: renderBAT126
   },
   {
     code:"IND-UT-103", title:"Récupération de chaleur sur compresseur d'air", sector:"indus", tags:["recuperation-chaleur"],
