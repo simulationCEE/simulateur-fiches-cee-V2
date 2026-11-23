@@ -20,6 +20,19 @@ const REGULATORY_WINDOWS = {
   'BAR-EN-102': HH_INFO_WINDOW,
   'BAR-EN-103': HH_INFO_WINDOW,
   'BAR-SE-104': HH_INFO_WINDOW,
+  'BAR-TH-155': HH_INFO_WINDOW,
+  'BAR-TH-125': {
+    type: 'validite',
+    label: 'Version vA54-5 (opérations engagées avant le 01/07/2028)',
+    start: '2024-01-01', end: '2028-06-30',
+    source: 'BAR-TH-125 vA54-5 à compter du 01/01/2024'
+  },
+  'BAR-TH-127': {
+    type: 'validite',
+    label: 'Version vA58-6 (opérations engagées jusqu\'au 30/06/2028)',
+    start: '2024-01-01', end: '2028-06-30',
+    source: 'BAR-TH-127 vA58-6 à compter du 01/01/2024'
+  },
   'BAR-TH-161': {
     type: 'validite',
     label: "Version vA71-3 (opérations engagées avant le 01/08/2030)",
